@@ -180,7 +180,32 @@ def edit_inventario(request, id_item):
         connection.commit()
         
         return redirect('/inventario/')    
+#-----------------------------platillos----------------------------------
+
+def add_platillo(request):
+    if request.method=='GET':
+        with connection.cursor() as cursor:
+            lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=1").fetchall()
+        return render(request, 'add_platillo.html', context={
+            'ingredientes': lista_ingredientes,
+        })
     
+    else:
+        nombre_platillo= request.POST['nombre']
+        desc= request.POST['desc']
+        precio=request.POST['precio']
+        ingrediente= request.POST.getlist('nombre_ingredientes')
+        cantidad = request.POST.getlist('cantidad')
+        print("PRECIO PLATILLO:"+str(precio))
+    
+        for j,y in zip(ingrediente,cantidad):
+            with connection.cursor() as cursor:
+                query="EXEC agregar_platillo %s, %s, %s,%s, %s"
+                filtro = (nombre_platillo, desc, precio, j,y)
+                cursor.execute(query, filtro)
+            connection.commit()
+        return redirect('/')
+
 #------------------------------alquiler----------------------------------  
 def alquiler(request):
     with connection.cursor() as cursor:
@@ -375,14 +400,6 @@ def agregar_orden(request):
         ids= request.POST.getlist('id_producto')
         coment= request.POST['comentario']
 
-
-        '''# Concatenar la lista de IDs y cantidades en una cadena separada por comas
-        ids_str = ','.join(str(id) for id in ids)
-        cant_str = ','.join(str(c) for c in cant)
-
-        with connection.cursor() as cursor:
-            cursor.execute("EXEC insertar_orden @id_producto %s,@cantidad %s, @descripcion %s",(ids_str, cant_str,coment))
-            id_orden = cursor.fetchone()[0]'''
         with connection.cursor() as cursor:
                 # Aquí inserto descripcion y activo en la tabla ORDEN
                 sql_query1 = "INSERT INTO orden(descripcion, activa) VALUES (%s, %s)"
