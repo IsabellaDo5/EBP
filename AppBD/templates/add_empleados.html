@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Editar registro
+{% endblock %}
+
+{% block content %}
+<h3>Agregar nuevo empleado</h3>
+
+<form action="/add_empleados/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    <div class="row">
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+        
+        <!--APELLIDO-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Apellido</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Apellido">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="apellido" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+
+        <!--SEXO-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Sexo</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Sexo">
+            </div>
+            <div class="col-auto">
+                <!--Agregué esta etiqueta-->
+            <select class="form-select" aria-label="Default select example" name="sexo"> 
+                <option selected>Seleccionar</option>
+                <option value="F">Femenino</option>
+                <option value="M">Masculino</option>
+            </select>
+            <!--Hasta aquí-->
+            </div>
+        </div>
+    </div>
+
+
+        <!--SEGUNDA FILA-->
+        <div class="row">
+            <!--Dirección-->
+            <div class="col-sm-4">
+                <div class="col-auto">
+                    <label for="staticEmail2" class="visually-hidden">Dirección</label>
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
+                </div>
+                <div class="col-auto">
+                    <label for="inputPassword2" class="visually-hidden"></label>
+                    <input type="text" name="direccion" class="form-control" id="inputPassword2" row="2" value="">
+                </div>
+            </div>
+            
+            <!--CEDULA-->
+            <div class="col-sm-4">
+                <div class="col-auto">
+                    <label for="staticEmail2" class="visually-hidden">Cédula</label>
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cédula (Sin guiones ni espacios)">
+                </div>
+                <div class="col-auto">
+                    <label for="inputPassword2" class="visually-hidden"></label>
+                    <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" value="">
+                </div>
+            </div>
+    
+            <!--TELÉFONO-->
+            <div class="col-sm-4">
+                <div class="col-auto">
+                    <label for="staticEmail2" class="visually-hidden">Teléfono </label>
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Teléfono (Formato: 88886666)">
+                </div>
+                <div class="col-auto">
+                    <label for="inputPassword2" class="visually-hidden"></label>
+                    <input type="text" maxlength = "8" name="telefono" class="form-control" id="inputPassword2" value="">
+                </div>
+            </div>
+        </div>
+    <button type="submit" class="btn btn-secondary">Guardar cambios</button>
+</form>
+
+  {% endblock %}

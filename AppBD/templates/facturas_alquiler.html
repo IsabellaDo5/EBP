@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Inicio
+{% endblock %}
+
+{% block content %}
+<h3>Facturas de alquiler</h3>
+{% for x in facturas %}
+<div class="card" style="margin: 1% !important;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-9">
+                <p></p>        
+                  <div class="container text-center">
+                    <div class="row">FACTURA DE ALQUILER</div>
+                    <div class="row">Numero de factura: {{x.num_factura}}</div>
+                    <div class="row">Fecha de facturacion: {{x.fecha}}</div>
+                    <div class="row">Facturado por: {{x.nombreemp}}</div>
+                    <div class="row">Cliente: {{x.nombrecli}}</div>
+                    <div class="row">Horas alquiladas: {{x.cantidad_tiempo}}</div>
+                    <div class="row">Total: {{x.total}} Córdobas</div>
+                  </div>
+                </div>  
+              </div>
+            <div class="col-sm-3">
+                
+          </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

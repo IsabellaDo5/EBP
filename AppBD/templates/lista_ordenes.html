@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Órdenes
+{% endblock %}
+
+{% block content %}
+<p class="fw-bold">Órdenes activas</p>
+{% for x in ordenes %}
+{% if x.2 == 1 %}
+<div class="card" style="margin-bottom: 2%;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                Orden no. {{x.0}}, {{x.1}}
+            </div>
+            <div class="col-md-4 w-auto">
+                <a href="/orden_detalle/{{x.0}}" ><button type="button" class="btn btn-outline-dark">Ver detalles</button></a>
+            </div>
+          </div>
+    </div>
+  </div>
+{% endif %}
+{% endfor %}
+
+<p class="fw-bold"></p>
+{% for x in ordenes %}
+{% if x.2 == 0 %}
+<div class="card" style="margin-bottom: 2%;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                Orden no. {{x.0}}, {{x.1}}
+            </div>
+            <div class="col-md-4 w-auto">
+                <a href="/orden_detalle/{{x.0}}" ><button type="button" class="btn btn-outline-dark">Ver detalles</button></a>
+            </div>
+          </div>
+    </div>
+  </div>
+{% endif %}
+{% endfor %}
+{% endblock %}

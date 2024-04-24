@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Editar registro
+{% endblock %}
+
+{% block content %}
+<h3>Facturar un alquiler</h3>
+<form action="/add_factura_alquiler/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    <p></p>
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    <div class="row">
+        <!--Fecha-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Fecha de la factura</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Fecha de la factura">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="fecha" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+        
+        <!--NUMERO DE FACTURA-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Numero de factura</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Numero de factura">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="num_factura" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+         
+        <!--id_empleado-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">ID Empleado </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID Empleado">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="id_empleado" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+
+        <!--id_cliente-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">ID Cliente </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID Cliente">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="id_clientes" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+
+        <!--id_alquiler-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">ID alquiler</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID Alquiler">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="id_alquiler" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+    </div>             
+    <button type="submit" class="btn btn-secondary">Guardar factura</button>
+</form>
+
+{% endblock %}

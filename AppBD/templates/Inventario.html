@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Inventario
+{% endblock %}
+
+{% block content %}
+<h3>Inventario</h3>
+{% for x in trab %}
+<div class="card" style="margin: 1% !important;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-9">
+                <p>{{x.1}}    </p>        
+                  <div class="container text-center">
+                    <div class="row">
+                      <div class="col">
+                        Precio del item: {{x.2}}
+                      </div>
+                      <div class="col">
+                        Tipo de item: {{x.7}}
+                      </div>
+                      <div class="col">
+                        Cantidad disponible: {{x.3}}
+                      </div>
+                      <div class="col">
+                        <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar producto</button></a>
+                        <a href="/eliminar_inventario/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Eliminar producto</button></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>  
+              </div>
+            <div class="col-sm-3">
+                
+          </div>
+    </div>
+</div>
+{% endfor %}
+
+<a href="/add_inventario/"><button class="btn btn-primary" type="button">Agregar productos</button></a>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Inicio
+{% endblock %}
+
+{% block content %}
+<h3>Empleados</h3>
+{% for x in trab %}
+<div class="card" style="margin: 1% !important;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-9">
+                <p>{{x.nombre}} {{x.apellido}}</p>          
+              </div>
+            <div class="col-sm-3">
+                <div class="btn-group me-2" role="group" aria-label="First group">
+                    <a href="/empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-outline-secondary">Editar</button></a>
+                    <a href="/eliminar_empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-danger">Eliminar</button></a>
+                  </div>
+                </div>
+          </div>
+    </div>
+</div>
+{% endfor %}
+
+<a href="/add_empleados/"><button class="btn btn-primary" type="button">Agregar un nuevo empleado</button></a>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Inicio
+{% endblock %}
+
+{% block content %}
+<h3>Clientes: </h3>
+{% for x in clientes %}
+<div class="card" style="margin: 1% !important;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-9">
+                <p>ID: {{x.id_clientes}}, Nombre del cliente: {{x.nombre}} {{x.apellido}}</p>          
+              </div>
+            <div class="col-sm-3">
+                <div class="btn-group me-2" role="group" aria-label="First group">
+                    <a href="/cliente/{{x.id_clientes}}"> <button type="button" class="btn btn-outline-secondary">Editar </button></a>
+                    <a href="/eliminar_cliente/{{x.id_clientes}}"> <button type="button" class="btn btn-outline-secondary">Eliminar </button></a>
+                  </div>
+                </div>
+          </div>
+    </div>
+</div>
+{% endfor %}
+
+
+<a href="/add_cliente/"><button class="btn btn-primary" type="button">Agregar un nuevo cliente</button></a>
+{% endblock %}

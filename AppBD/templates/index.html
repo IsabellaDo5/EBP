@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Inicio
+{% endblock %}
+
+{% block content %}
+<h3>Bienvenido al sistema de facturación e inventario de El Buen Punto</h3>
+
+<div class="container ">
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h2>General</h2>
+                <a href="/empleados/"><button class="btn btn-primary" type="button">Empleados</button></a>
+                <a href="/inventario/"><button class="btn btn-primary" type="button">Inventario</button></a>
+                <a href=""><button class="btn btn-primary" type="button">Platillos</button></a>
+                <a href="/add_alquiler_cliente/"><button class="btn btn-primary" type="button">Clientes</button></a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h2>Órdenes</h2>
+                <a href="{% url 'gen_orden' %}"><button class="btn btn-primary" type="button">Ingresar una orden</button></a>
+                <a href="{% url 'ordenes' %}"><button class="btn btn-primary" type="button">Ver todas las órdenes</button></a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h2>Alquiler</h2>
+              <a href="/alquiler/"><button class="btn btn-primary" type="button">Alquileres</button></a>
+              <a href="/add_factura_alquiler/"><button class="btn btn-primary" type="button">Facturar Alquiler</button></a>
+              <a href="/facturas_alquiler/"><button class="btn btn-primary" type="button">Ver facturas de alquiler</button></a>
+                
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% endblock %}

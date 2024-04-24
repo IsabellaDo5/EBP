@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Editar registro
+{% endblock %}
+
+{% block content %}
+<h3>Editar información</h3>
+{% for x in info %}
+<form action="/empleado/{{x.0}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    <p>ID: {{x.0}}</p>
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    <div class="row">
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.1}}" >
+            </div>
+        </div>
+        
+        <!--APELLIDO-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Apellido</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Apellido">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="apellido" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.2}}">
+            </div>
+        </div>
+
+        <!--SEXO-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Sexo</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Sexo">
+            </div>
+            <!--Agregué esta etiqueta-->
+            <select class="form-select" aria-label="Default select example" name="sexo">
+                {% if x.6 == "M"%} 
+                <option selected value="{{x.6}}">Masculino</option>
+                <option value="F">Femenino</option>
+                {% endif %}
+                {% if x.6 == "F" %}
+                <option selected value="{{x.6}}">Femenino</option>
+                <option value="M">Masculino</option>
+                {% endif %}
+            </select>
+            <!--Hasta aquí-->
+        </div>
+    </div>
+
+
+        <!--SEGUNDA FILA-->
+        <div class="row">
+            <!--Dirección-->
+            <div class="col-sm-4">
+                <div class="col-auto">
+                    <label for="staticEmail2" class="visually-hidden">Dirección</label>
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
+                </div>
+                <div class="col-auto">
+                    <label for="inputPassword2" class="visually-hidden"></label>
+                    <input type="text" name="direccion" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.3}}">
+                </div>
+            </div>
+            
+            <!--CEDULA-->
+            <div class="col-sm-4">
+                <div class="col-auto">
+                    <label for="staticEmail2" class="visually-hidden">Cédula</label>
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cédula (Sin guiones ni espacios)">
+                </div>
+                <div class="col-auto">
+                    <label for="inputPassword2" class="visually-hidden"></label>
+                    <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.4}}">
+                </div>
+            </div>
+    
+            <!--TELÉFONO-->
+            <div class="col-sm-4">
+                <div class="col-auto">
+                    <label for="staticEmail2" class="visually-hidden">Teléfono </label>
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Teléfono (Formato: 88886666)">
+                </div>
+                <div class="col-auto">
+                    <label for="inputPassword2" class="visually-hidden"></label>
+                    <input type="text" maxlength = "8" name="telefono" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.5}}">
+                </div>
+            </div>
+        </div>
+    <button type="submit" class="btn btn-secondary">Guardar cambios</button>
+</form>
+{% endfor %}
+  {% endblock %}

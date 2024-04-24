@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Registrar una orden
+{% endblock %}
+
+{% block content %}
+<h3>Registrar una orden</h3>
+<form action="/generar_orden/" method="post">
+    {% csrf_token %}
+
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Agregar un comentario:</span>
+        <input type="text" name="comentario" class="form-control" placeholder="" aria-describedby="basic-addon1">
+      </div>
+    <h3>Menú</h3> 
+    {% for x in infopro %}
+     
+    <div class="card" style="margin-bottom: 2% !important;" >
+        <div class="card-body">
+            <div class="input-group">
+                <span class="input-group-text">{{x.nombre}}</span>
+                <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
+                <input type="hidden" name="id_producto" value="{{x.id_item}}" class="form-control">
+                <!--INPUT DONDE SOLO SE MUESTRA EL PRECIO DEL PRODUCTO-->
+                <input type="text" id="precio{{x.id_item}}" value="{{x.precio}}" class="form-control" disabled>
+                <!--INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR-->
+                <input type="number" name="cantidad" id="{{x.id_item}}" value="0" min="0" max="{{x.cantidad}}" class="form-control">
+                <!--INPUT DONDE SOLO SE IMPRIME EL PRECIO TOTAL DE LOS PRODUCTOS-->
+                <input type="text" id="preciotot{{x.id_item}}" value="0"  class="form-control" disabled>
+                
+                <script>
+                    // Funcion principal, espera a que cargue el html antes de hacer cualquier cosa
+                    document.addEventListener('DOMContentLoaded', function() {
+                            // Obtener el elemento de entrada y el elemento de resultado
+                            var numeroInput = document.getElementById('{{x.id_item}}');                           
+                            var preciounit = document.getElementById('precio{{x.id_item}}')
+                            var preciototal = document.getElementById('preciotot{{x.id_item}}');
+
+                            // Agregar un evento de escucha al elemento 'input'
+                            numeroInput.addEventListener('input', function() {
+                                // Obtiene la cantidad de productos del input con id: 'x.id_item'
+                                var cantidad = numeroInput.value;
+
+                                // Imprime en el html el precio total por cada producto
+                                preciototal.value = ""+parseInt(cantidad,10)*parseFloat(preciounit.value);
+                            });
+                        });
+                
+                </script>
+
+                
+            </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <!--<input type="hidden" id="postId" name="postId" value="34657" /> <input type="hidden" id="postId2" name="postId" value="5846" />-->
+</form>
+
+
+{% endblock %}

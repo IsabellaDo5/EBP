@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Editar registro de alquiler
+{% endblock %}
+
+{% block content %}
+<h3>Editar información de cliente</h3>
+{% for x in info %}
+<form action="/cliente/{{x.0}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    <p>ID: {{x.0}}</p>
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    <div class="row">
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.1}}" >
+            </div>
+        </div>
+
+        <!--APELLIDO-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Apellido</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Apellido">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="apellido" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.2}}" >
+            </div>
+        </div>
+
+        <!--DIRECCION-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Dirección</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="direccion" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.3}}" >
+            </div>
+        </div>
+  
+    </div>
+    <div class="row">
+        <!--CEDULA-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Cédula</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cédula">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="cedula" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.4}}" >
+            </div>
+        </div>
+
+        <!--TELEFONO-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Teléfono</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Teléfono">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="telefono" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.5}}" >
+            </div>
+        </div>
+
+  
+    </div>
+    <button type="submit" class="btn btn-secondary">Guardar cambios</button>
+</form>
+{% endfor %}
+  {% endblock %}

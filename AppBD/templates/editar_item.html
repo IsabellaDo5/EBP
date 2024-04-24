@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Editar registro
+{% endblock %}
+
+{% block content %}
+<h3>Editar información</h3>
+{% for x in info %}
+<form action="/item/{{x.5}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    <div class="row">
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" maxlength="25" required
+                    value="{{x.0}}">
+            </div>
+        </div>
+
+        <!--Precio-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Precio</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Precio">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="number" name="precio" class="form-control" id="inputPassword2" maxlength="25" required
+                    value="{{x.1}}">
+            </div>
+        </div>
+
+        <!--tipoItem-->
+        <div class="col-md-4">
+            <label for="inputState" class="form-label">Tipo de item:</label>
+            <select id="inputState" class="form-select" name="id_tipoItem">
+                {% for y in catalogo_tipoItem %}
+                    {% if x.7 == y.nombre %}
+                    <option selected value="{{y.nombre}}">{{y.nombre}}</option>
+                    {%else%}
+                    <option value="{{y.nombre}}">{{y.nombre}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <!--Cantidad-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Cantidad</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cantidad">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="number" name="cantidad" class="form-control" id="inputPassword2" maxlength="25" required
+                    value="{{x.2}}">
+            </div>
+        </div>
+
+        <!--Unidad de medida-->
+        <div class="col-md-4">
+            <label for="inputState" class="form-label">Unidad de medida:</label>
+            <select id="inputState" class="form-select" disabled name="unidad_medida">
+               
+                <option selected disabled value="">{{x.4}}</option>
+                
+                <option value=""></option>
+            </select>
+        </div>
+
+
+
+    </div>
+    <button type="submit" class="btn btn-secondary">Guardar cambios</button>
+</form>
+{% endfor %}
+{% endblock %}

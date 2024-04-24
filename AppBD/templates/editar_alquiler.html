@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Editar registro de alquiler
+{% endblock %}
+
+{% block content %}
+<h3>Editar información</h3>
+{% for x in info %}
+<form action="/alquiler/{{x.0}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    <p>ID: {{x.0}}</p>
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    <div class="row">
+        <!--horas-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Horas</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Horas">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="horas" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.1}}" >
+            </div>
+        </div>
+
+        <!--id_tipoAlquiler-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Tipo de Alquiler</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Tipo de Alquiler">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="id_tipoAlquiler" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.2}}" >
+            </div>
+        </div>
+
+        <!--id_cliente-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">ID del cliente</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID del cliente">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="id_clientes" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.3}}" >
+            </div>
+        </div>
+  
+    </div>
+    <button type="submit" class="btn btn-secondary">Guardar cambios</button>
+</form>
+{% endfor %}
+  {% endblock %}

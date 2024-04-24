@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Editar registro
+{% endblock %}
+
+{% block content %}
+<h3>Agregar un item nuevo al inventario</h3>
+
+<form action="/add_cliente/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    <div class="row">
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+        
+        <!--apellido-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Apellido</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Apellido">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="apellido" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+         
+        <!--direccion-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Dirección </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="direccion" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+
+        <!--cedula-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Cedula</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cedula">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="cedula" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+
+         <!--telefono-->
+         <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Telefono</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Telefono">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="telefono" class="form-control" id="inputPassword2" value="">
+            </div>
+        </div>
+    </div>             
+    <button type="submit" class="btn btn-secondary">Guardar cliente</button>
+</form>
+
+  {% endblock %}
