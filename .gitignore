@@ -1,4 +1,4 @@
-AppBD\__pycache__
-ProyectoBD\__pycache__
-ProyectoBD\settings.py
+AppBD/__pycache__
+ProyectoBD/__pycache__
+ProyectoBD/settings.py
 *.pyc
