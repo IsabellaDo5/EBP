@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Mesas
+{% endblock %}
+
+{% block content %}
+<h3>Seleccione una mesa para ver las ordenes o añadir una nueva/h3>
+
+<div class="container ">
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h2>General</h2>
+                <a href="/empleados/"><button class="btn btn-primary" type="button">Empleados</button></a>
+                <a href="/inventario/"><button class="btn btn-primary" type="button">Inventario</button></a>
+                <a href=""><button class="btn btn-primary" type="button">Platillos</button></a>
+                <a href="/add_alquiler_cliente/"><button class="btn btn-primary" type="button">Clientes</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% endblock %}

@@ -21,8 +21,7 @@ from AppBD import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.inicio),
-    path('login/', views.login),
-    path('registro/', views.registro),
+    path('signin/', views.login_user),
     path('cerrar_sesion/', views.cerrar_sesion),
     #Seccion de empleados
     path('eliminar_empleado/<int:id_emp>/',views.eliminar_empleado),
@@ -52,6 +51,8 @@ urlpatterns = [
     path('orden_detalle/<int:id_orden>', views.detalle_orden),
     path('ver_ordenes', views.ver_ordenes, name='ordenes'),
 
+    #orden hotep
+    path('mesas/', views.mesas, name="mesas"),
     #Facturas alquiler
     path('facturas_alquiler/', views.ver_facturas_alquiler),
     path('add_factura_alquiler/', views.add_factura_alquiler),
@@ -59,5 +60,4 @@ urlpatterns = [
     #Facturas orden
     #path('facturas_orden/', views.facturas, name='facturas'),
     #path('add_factura_orden/', views.add_factura_orden),
-
 ]

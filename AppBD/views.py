@@ -3,27 +3,9 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import *
 from django.contrib.auth import login, authenticate, logout
 from django.db import connection
-import bcrypt
+
 import datetime
-
 # Create your views here.
-def registro(request):
-    if request.method=='POST':
-        return redirect('/')
-    else:
-        return render(request, 'registro.html')
-
-def login(request):
-    if request.method=='POST':
-        return redirect('/')
-    else:
-        return render(request, 'login.html')
-    
-def cerrar_sesion(request):
-    logout(request)
-    # Redirige a la página que desees después de cerrar sesión
-    return redirect('/')
-
 def inicio(request):
 
     '''if request.user.is_authenticated:
@@ -32,6 +14,25 @@ def inicio(request):
         return redirect('signin/')'''
     return render(request, 'index.html', {'usuario': request.user})
 
+def login_user(request):
+    if request.method == 'GET':
+        return render(request, 'signin.html', {
+        'form': AuthenticationForm})
+    else:
+        user= authenticate(request, username=request.POST['username'], password = request.POST['password'])
+
+        if user is None:
+           return render(request, 'signin.html', {
+        'form': AuthenticationForm,
+        'error': 'El usuario o contraseña no son validos'})
+        else:
+            login(request, user)
+            return redirect('/')
+        
+def cerrar_sesion(request):
+    logout(request)
+    # Redirige a la página que desees después de cerrar sesión
+    return redirect('/')
 
 def empleados(request):
     #trabajadores = Empleado.objects.all().values
@@ -351,7 +352,7 @@ def factura_orden(request):
     })
     else:
         return redirect('/')
-
+#----------------------------------ordenes hotep-------------------------------------------
 
 #----------------------------------ordenes isa---------------------------------------------
 def ver_ordenes(request):
@@ -495,4 +496,11 @@ def add_factura_alquiler(request):
         return redirect('/facturas_alquiler/') 
 
 
-#---------------------facturas orden------------------------------------------
+#---------------------mesas-----------------------------------------
+def mesas(request):
+    mesas = [1, 2, 3, 4, 5]
+
+    return render(request, 'mesas.html', context={
+            'mesas': mesas,
+        })
+

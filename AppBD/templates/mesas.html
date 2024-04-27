@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Ordenes
+{% endblock %}
+
+{% block content %}
+<h3>Seleccione una de las mesas para ver las ordenes o agregar una nueva</h3>
+
+<div class="container ">
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h2>General</h2>
+          {% for boton_id in mesas %}
+                <a href="/empleado/{{ boton_id }}/"> <button type="button" class="btn btn-outline-secondary">Editar {{ boton_id }}</button></a>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+</div>
+
+  {% endblock %}
