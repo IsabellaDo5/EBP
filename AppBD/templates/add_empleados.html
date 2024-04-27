@@ -1,98 +1,192 @@
+
 {% extends "layout.html" %}
 
 {% block title %}
-  Editar registro
+Editar registro
 {% endblock %}
 
 {% block content %}
 <h3>Agregar nuevo empleado</h3>
 
-<form action="/add_empleados/" method="post" class="row g-3" style="margin-top: 2% !important;">
+<form action="/add_empleados/" method="post" class="row g-3 " style="margin-top: 2% !important;">
     {% csrf_token %}
     <!--PRIMERA FILA-->
-    <div class="row">
+    <div class="row prueba">
         <!--NOMBRE-->
-        <div class="col-sm-4">
+        <div class="col-md-6">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Nombre</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
+                <input type="text" readonly class="form-control-plaintext"  value="Nombre">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="nombre" class="form-control" id="inputPassword2" value="">
+                <input type="text" name="nombre" class="form-control" id="nombre" value="" required>
             </div>
         </div>
-        
+
         <!--APELLIDO-->
-        <div class="col-sm-4">
+        <div class="col-md-6">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Apellido</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Apellido">
+                <input type="text" readonly class="form-control-plaintext"  value="Apellido">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="apellido" class="form-control" id="inputPassword2" value="">
+                <input type="text" name="apellido" class="form-control" id="apellido" value="" required>
             </div>
         </div>
 
         <!--SEXO-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Sexo</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Sexo">
             </div>
             <div class="col-auto">
                 <!--Agregué esta etiqueta-->
-            <select class="form-select" aria-label="Default select example" name="sexo"> 
-                <option selected>Seleccionar</option>
-                <option value="F">Femenino</option>
-                <option value="M">Masculino</option>
-            </select>
-            <!--Hasta aquí-->
+                <select class="form-select" aria-label="Default select example" name="sexo" required>
+                    <option selected value="">Seleccionar</option>
+                    <option value="F">Femenino</option>
+                    <option value="M">Masculino</option>
+                </select>
+                <!--Hasta aquí-->
+            </div>
+        </div>
+
+        <!--ROL-->
+        <div class="col-md-5">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Rol</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Rol">
+            </div>
+            <div class="col-auto">
+                <!--Agregué esta etiqueta-->
+                <select class="form-select" aria-label="Default select example" name="rol" required>
+                    <option selected value disabled>Seleccionar</option>
+                    {% for x in lista_roles %}
+                    <option value="{{x.nombre}}">{{x.nombre}}</option>
+                    {% endfor %}
+                </select>
+                <!--Hasta aquí-->
             </div>
         </div>
     </div>
 
 
-        <!--SEGUNDA FILA-->
-        <div class="row">
-            <!--Dirección-->
-            <div class="col-sm-4">
-                <div class="col-auto">
-                    <label for="staticEmail2" class="visually-hidden">Dirección</label>
-                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
-                </div>
-                <div class="col-auto">
-                    <label for="inputPassword2" class="visually-hidden"></label>
-                    <input type="text" name="direccion" class="form-control" id="inputPassword2" row="2" value="">
-                </div>
+    <!--SEGUNDA FILA-->
+    <div class="row">
+        <!--Dirección-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Dirección</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
             </div>
-            
-            <!--CEDULA-->
-            <div class="col-sm-4">
-                <div class="col-auto">
-                    <label for="staticEmail2" class="visually-hidden">Cédula</label>
-                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cédula (Sin guiones ni espacios)">
-                </div>
-                <div class="col-auto">
-                    <label for="inputPassword2" class="visually-hidden"></label>
-                    <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" value="">
-                </div>
-            </div>
-    
-            <!--TELÉFONO-->
-            <div class="col-sm-4">
-                <div class="col-auto">
-                    <label for="staticEmail2" class="visually-hidden">Teléfono </label>
-                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Teléfono (Formato: 88886666)">
-                </div>
-                <div class="col-auto">
-                    <label for="inputPassword2" class="visually-hidden"></label>
-                    <input type="text" maxlength = "8" name="telefono" class="form-control" id="inputPassword2" value="">
-                </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="direccion" class="form-control" id="inputPassword2" row="2" value="" required>
             </div>
         </div>
-    <button type="submit" class="btn btn-secondary">Guardar cambios</button>
+
+        <!--CEDULA-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Cédula</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Cédula (Sin guiones ni espacios)">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" value=""
+                    required>
+            </div>
+        </div>
+
+        <!--TELÉFONO-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Teléfono </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Teléfono (Formato: 88886666)">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" maxlength="8" name="telefono" class="form-control" id="inputPassword2" value=""
+                    required>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <h3>Información de inicio de sesión</h3>
+        <div class="col">
+            <div class="mb-3">
+                <label for="formGroupExampleInput" class="form-label">Nombre de usuario</label>
+                <input type="text" class="form-control" id="formGroupExampleInput" placeholder="" name="username">
+            </div>
+        </div>
+        <div class="col">
+            <div class="mb-3">
+                <label for="formGroupExampleInput2" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="formGroupExampleInput2"
+                    placeholder="Escribe aquí tu contraseña" name="password" required >
+            </div>
+            <div class="mb-3">
+                <label for="formGroupExampleInput2" class="form-label">Confirma tu contraseña</label>
+                <input type="password" class="form-control" id="formGroupExampleInput3"
+                    placeholder="Escribe nuevamente tu contraseña" name="confirmpassword" required >
+            </div>
+            <p id="mensaje"></p>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-secondary" id="subir">Guardar cambios</button>
 </form>
 
-  {% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Obtener los elementos de input
+        var nombre = document.getElementById('nombre')
+        var apellido = document.getElementById('apellido')
+        var usuario = document.getElementById('formGroupExampleInput');
+
+        var input1 = document.getElementById('formGroupExampleInput2');
+        var input2 = document.getElementById('formGroupExampleInput3');
+        var mensaje = document.getElementById('mensaje');
+        var registrarme = document.getElementById('subir')
+
+
+        nombre.addEventListener('input', crearUsuario);
+        apellido.addEventListener('input', crearUsuario);
+
+        // Agregar event listeners para el evento 'input' en ambos inputs
+        input1.addEventListener('input', compararTexto);
+        input2.addEventListener('input', compararTexto);
+
+        function crearUsuario(){
+            var Tnombre = nombre.value;
+            var Tapellido = apellido.value;
+
+            usuario.value = ""+Tapellido+"_"+Tnombre;
+        }
+
+        function compararTexto() {
+            // Obtener los valores de los inputs
+            var valor1 = input1.value;
+            var valor2 = input2.value;
+
+            // Comparar los valores
+            if (valor1 === valor2 && valor1.length != 0 && valor2.length != 0) {
+                mensaje.textContent = "Ambas contraseñas coinciden.";
+                registrarme.disabled = false;
+
+            } else {
+                mensaje.textContent = "No coinciden las contraseñas";
+                registrarme.disabled = true;
+            }
+        }
+
+
+    });
+
+</script>
+{% endblock %}

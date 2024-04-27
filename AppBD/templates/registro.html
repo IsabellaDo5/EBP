@@ -8,7 +8,7 @@ Registrarse
 
 <h1>Registrarse</h1>
 <div>
-  <form action="login/" method="post">
+  <form action="registro/" method="post">
     <div class="mb-3">
       <label for="formGroupExampleInput" class="form-label">Nombre de usuario</label>
       <input type="text" class="form-control" id="formGroupExampleInput"
@@ -16,31 +16,50 @@ Registrarse
     </div>
     <div class="mb-3">
       <label for="formGroupExampleInput2" class="form-label">Contraseña</label>
-      <input type="password" class="form-control" id="formGroupExampleInput2" placeholder="Escribe aquí tu contraseña">
+      <input type="password" class="form-control" id="formGroupExampleInput2" placeholder="Escribe aquí tu contraseña" required>
     </div>
     <div class="mb-3">
       <label for="formGroupExampleInput2" class="form-label">Confirma tu contraseña</label>
       <input type="password" class="form-control" id="formGroupExampleInput3"
-        placeholder="Escribe nuevamente tu contraseña">
+        placeholder="Escribe nuevamente tu contraseña" required>
     </div>
-    <button type="button" class="btn btn-primary">Crear nuevo usuario</button>
+    <p id="mensaje"></p>
+    <button type="button" class="btn btn-primary" id="subir" disabled>Crear nuevo usuario</button>
   </form>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
 
-  const password = document.getElementById("formGroupExampleInput2").value;
-  const confirm_pass = document.getElementById("formGroupExampleInput3").value;
+    // Obtener el elemento de input
+    // Obtener los elementos de input
+    var input1 = document.getElementById('formGroupExampleInput2');
+    var input2 = document.getElementById('formGroupExampleInput3');
+    var mensaje = document.getElementById('mensaje');
+    var registrarme = document.getElementById('subir')
 
-  confirm_pass.addEventListener("input", comparar);
+    // Agregar event listeners para el evento 'input' en ambos inputs
+    input1.addEventListener('input', comprobarTexto);
+    input2.addEventListener('input', comprobarTexto);
 
-  function comparar(e) {
-    if(password==e.target.value){
-      alert(e.target.value)
+    function comprobarTexto() {
+      // Obtener los valores de los inputs
+      var valor1 = input1.value;
+      var valor2 = input2.value;
+
+      // Comparar los valores
+      if (valor1 === valor2 && valor1.length!=0 && valor2.length!=0 ) {
+        mensaje.textContent = "Ambas contraseñas coinciden.";
+        registrarme.disabled= false;
+
+      } else {
+        mensaje.textContent = "No coinciden las contraseñas";
+        registrarme.disabled= true;
+      }
     }
-  }
-});
+
+
+  });
 
 </script>
 {% endblock %}

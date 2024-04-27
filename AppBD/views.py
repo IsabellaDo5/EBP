@@ -76,12 +76,22 @@ def edit_empleados(request, id_emp):
     
 def agregar_empleado(request):
     if request.method == 'GET':
-        return render(request, 'add_empleados.html')
-    else:
 
         with connection.cursor() as cursor:
-            sql_query = "INSERT INTO empleados (nombre, apellido,direccion, cedula, telefono, sexo) VALUES (%s, %s, %s,%s, %s, %s)"
-            valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'])
+            roles= cursor.execute("SELECT * FROM roles").fetchall()
+
+        return render(request, 'add_empleados.html', context={
+            'lista_roles':roles,
+        })
+    else:
+
+        password_flat = request.POST['password']
+
+        password = bcrypt.hashpw(password_flat,bcrypt.gensalt())
+
+        with connection.cursor() as cursor:
+            sql_query = "exec registrar_empleado %s,%s,%s,%s,%s,%s,%s,%s,%s"
+            valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'], request.POST['rol'], request.POST['username'], password)
             cursor.execute(sql_query, valores)
 
         connection.commit()
