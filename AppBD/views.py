@@ -504,3 +504,18 @@ def mesas(request):
             'mesas': mesas,
         })
 
+
+def mesa_orden(request, id_mesa):
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            
+            #cursor.execute(query, filtro)
+
+            #Obtiene los resultados
+            info = "asdasdas"
+            #print("Info del usuario:"+str(info))
+
+        #info = Empleado.objects.filter(id_empleado=id_emp)
+        return render(request, 'mesa_orden.html', context={
+            'info': info,
+        })
