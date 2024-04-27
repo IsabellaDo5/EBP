@@ -3,7 +3,9 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import *
 from django.contrib.auth import login, authenticate, logout
 from django.db import connection
-import bcrypt
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+import hashlib
 import datetime
 
 # Create your views here.
@@ -15,21 +17,47 @@ def registro(request):
 
 def login(request):
     if request.method=='POST':
-        return redirect('/')
+
+        username= request.POST['username']
+        password = request.POST['password']
+
+        h = hashlib.new("SHA256")
+        password = request.POST['password']
+        h.update(password.encode())
+        password_hash = h.hexdigest()
+
+
+        with connection.cursor() as cursor:
+            query="EXEC buscar_cuenta %s"
+            filtro = (username,)
+            cursor.execute(query, filtro)
+
+            # Obtiene los resultados
+            resultados = cursor.fetchall()
+
+        print("CONTRASEÑA BD:"+str(resultados[0][2]))
+        print("CONTRASEÑA hash:"+str(password_hash))
+        if len(resultados)==0:
+
+            messages.error(request, "ERROR:Credenciales no válidas.")
+            return render(request, 'login.html')
+        
+        if password_hash == resultados[0][2]:
+           
+           return redirect('/')
+        else:
+            messages.error(request, "ERROR:Credenciales no válidas.")
+            return render(request, 'login.html')
     else:
         return render(request, 'login.html')
     
 def cerrar_sesion(request):
-    logout(request)
+    
     # Redirige a la página que desees después de cerrar sesión
     return redirect('/')
 
 def inicio(request):
 
-    '''if request.user.is_authenticated:
-        return render(request, 'index.html', {'usuario': request.user})
-    else:
-        return redirect('signin/')'''
     return render(request, 'index.html', {'usuario': request.user})
 
 
@@ -84,10 +112,11 @@ def agregar_empleado(request):
             'lista_roles':roles,
         })
     else:
-
+        # encripta la contraseña
+        h = hashlib.new("SHA256")
         password_flat = request.POST['password']
-
-        password = bcrypt.hashpw(password_flat,bcrypt.gensalt())
+        h.update(password_flat.encode())
+        password = h.hexdigest()
 
         with connection.cursor() as cursor:
             sql_query = "exec registrar_empleado %s,%s,%s,%s,%s,%s,%s,%s,%s"
