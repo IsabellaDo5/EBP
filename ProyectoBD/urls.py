@@ -23,7 +23,7 @@ urlpatterns = [
     path('', views.inicio),
     path('login/', views.login),
     path('registro/', views.registro),
-    path('cerrar_sesion/', views.cerrar_sesion),
+    path('logout/', views.cerrar_sesion),
     #Seccion de empleados
     path('eliminar_empleado/<int:id_emp>/',views.eliminar_empleado),
     path('add_empleados/',views.agregar_empleado),
