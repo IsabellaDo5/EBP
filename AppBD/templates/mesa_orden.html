@@ -14,10 +14,26 @@
           <h2>Todas las ordenes de la mesa {{info.0}}:</h2>
           <div style="height:100%;width:100%;border:1px solid #ccc;">
             <div style="height:100%;width:100%;overflow:auto;">
-              Así, una vez que hay suficiente texto en este cuadro, ¡el cuadro crecerá barras de desplazamiento... por eso lo llamamos un cuadro de desplazamiento! También podrías colocar una imagen en el cuadro de desplazamiento.
+
+
+              <div class="card" style="margin: 1% !important;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-9">
+                            <p>{{x.nombre}} {{x.apellido}}</p>          
+                          </div>
+                        <div class="col-sm-3">
+                            <div class="btn-group me-2" role="group" aria-label="First group">
+                                <a href="/empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-outline-secondary">Editar</button></a>
+                                <a href="/eliminar_empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-danger">Eliminar</button></a>
+                              </div>
+                            </div>
+                      </div>
+                </div>
+            </div>
+            
             </div>
           </div>
-</div>
         </div>
       </div>
     </div>
