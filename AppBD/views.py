@@ -498,9 +498,17 @@ def add_factura_alquiler(request):
 
 #---------------------mesas-----------------------------------------
 def mesas(request):
+    #Arreglo para mostrar el numero de mesas
     mesas = [1, 2, 3, 4, 5]
 
+    with connection.cursor() as cursor:
+        sql_query = "exec VerOrdenesActivas "
+
+        ordenes=cursor.execute(sql_query)
+
+
     return render(request, 'mesas.html', context={
+            'ordenes': ordenes,
             'mesas': mesas,
         })
 
