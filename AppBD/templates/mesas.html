@@ -9,7 +9,7 @@
 
 <div class="container ">
   <div class="row">
-    <div class="col">
+    <div class="col-md-6">
       <div class="card">
         <div class="card-body">
           <h2>General</h2>
@@ -20,13 +20,13 @@
         </div>
       </div>
     </div>
-    <div class="col">
+    <div class="col-md-6">
       <div class="card">
         <div class="card-body">
           <h2>Ordenes recientes (todas las mesas):</h2>
           <div style="height: 65vh; width: 100%; border: 0px solid #ccc; overflow: auto;">
             
-            {% for x in ordenes %}
+            
             <div class="card" style="margin: 1% !important;">
               <div class="card-body">
                   <div class="row">
@@ -35,13 +35,13 @@
                             <span class="fw-bold">ID Orden:</span> {{x.id_orden}}</p>
                           </div>
                           <div class="row" style="margin-bottom: 0px;">
-                            <p><span class="fw-bold">Atendido por:</span> {{ x.nombreEmpleado }}</p>
+                            <p><span class="fw-bold">Atendido por:</span> <span> {{ x.nombreEmpleado }}</span></p>
                         </div>
                           <div class="row" style="margin-bottom: 0px;">
                             <span class="fw-bold">Cliente:</span> {{x.nombreCliente}}</p>
                           </div>
                           <div class="row" style="margin-bottom: 0px;">
-                            <span class="fw-bold">Nota:</span> {{x.descripcion}}</p>
+                            <span class="fw-bold">Nota:</span> <span>  {{x.descripcion}} </span></p>
                           </div>
                       </div>
                       <div class="col-sm-3">
@@ -52,7 +52,8 @@
                   </div>
               </div>
           </div>
-          {% endfor %}
+          
+
         </div>
       </div>
     </div>
