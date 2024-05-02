@@ -209,9 +209,8 @@ def add_platillo(request):
 #------------------------------alquiler----------------------------------  
 def alquiler(request):
     with connection.cursor() as cursor:
-        resultados=cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquiler a JOIN clientes c ON a.id_clientes = c.id_clientes JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
-         
-    print(resultados)    
+        resultados="asdasdsa" #cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquileres a JOIN clientes c ON a.id_cliente = c.id_clientes JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
+        print(resultados)    
     return render(request, 'alquiler.html', context={
         'alquiler': resultados,
 }) 
