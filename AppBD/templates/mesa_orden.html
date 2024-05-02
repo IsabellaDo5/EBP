@@ -7,36 +7,55 @@
 {% block content %}
 <h3>Seleccione una de las mesas para ver las ordenes o agregar una nueva</h3>
 
-<div class="container ">
+<div class="container">
+  <div class="row">
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <h2>Todas las ordenes de la mesa {{info.0}}:</h2>
-          <div style="height:100%;width:100%;border:1px solid #ccc;">
-            <div style="height:100%;width:100%;overflow:auto;">
-
-
-              <div class="card" style="margin: 1% !important;">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-9">
-                            <p>{{x.nombre}} {{x.apellido}}</p>          
-                          </div>
-                        <div class="col-sm-3">
-                            <div class="btn-group me-2" role="group" aria-label="First group">
-                                <a href="/empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-outline-secondary">Editar</button></a>
-                                <a href="/eliminar_empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-danger">Eliminar</button></a>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div style="height:65vh;width:100%;border:1px;overflow:auto;">                     
+                <h2>Todas las ordenes de la mesa {{id_mesa}}:</h2>
+                <!-- Contenido de la primera columna -->
+                
+                <div class="card" style="margin: 1% !important;">
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col-sm-9">
+                              <div class="row" style="margin-bottom: 0px;">
+                                <span class="fw-bold">ID Orden:</span> {{x.id_orden}}</p>
                               </div>
+                              <div class="row" style="margin-bottom: 0px;">
+                                <p><span class="fw-bold">Atendido por:</span> <span> {{ x.nombreEmpleado }}</span></p>
                             </div>
+                              <div class="row" style="margin-bottom: 0px;">
+                                <span class="fw-bold">Cliente:</span> {{x.nombreCliente}}</p>
+                              </div>
+                              <div class="row" style="margin-bottom: 0px;">
+                                <span class="fw-bold">Nota:</span> <span>  {{x.descripcion}} </span></p>
+                              </div>
+                          </div>
+                          <div class="col-sm-3">
+                              <div class="btn-group me-2" role="group" aria-label="First group">
+                                  <a href="/empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-outline-secondary">Editar</button></a>
+                              </div>
+                          </div>
                       </div>
-                </div>
+                  </div>
+              </div>
+              
+              </div>
             </div>
-            
+            <div class="col-md-6">
+              <div style="height:65vh;width:100%;border:1px;overflow:auto;">
+                <!-- Contenido de la segunda columna -->
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 </div>
-
   {% endblock %}

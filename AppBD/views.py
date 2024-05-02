@@ -516,14 +516,15 @@ def mesas(request):
 def mesa_orden(request, id_mesa):
     if request.method == 'GET':
         with connection.cursor() as cursor:
+            query="exec VerOrdenesActivasMesa %s"
             
-            #cursor.execute(query, filtro)
+            mesa=(id_mesa,)
+            cursor.execute(query, mesa)
+            ordenes_mesa=cursor.fetchall()
+           
 
-            #Obtiene los resultados
-            info = "asdasdas"
-            #print("Info del usuario:"+str(info))
 
-        #info = Empleado.objects.filter(id_empleado=id_emp)
         return render(request, 'mesa_orden.html', context={
-            'info': info,
+            'id_mesa': id_mesa,
+            'ordenes_mesa': ordenes_mesa
         })
