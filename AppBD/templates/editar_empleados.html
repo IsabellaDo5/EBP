@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Editar registro
+Editar registro
 {% endblock %}
 
 {% block content %}
@@ -10,41 +10,44 @@
 <form action="/empleado/{{x.0}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
     <p>ID: {{x.0}}</p>
     {% csrf_token %}
+
     <!--PRIMERA FILA-->
     <div class="row">
         <!--NOMBRE-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Nombre</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="nombre" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.1}}" >
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" maxlength="25" required
+                    value="{{x.1}}">
             </div>
         </div>
-        
+
         <!--APELLIDO-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Apellido</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Apellido">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="apellido" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.2}}">
+                <input type="text" name="apellido" class="form-control" id="inputPassword2" maxlength="25" required
+                    value="{{x.2}}">
             </div>
         </div>
 
         <!--SEXO-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Sexo</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Sexo">
             </div>
             <!--Agregué esta etiqueta-->
             <select class="form-select" aria-label="Default select example" name="sexo">
-                {% if x.6 == "M"%} 
+                {% if x.6 == "M"%}
                 <option selected value="{{x.6}}">Masculino</option>
                 <option value="F">Femenino</option>
                 {% endif %}
@@ -58,45 +61,79 @@
     </div>
 
 
-        <!--SEGUNDA FILA-->
-        <div class="row">
-            <!--Dirección-->
-            <div class="col-sm-4">
-                <div class="col-auto">
-                    <label for="staticEmail2" class="visually-hidden">Dirección</label>
-                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
-                </div>
-                <div class="col-auto">
-                    <label for="inputPassword2" class="visually-hidden"></label>
-                    <input type="text" name="direccion" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.3}}">
-                </div>
+    <!--SEGUNDA FILA-->
+    <div class="row">
+        <!--Dirección-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Dirección</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Dirección">
             </div>
-            
-            <!--CEDULA-->
-            <div class="col-sm-4">
-                <div class="col-auto">
-                    <label for="staticEmail2" class="visually-hidden">Cédula</label>
-                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cédula (Sin guiones ni espacios)">
-                </div>
-                <div class="col-auto">
-                    <label for="inputPassword2" class="visually-hidden"></label>
-                    <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.4}}">
-                </div>
-            </div>
-    
-            <!--TELÉFONO-->
-            <div class="col-sm-4">
-                <div class="col-auto">
-                    <label for="staticEmail2" class="visually-hidden">Teléfono </label>
-                    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Teléfono (Formato: 88886666)">
-                </div>
-                <div class="col-auto">
-                    <label for="inputPassword2" class="visually-hidden"></label>
-                    <input type="text" maxlength = "8" name="telefono" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.5}}">
-                </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="direccion" class="form-control" id="inputPassword2" maxlength="25" required
+                    value="{{x.3}}">
             </div>
         </div>
+
+        <!--CEDULA-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Cédula</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Cédula (Sin guiones ni espacios)">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" maxlength="25"
+                    required value="{{x.4}}">
+            </div>
+        </div>
+
+        <!--TELÉFONO-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Teléfono </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Teléfono (Formato: 88886666)">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" maxlength="8" name="telefono" class="form-control" id="inputPassword2" maxlength="25"
+                    required value="{{x.5}}">
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!--TERCERA FILA-->
+    <div class="row">
+        <!--NOMBRE DE USUARIO-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre de usuario</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre de usuario">
+            </div>
+            <div class="col-auto">
+                <input type="text" name="nombre_usuario" class="form-control" id="inputPassword2" maxlength="10" required
+                    value="{{x.10}}" disabled>
+            </div>
+        </div>
+
+        <!--tipoItem-->
+        <div class="col-md-4">
+            <label for="inputState" class="form-label">Rol:</label>
+            <select id="inputState" class="form-select" name="rol">
+                {% for y in catalogo_roles %}
+                    {% if x.9 == y.nombre %}
+                    <option selected value="{{y.nombre}}">{{y.nombre}}</option>
+                    {%else%}
+                    <option value="{{y.nombre}}">{{y.nombre}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
     <button type="submit" class="btn btn-secondary">Guardar cambios</button>
 </form>
 {% endfor %}
-  {% endblock %}
+{% endblock %}

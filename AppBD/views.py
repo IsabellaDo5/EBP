@@ -16,6 +16,7 @@ def registro(request):
     else:
         return render(request, 'registro.html')
 
+# Inicio de sesión
 def login(request):
     if request.method=='POST':
 
@@ -56,11 +57,13 @@ def login(request):
     else:
         return render(request, 'login.html')
     
+# Cerrar sesión    
 def cerrar_sesion(request):
     
     del request.session['account_id']
     return redirect('/')
 
+# Pagina de inicio
 def inicio(request):
     if 'account_id' not in request.session:
         return redirect('/login')
@@ -81,31 +84,37 @@ def empleados(request):
             'trab': resultados,
         })
 
+# Editar la información de los empleados
 def edit_empleados(request, id_emp):
     if 'account_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
             with connection.cursor() as cursor:
-                query="SELECT * FROM empleados WHERE id_empleado = %s"
+                query="exec buscar_empleado %s"
                 filtro = (id_emp,)
                 cursor.execute(query, filtro)
-
                 # Obtiene los resultados
                 info = cursor.fetchall()
+
+            with connection.cursor() as cursor:
+                catalogo_roles = cursor.execute("SELECT * FROM roles").fetchall()
+
+                
                 print("Info del usuario:"+str(info))
 
             #info = Empleado.objects.filter(id_empleado=id_emp)
             return render(request, 'editar_empleados.html', context={
                 'info': info,
+                'catalogo_roles': catalogo_roles,
             })
         else:
             with connection.cursor() as cursor:
             # Define tu consulta SQL de actualización
-                sql_query = "UPDATE empleados SET nombre = %s, apellido = %s, direccion = %s, cedula = %s, telefono = %s, sexo= %s  WHERE id_empleado = %s"
+                sql_query = "exec modificar_empleado %s,%s,%s,%s,%s,%s,%s,%s"
             
             # Define los nuevos valores
-                nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'], id_emp)
+                nuevos_valores = (id_emp, request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'], request.POST['rol'])
 
             # Ejecuta la consulta SQL de actualización
                 cursor.execute(sql_query, nuevos_valores)

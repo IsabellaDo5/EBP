@@ -24,7 +24,7 @@ Editar registro
             </select>
         </div>
         <!--NOMBRE-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Nombre</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
@@ -36,7 +36,7 @@ Editar registro
         </div>
 
         <!--PRECIO-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Precio</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Precio">
@@ -47,20 +47,8 @@ Editar registro
             </div>
         </div>
 
-
-        <!--<div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Tipo de Item: </label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Tipo de Item">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_tipoItem" class="form-control" id="inputPassword2" value="">
-            </div>
-        </div>-->
-
         <!--CANTIDAD-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Cantidad</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cantidad">
@@ -72,14 +60,14 @@ Editar registro
         </div>
 
         <!--Medidas-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Unidad de medida</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Unidad de medida">
             </div>
             <div class="col-auto">
                 <!--Agregué esta etiqueta-->
-            <select class="form-select" aria-label="Default select example" name="unidad_medida"> 
+            <select class="form-select" aria-label="Default select example" name="unidad_medida" id="unidad_medida" disabled> 
                 <option selected disabled value=" " >Seleccionar</option>
                 {% for x in unidadesdeMedida %}
                 <option value="{{x.nombre}}">{{x.nombre}}</option>
@@ -92,4 +80,19 @@ Editar registro
     <button type="submit" class="btn btn-secondary">Guardar producto nuevo</button>
 </form>
 
+<script>
+    var tipo_item = document.getElementById('inputState');
+    var unidad_medida = document.getElementById('unidad_medida');
+
+    tipo_item.addEventListener("change", function() {
+        if(tipo_item.value === "Ingrediente"){
+            unidad_medida.disabled = false;
+        }
+        else{
+            unidad_medida.disabled = true;
+        }
+        console.log(tipo_item.value)
+
+    })
+</script>
 {% endblock %}
