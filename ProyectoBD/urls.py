@@ -21,8 +21,9 @@ from AppBD import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.inicio),
-    path('signin/', views.login_user),
-    path('cerrar_sesion/', views.cerrar_sesion),
+    path('login/', views.login),
+    path('registro/', views.registro),
+    path('logout/', views.cerrar_sesion),
     #Seccion de empleados
     path('eliminar_empleado/<int:id_emp>/',views.eliminar_empleado),
     path('add_empleados/',views.agregar_empleado),

@@ -7,16 +7,25 @@ Iniciar sesión
 {% block content %}
 
 <h1>Iniciar sesión</h1>
-<form action="login/" method="post">
+<form action="/login/" method="post">
+  {% csrf_token %}
   <div class="mb-3">
     <label for="formGroupExampleInput" class="form-label">Nombre de usuario</label>
-    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Escribe aquí tu nombre de usuario">
+    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Escribe aquí tu nombre de usuario" name="username">
   </div>
   <div class="mb-3">
     <label for="formGroupExampleInput2" class="form-label">Contraseña</label>
-    <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Escribe aquí tu contraseña">
+    <input type="password" class="form-control" id="formGroupExampleInput2" placeholder="Escribe aquí tu contraseña" name="password">
   </div>
-  <button type="button" class="btn btn-primary">Iniciar sesión</button>
+  <button type="submit" class="btn btn-primary">Iniciar sesión</button>
 </form>
+
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+  <li class="{{ message.tags }}">{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
 
 {% endblock %}

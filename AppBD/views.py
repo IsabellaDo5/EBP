@@ -1,93 +1,146 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import *
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, logout
 from django.db import connection
-
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+import hashlib
 import datetime
 # Create your views here.
-def inicio(request):
-
-    '''if request.user.is_authenticated:
-        return render(request, 'index.html', {'usuario': request.user})
+def registro(request):
+    if request.method=='POST':
+        return redirect('/')
     else:
-        return redirect('signin/')'''
-    return render(request, 'index.html', {'usuario': request.user})
+        return render(request, 'registro.html')
 
-def login_user(request):
-    if request.method == 'GET':
-        return render(request, 'signin.html', {
-        'form': AuthenticationForm})
-    else:
-        user= authenticate(request, username=request.POST['username'], password = request.POST['password'])
+def login(request):
+    if request.method=='POST':
 
-        if user is None:
-           return render(request, 'signin.html', {
-        'form': AuthenticationForm,
-        'error': 'El usuario o contraseña no son validos'})
-        else:
-            login(request, user)
-            return redirect('/')
-        
-def cerrar_sesion(request):
-    logout(request)
-    # Redirige a la página que desees después de cerrar sesión
-    return redirect('/')
+        username= request.POST['username']
+        password = request.POST['password']
 
-def empleados(request):
-    #trabajadores = Empleado.objects.all().values
-    with connection.cursor() as cursor:
-        resultados=cursor.execute("SELECT * FROM empleados").fetchall()
-         
-    print(resultados)    
-    return render(request, 'empleados.html', context={
-        'trab': resultados,
-    })
+        h = hashlib.new("SHA256")
+        password = request.POST['password']
+        h.update(password.encode())
+        password_hash = h.hexdigest()
 
-def edit_empleados(request, id_emp):
-    if request.method == 'GET':
+
         with connection.cursor() as cursor:
-            query="SELECT * FROM empleados WHERE id_empleado = %s"
-            filtro = (id_emp,)
+            query="EXEC buscar_cuenta %s"
+            filtro = (username,)
             cursor.execute(query, filtro)
 
             # Obtiene los resultados
-            info = cursor.fetchall()
-            print("Info del usuario:"+str(info))
-
-        #info = Empleado.objects.filter(id_empleado=id_emp)
-        return render(request, 'editar_empleados.html', context={
-            'info': info,
-        })
-    else:
-        with connection.cursor() as cursor:
-        # Define tu consulta SQL de actualización
-            sql_query = "UPDATE empleados SET nombre = %s, apellido = %s, direccion = %s, cedula = %s, telefono = %s, sexo= %s  WHERE id_empleado = %s"
-        
-        # Define los nuevos valores
-            nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'], id_emp)
-
-        # Ejecuta la consulta SQL de actualización
-            cursor.execute(sql_query, nuevos_valores)
-
-    # Asegúrate de realizar un commit para aplicar los cambios en la base de datos
+            user = cursor.fetchall()
         connection.commit()
+
+        user_info={
+            'account_id': user[0][0]
+        }
+        print("CONTRASEÑA BD:"+str(user[0][2]))
+        print("CONTRASEÑA hash:"+str(password_hash))
+        if len(user)==0:
+
+            messages.error(request, "ERROR:Credenciales no válidas.")
+            return render(request, 'login.html')
         
-        return redirect('/empleados/')
+        if password_hash == user[0][2]:
+            request.session['account_id'] = user_info
+            return redirect('/')
+        else:
+            messages.error(request, "ERROR:Credenciales no válidas.")
+            return render(request, 'login.html')
+    else:
+        return render(request, 'login.html')
+    
+def cerrar_sesion(request):
+    
+    del request.session['account_id']
+    return redirect('/')
+
+def inicio(request):
+    if 'account_id' not in request.session:
+        return redirect('/login')
+    else:
+        print(request.session['account_id'])
+        return render(request, 'index.html')
+
+def empleados(request):
+    if 'account_id' not in request.session:
+        return redirect('/login')
+    else:
+    #trabajadores = Empleado.objects.all().values
+        with connection.cursor() as cursor:
+            resultados=cursor.execute("SELECT * FROM empleados").fetchall()
+            
+        print(resultados)    
+        return render(request, 'empleados.html', context={
+            'trab': resultados,
+        })
+
+def edit_empleados(request, id_emp):
+    if 'account_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method == 'GET':
+            with connection.cursor() as cursor:
+                query="SELECT * FROM empleados WHERE id_empleado = %s"
+                filtro = (id_emp,)
+                cursor.execute(query, filtro)
+
+                # Obtiene los resultados
+                info = cursor.fetchall()
+                print("Info del usuario:"+str(info))
+
+            #info = Empleado.objects.filter(id_empleado=id_emp)
+            return render(request, 'editar_empleados.html', context={
+                'info': info,
+            })
+        else:
+            with connection.cursor() as cursor:
+            # Define tu consulta SQL de actualización
+                sql_query = "UPDATE empleados SET nombre = %s, apellido = %s, direccion = %s, cedula = %s, telefono = %s, sexo= %s  WHERE id_empleado = %s"
+            
+            # Define los nuevos valores
+                nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'], id_emp)
+
+            # Ejecuta la consulta SQL de actualización
+                cursor.execute(sql_query, nuevos_valores)
+
+        # Asegúrate de realizar un commit para aplicar los cambios en la base de datos
+            connection.commit()
+            
+            return redirect('/empleados/')
     
 def agregar_empleado(request):
-    if request.method == 'GET':
-        return render(request, 'add_empleados.html')
+    if 'account_id' not in request.session:
+        return redirect('/login')
     else:
+        if request.method == 'GET':
 
-        with connection.cursor() as cursor:
-            sql_query = "INSERT INTO empleados (nombre, apellido,direccion, cedula, telefono, sexo) VALUES (%s, %s, %s,%s, %s, %s)"
-            valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'])
-            cursor.execute(sql_query, valores)
+            with connection.cursor() as cursor:
+                roles= cursor.execute("SELECT * FROM roles").fetchall()
 
-        connection.commit()
+            return render(request, 'add_empleados.html', context={
+                'lista_roles':roles,
+            })
+        else:
+            # encripta la contraseña
+            h = hashlib.new("SHA256")
+            password_flat = request.POST['password']
+            h.update(password_flat.encode())
+            password = h.hexdigest()
 
-        return redirect('/empleados/')
+            with connection.cursor() as cursor:
+                sql_query = "exec registrar_empleado %s,%s,%s,%s,%s,%s,%s,%s,%s"
+                valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'], request.POST['rol'], request.POST['username'], password)
+                cursor.execute(sql_query, valores)
+
+            connection.commit()
+
+            return redirect('/empleados/')
 
 def eliminar_empleado(request, id_emp):
     with connection.cursor() as cursor:
@@ -101,43 +154,50 @@ def eliminar_empleado(request, id_emp):
 
 #----------------------------inventario-------------------------------------
 def inventario(request):
-    with connection.cursor() as cursor:
-        resultados=cursor.execute("EXEC ver_inventario").fetchall()
-         
-    print(resultados)    
-    return render(request, 'inventario.html', context={
-        'trab': resultados,
-    })
+    if 'account_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method == 'GET':
+            with connection.cursor() as cursor:
+                resultados=cursor.execute("EXEC ver_inventario").fetchall()
+            
+                print(resultados)    
+                return render(request, 'inventario.html', context={
+                    'trab': resultados,
+                })
 
 def agregar_inventario(request):
-    if request.method == 'GET':
-        with connection.cursor() as cursor:
-            tipos_item= cursor.execute("SELECT nombre FROM tipoItem").fetchall()
-        connection.commit()
-
-        with connection.cursor() as cursor:
-            medidas= cursor.execute("SELECT nombre FROM medidas").fetchall()
-        connection.commit()
-        return render(request, 'add_inventario.html', context={
-            'tiposdeItem': tipos_item,
-            'unidadesdeMedida': medidas,
-        })
+    if 'account_id' not in request.session:
+        return redirect('/login')
     else:
-        UnidadMedida=""
-        
-        try:
-            UnidadMedida= request.POST['unidad_medida']
-        except:
-            UnidadMedida=" "
+        if request.method == 'GET':
+            with connection.cursor() as cursor:
+                tipos_item= cursor.execute("SELECT nombre FROM tipoItem").fetchall()
+            connection.commit()
 
-        with connection.cursor() as cursor:
-            sql_query = "EXEC agregar_inventario %s, %s, %s, %s, %s"
-            valores = (request.POST['nombre'], request.POST['precio'], request.POST['id_tipoItem'], request.POST['cantidad'],UnidadMedida)
-            cursor.execute(sql_query, valores)
+            with connection.cursor() as cursor:
+                medidas= cursor.execute("SELECT nombre FROM medidas").fetchall()
+            connection.commit()
+            return render(request, 'add_inventario.html', context={
+                'tiposdeItem': tipos_item,
+                'unidadesdeMedida': medidas,
+            })
+        else:
+            UnidadMedida=""
+            
+            try:
+                UnidadMedida= request.POST['unidad_medida']
+            except:
+                UnidadMedida=" "
 
-        connection.commit()
+            with connection.cursor() as cursor:
+                sql_query = "EXEC agregar_inventario %s, %s, %s, %s, %s"
+                valores = (request.POST['nombre'], request.POST['precio'], request.POST['id_tipoItem'], request.POST['cantidad'],UnidadMedida)
+                cursor.execute(sql_query, valores)
 
-        return redirect('/inventario/')
+            connection.commit()
+
+            return redirect('/inventario/')
     
 def eliminar_item(request,id_item):
     with connection.cursor() as cursor:
@@ -150,101 +210,114 @@ def eliminar_item(request,id_item):
     return redirect('/inventario/')
     
 def edit_inventario(request, id_item):
-    if request.method == 'GET':
-        with connection.cursor() as cursor:
-            query="EXEC obtener_info_item %s"
-            filtro = (id_item,)
-            cursor.execute(query, filtro)
-
-            # Obtiene los resultados
-            info = cursor.fetchall()
-        
-        with connection.cursor() as cursor:
-            catalogo_tipoItem = cursor.execute("SELECT nombre FROM tipoItem").fetchall()
-
-        #info = Empleado.objects.filter(id_empleado=id_emp)
-        return render(request, 'editar_item.html', context={
-            'info': info,
-            'catalogo_tipoItem': catalogo_tipoItem,
-        })
+    if 'account_id' not in request.session:
+        return redirect('/login')
     else:
-        try:
-            unidad_medida= request.POST['unidad_medida']
-        except:
-            unidad_medida=""
+        if request.method == 'GET':
+            with connection.cursor() as cursor:
+                query="EXEC obtener_info_item %s"
+                filtro = (id_item,)
+                cursor.execute(query, filtro)
 
-        with connection.cursor() as cursor:
-            sql_query = "EXEC editar_info_item %s,%s,%s,%s,%s,%s"
-            nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
-            cursor.execute(sql_query, nuevos_valores)
-        connection.commit()
-        
-        return redirect('/inventario/')    
+                # Obtiene los resultados
+                info = cursor.fetchall()
+            
+            with connection.cursor() as cursor:
+                catalogo_tipoItem = cursor.execute("SELECT nombre FROM tipoItem").fetchall()
+
+            #info = Empleado.objects.filter(id_empleado=id_emp)
+            return render(request, 'editar_item.html', context={
+                'info': info,
+                'catalogo_tipoItem': catalogo_tipoItem,
+            })
+        else:
+            try:
+                unidad_medida= request.POST['unidad_medida']
+            except:
+                unidad_medida=""
+
+            with connection.cursor() as cursor:
+                sql_query = "EXEC editar_info_item %s,%s,%s,%s,%s,%s"
+                nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
+                cursor.execute(sql_query, nuevos_valores)
+            connection.commit()
+            
+            return redirect('/inventario/')    
 #-----------------------------platillos----------------------------------
 
 def add_platillo(request):
-    if request.method=='GET':
-        with connection.cursor() as cursor:
-            lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=1").fetchall()
-        return render(request, 'add_platillo.html', context={
-            'ingredientes': lista_ingredientes,
-        })
-    
+    if 'account_id' not in request.session:
+        return redirect('/login')
     else:
-        nombre_platillo= request.POST['nombre']
-        desc= request.POST['desc']
-        precio=request.POST['precio']
-        ingrediente= request.POST.getlist('nombre_ingredientes')
-        cantidad = request.POST.getlist('cantidad')
-        print("PRECIO PLATILLO:"+str(precio))
-    
-        for j,y in zip(ingrediente,cantidad):
+        if request.method=='GET':
             with connection.cursor() as cursor:
-                query="EXEC agregar_platillo %s, %s, %s,%s, %s"
-                filtro = (nombre_platillo, desc, precio, j,y)
-                cursor.execute(query, filtro)
-            connection.commit()
-        return redirect('/')
+                lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=1").fetchall()
+            return render(request, 'add_platillo.html', context={
+                'ingredientes': lista_ingredientes,
+            })
+        
+        else:
+            nombre_platillo= request.POST['nombre']
+            desc= request.POST['desc']
+            precio=request.POST['precio']
+            ingrediente= request.POST.getlist('nombre_ingredientes')
+            cantidad = request.POST.getlist('cantidad')
+            print("PRECIO PLATILLO:"+str(precio))
+        
+            for j,y in zip(ingrediente,cantidad):
+                with connection.cursor() as cursor:
+                    query="EXEC agregar_platillo %s, %s, %s,%s, %s"
+                    filtro = (nombre_platillo, desc, precio, j,y)
+                    cursor.execute(query, filtro)
+                connection.commit()
+            return redirect('/')
 
 #------------------------------alquiler----------------------------------  
 def alquiler(request):
-    with connection.cursor() as cursor:
-        resultados="asdasdsa" #cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquileres a JOIN clientes c ON a.id_cliente = c.id_clientes JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
-        print(resultados)    
-    return render(request, 'alquiler.html', context={
-        'alquiler': resultados,
-}) 
-
-def edit_alquiler(request, id_alquiler):
-    if request.method == 'GET':
-        with connection.cursor() as cursor:
-            query="SELECT * FROM alquiler WHERE id_alquiler = %s"
-            filtro = (id_alquiler,)
-            cursor.execute(query, filtro)
-
-            # Obtiene los resultados
-            info = cursor.fetchall()
-            print("Info del item:"+str(info))
-
-        #info = Empleado.objects.filter(id_empleado=id_emp)
-        return render(request, 'editar_alquiler.html', context={
-            'info': info,
-        })
+    if 'account_id' not in request.session:
+        return redirect('/login')
     else:
         with connection.cursor() as cursor:
-        # Define tu consulta SQL de actualización
-            sql_query = "UPDATE alquiler SET horas = %s, id_tipoAlquiler = %s, id_clientes=%s WHERE id_alquiler= %s"
-        
-        # Define los nuevos valores
-            nuevos_valores = (request.POST['horas'], request.POST['id_tipoAlquiler'], request.POST['id_clientes'], id_alquiler)
+            resultados=cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquiler a JOIN clientes c ON a.id_clientes = c.id_clientes JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
+            
+        print(resultados)    
+        return render(request, 'alquiler.html', context={
+            'alquiler': resultados,
+    }) 
 
-        # Ejecuta la consulta SQL de actualización
-            cursor.execute(sql_query, nuevos_valores)
+def edit_alquiler(request, id_alquiler):
+    if 'account_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method == 'GET':
+            with connection.cursor() as cursor:
+                query="SELECT * FROM alquiler WHERE id_alquiler = %s"
+                filtro = (id_alquiler,)
+                cursor.execute(query, filtro)
 
-    # Asegúrate de realizar un commit para aplicar los cambios en la base de datos
-        connection.commit()
-        
-        return redirect('/alquiler/')
+                # Obtiene los resultados
+                info = cursor.fetchall()
+                print("Info del item:"+str(info))
+
+            #info = Empleado.objects.filter(id_empleado=id_emp)
+            return render(request, 'editar_alquiler.html', context={
+                'info': info,
+            })
+        else:
+            with connection.cursor() as cursor:
+            # Define tu consulta SQL de actualización
+                sql_query = "UPDATE alquiler SET horas = %s, id_tipoAlquiler = %s, id_clientes=%s WHERE id_alquiler= %s"
+            
+            # Define los nuevos valores
+                nuevos_valores = (request.POST['horas'], request.POST['id_tipoAlquiler'], request.POST['id_clientes'], id_alquiler)
+
+            # Ejecuta la consulta SQL de actualización
+                cursor.execute(sql_query, nuevos_valores)
+
+        # Asegúrate de realizar un commit para aplicar los cambios en la base de datos
+            connection.commit()
+            
+            return redirect('/alquiler/')
 
 def add_alquiler2(request):
     if request.method == 'GET':
