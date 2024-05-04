@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Mesas
+{% endblock %}
+
+{% block content %}
+<h3>Seleccione una de las mesas para ver las ordenes o agregar una nueva</h3>
+
+<div class="container ">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h2>General</h2>
+          {% for mesa_id in mesas %}
+                <a href="/mesa_orden/{{ mesa_id }}/"> <button type="button" class="btn btn-outline-secondary">Mesa {{ mesa_id }}</button></a>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h2>Ordenes recientes (todas las mesas):</h2>
+          <div style="height: 65vh; width: 100%; border: 0px solid #ccc; overflow: auto;">
+            
+            {% for x in ordenes %}
+            <div class="card" style="margin: 1% !important;">
+              <div class="card-body">
+                  <div class="row">
+                      <div class="col-sm-9">
+                          <div class="row" style="margin-bottom: 0px;">
+                            <span class="fw-bold">ID Orden:</span> {{x.id_orden}}</p>
+                          </div>
+                          <div class="row" style="margin-bottom: 0px;">
+                            <p><span class="fw-bold">Atendido por:</span> <span> {{ x.nombreEmpleado }}</span></p>
+                        </div>
+                          <div class="row" style="margin-bottom: 0px;">
+                            <span class="fw-bold">Cliente:</span> {{x.nombreCliente}}</p>
+                          </div>
+                          <div class="row" style="margin-bottom: 0px;">
+                            <span class="fw-bold">Nota:</span> <span>  {{x.descripcion}} </span></p>
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <div class="btn-group me-2" role="group" aria-label="First group">
+                              <a href="/empleado/{{x.id_empleado}}"> <button type="button" class="btn btn-outline-secondary">Editar</button></a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+</div>
+
+  {% endblock %}

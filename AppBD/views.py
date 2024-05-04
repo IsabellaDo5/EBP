@@ -434,7 +434,7 @@ def factura_orden(request):
     })
     else:
         return redirect('/')
-
+#----------------------------------ordenes hotep-------------------------------------------
 
 #----------------------------------ordenes isa---------------------------------------------
 def ver_ordenes(request):
@@ -472,11 +472,14 @@ def detalle_orden(request, id_orden):
 def agregar_orden(request):
     if request.method == 'GET':
         with connection.cursor() as cursor:
+
             resultados=cursor.execute("SELECT * FROM inventario").fetchall()
         
         hora_actual = str(datetime.datetime.now())   
 
-        return render(request, 'generar_orden.html', {'infopro': resultados, 'hora': hora_actual})
+        return render(request, 'generar_orden.html', 
+        {'infopro': resultados,
+          'hora': hora_actual})
     else:
         cant= request.POST.getlist('cantidad')
         ids= request.POST.getlist('id_producto')
@@ -578,4 +581,34 @@ def add_factura_alquiler(request):
         return redirect('/facturas_alquiler/') 
 
 
-#---------------------facturas orden------------------------------------------
+#---------------------mesas-----------------------------------------
+def mesas(request):
+    #Arreglo para mostrar el numero de mesas
+    mesas = [1, 2, 3, 4, 5]
+
+    with connection.cursor() as cursor:
+        sql_query = "exec VerOrdenesActivas"
+        ordenes=cursor.execute(sql_query).fetchall() 
+
+
+    return render(request, 'mesas.html', context={
+            'ordenes': ordenes,
+            'mesas': mesas,
+        })
+
+
+def mesa_orden(request, id_mesa):
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            query="exec VerOrdenesActivasMesa %s"
+            
+            mesa=(id_mesa,)
+            cursor.execute(query, mesa)
+            ordenes_mesa=cursor.fetchall()
+           
+
+
+        return render(request, 'mesa_orden.html', context={
+            'id_mesa': id_mesa,
+            'ordenes_mesa': ordenes_mesa
+        })
