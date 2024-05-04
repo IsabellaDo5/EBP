@@ -9,20 +9,15 @@ from django.contrib.auth.models import User
 import hashlib
 import datetime
 
-# Create your views here.
-def registro(request):
-    if request.method=='POST':
-        return redirect('/')
-    else:
-        return render(request, 'registro.html')
-
 # Inicio de sesión
 def login(request):
     if request.method=='POST':
 
         username= request.POST['username']
         password = request.POST['password']
+        
 
+        # Encripta la contraseña
         h = hashlib.new("SHA256")
         password = request.POST['password']
         h.update(password.encode())
@@ -38,20 +33,25 @@ def login(request):
             user = cursor.fetchall()
         connection.commit()
 
+        # Almacena en un diccionario el id del usuario que acaba de ingresar sesión
         user_info={
             'account_id': user[0][0]
         }
         print("CONTRASEÑA BD:"+str(user[0][2]))
         print("CONTRASEÑA hash:"+str(password_hash))
         if len(user)==0:
-
+            # Si no encuentra el usuario en la db marca error
             messages.error(request, "ERROR:Credenciales no válidas.")
             return render(request, 'login.html')
         
         if password_hash == user[0][2]:
+
+            # Guarda en una sesión el id del usuario que acaba de loggearse
             request.session['account_id'] = user_info
             return redirect('/')
         else:
+
+            #Manda un mensaje de error si no encuentra coincidencias en la db
             messages.error(request, "ERROR:Credenciales no válidas.")
             return render(request, 'login.html')
     else:
@@ -65,12 +65,16 @@ def cerrar_sesion(request):
 
 # Pagina de inicio
 def inicio(request):
+
+    # Si no encuentra una variable 'account_id' en request.session, entonces lo redirige a la pagina de Login
     if 'account_id' not in request.session:
         return redirect('/login')
     else:
+    # Si encuentra 'account_id' en request.session, imprime el id del usuario que inició sesión y le permite ver la página de inicio
         print(request.session['account_id'])
         return render(request, 'index.html')
 
+# Muestra la lista de empleados
 def empleados(request):
     if 'account_id' not in request.session:
         return redirect('/login')
@@ -110,20 +114,16 @@ def edit_empleados(request, id_emp):
             })
         else:
             with connection.cursor() as cursor:
-            # Define tu consulta SQL de actualización
                 sql_query = "exec modificar_empleado %s,%s,%s,%s,%s,%s,%s,%s"
-            
-            # Define los nuevos valores
                 nuevos_valores = (id_emp, request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'], request.POST['telefono'], request.POST['sexo'], request.POST['rol'])
-
-            # Ejecuta la consulta SQL de actualización
                 cursor.execute(sql_query, nuevos_valores)
 
-        # Asegúrate de realizar un commit para aplicar los cambios en la base de datos
+       
             connection.commit()
             
             return redirect('/empleados/')
-    
+        
+# Agregar un empleado   
 def agregar_empleado(request):
     if 'account_id' not in request.session:
         return redirect('/login')
