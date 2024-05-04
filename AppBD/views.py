@@ -67,11 +67,11 @@ def cerrar_sesion(request):
 def inicio(request):
     ### DESCOMENTARIA TODO ESTO CUANDO AGREGGUES UNA CUENTA
     # Si no encuentra una variable 'account_id' en request.session, entonces lo redirige a la pagina de Login
-    #if 'account_id' not in request.session:
-       # return redirect('/login')
-    #else:
+    if 'account_id' not in request.session:
+       return redirect('/login')
+    else:
     # Si encuentra 'account_id' en request.session, imprime el id del usuario que inició sesión y le permite ver la página de inicio
-        #print(request.session['account_id'])
+        print(request.session['account_id'])
     return render(request, 'index.html')
 
 # Muestra la lista de empleados
