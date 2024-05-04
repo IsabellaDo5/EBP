@@ -22,7 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.inicio),
     path('login/', views.login),
-    path('registro/', views.registro),
     path('logout/', views.cerrar_sesion),
     #Seccion de empleados
     path('eliminar_empleado/<int:id_emp>/',views.eliminar_empleado),

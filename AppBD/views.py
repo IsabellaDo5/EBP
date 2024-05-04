@@ -4,17 +4,10 @@ from django.contrib.auth.forms import *
 from django.contrib.auth import login, logout
 from django.db import connection
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 import hashlib
 import datetime
 # Create your views here.
-def registro(request):
-    if request.method=='POST':
-        return redirect('/')
-    else:
-        return render(request, 'registro.html')
-
 def login(request):
     if request.method=='POST':
 
@@ -28,17 +21,18 @@ def login(request):
 
 
         with connection.cursor() as cursor:
+            # Busca la cuenta en la db
             query="EXEC buscar_cuenta %s"
             filtro = (username,)
             cursor.execute(query, filtro)
-
-            # Obtiene los resultados
             user = cursor.fetchall()
+
+
+            
+            # Obtiene los resultados
+            
         connection.commit()
 
-        user_info={
-            'account_id': user[0][0]
-        }
         print("CONTRASEÑA BD:"+str(user[0][2]))
         print("CONTRASEÑA hash:"+str(password_hash))
         if len(user)==0:
@@ -46,8 +40,19 @@ def login(request):
             messages.error(request, "ERROR:Credenciales no válidas.")
             return render(request, 'login.html')
         
-        if password_hash == user[0][2]:
-            request.session['account_id'] = user_info
+        if password_hash == user[0][2]:#--->esto es la contraseña
+            with connection.cursor() as cursor:
+                query= "select id_empleado from empleados where id_cuenta = %s"
+                filtro = (user[0][0],)
+                cursor.execute(query, filtro)
+                id_empleado_actual= cursor.fetchall()
+                
+
+                print("ID EMPLEADO LOGEADO"+str(id_empleado_actual[0][0]))
+                user_info={ 'empleado_id': id_empleado_actual[0][0]
+                }       
+
+            request.session['empleado_id'] = user_info
             return redirect('/')
         else:
             messages.error(request, "ERROR:Credenciales no válidas.")
@@ -57,21 +62,20 @@ def login(request):
     
 def cerrar_sesion(request):
     
-    del request.session['account_id']
+    del request.session['empleado_id']
     return redirect('/')
 
 def inicio(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
-        print(request.session['account_id'])
+        #print(request.session['account_id'])
         return render(request, 'index.html')
 
 def empleados(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
-    #trabajadores = Empleado.objects.all().values
         with connection.cursor() as cursor:
             resultados=cursor.execute("SELECT * FROM empleados").fetchall()
             
@@ -81,7 +85,7 @@ def empleados(request):
         })
 
 def edit_empleados(request, id_emp):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -115,9 +119,9 @@ def edit_empleados(request, id_emp):
             return redirect('/empleados/')
     
 def agregar_empleado(request):
-    if 'account_id' not in request.session:
-        return redirect('/login')
-    else:
+    #if 'empleado_id' not in request.session:
+        #return redirect('/login')
+    #else:
         if request.method == 'GET':
 
             with connection.cursor() as cursor:
@@ -154,7 +158,7 @@ def eliminar_empleado(request, id_emp):
 
 #----------------------------inventario-------------------------------------
 def inventario(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -167,7 +171,7 @@ def inventario(request):
                 })
 
 def agregar_inventario(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -210,7 +214,7 @@ def eliminar_item(request,id_item):
     return redirect('/inventario/')
     
 def edit_inventario(request, id_item):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -246,9 +250,9 @@ def edit_inventario(request, id_item):
 #-----------------------------platillos----------------------------------
 
 def add_platillo(request):
-    if 'account_id' not in request.session:
-        return redirect('/login')
-    else:
+    #if 'empleado_id' not in request.session:
+    #    return redirect('/login')
+    #else:
         if request.method=='GET':
             with connection.cursor() as cursor:
                 lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=1").fetchall()
@@ -274,7 +278,7 @@ def add_platillo(request):
 
 #------------------------------alquiler----------------------------------  
 def alquiler(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
@@ -286,7 +290,7 @@ def alquiler(request):
     }) 
 
 def edit_alquiler(request, id_alquiler):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -345,9 +349,9 @@ def eliminar_alquiler(request,id_alquiler):
 
 def add_alquiler_cliente(request):
     with connection.cursor() as cursor:
-        clientes=cursor.execute("sp_get_clientes").fetchall()
-         
-    print(clientes)    
+        clientes=cursor.execute("exec VerClientes").fetchall()
+
+           
     return render(request, 'add_alquiler_cliente.html', context={
         'clientes': clientes,
 }) 
@@ -462,14 +466,18 @@ def detalle_orden(request, id_orden):
 def agregar_orden(request):
     if request.method == 'GET':
         with connection.cursor() as cursor:
+            clientes = cursor.execute("exec VerClientes").fetchall()
+            resultados = cursor.execute("SELECT * FROM VerMenu").fetchall()
 
-            resultados=cursor.execute("SELECT * FROM inventario").fetchall()
+        clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]
+        print(clientes_nombres)
         
         hora_actual = str(datetime.datetime.now())   
 
         return render(request, 'generar_orden.html', 
-        {'infopro': resultados,
-          'hora': hora_actual})
+                      {'infopro': resultados,
+                       'hora': hora_actual,
+                       'clientes_nombres': clientes_nombres})
     else:
         cant= request.POST.getlist('cantidad')
         ids= request.POST.getlist('id_producto')
