@@ -389,11 +389,14 @@ def detalle_orden(request, id_orden):
 def agregar_orden(request):
     if request.method == 'GET':
         with connection.cursor() as cursor:
+
             resultados=cursor.execute("SELECT * FROM inventario").fetchall()
         
         hora_actual = str(datetime.datetime.now())   
 
-        return render(request, 'generar_orden.html', {'infopro': resultados, 'hora': hora_actual})
+        return render(request, 'generar_orden.html', 
+        {'infopro': resultados,
+          'hora': hora_actual})
     else:
         cant= request.POST.getlist('cantidad')
         ids= request.POST.getlist('id_producto')
@@ -501,9 +504,8 @@ def mesas(request):
     mesas = [1, 2, 3, 4, 5]
 
     with connection.cursor() as cursor:
-        sql_query = "exec VerOrdenesActivas "
-
-        ordenes=cursor.execute(sql_query)
+        sql_query = "exec VerOrdenesActivas"
+        ordenes=cursor.execute(sql_query).fetchall() 
 
 
     return render(request, 'mesas.html', context={
