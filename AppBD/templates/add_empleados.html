@@ -121,7 +121,7 @@ Editar registro
         <div class="col">
             <div class="mb-3">
                 <label for="formGroupExampleInput" class="form-label">Nombre de usuario</label>
-                <input type="text" class="form-control" id="formGroupExampleInput" placeholder="" name="username">
+                <input type="text" class="form-control" id="formGroupExampleInput" placeholder="" name="username" autocomplete="off">
             </div>
         </div>
         <div class="col">
@@ -165,8 +165,9 @@ Editar registro
         function crearUsuario(){
             var Tnombre = nombre.value;
             var Tapellido = apellido.value;
+            const username = Tnombre.split(" ");
 
-            usuario.value = ""+Tapellido.charAt(0)+Tnombre;
+            usuario.value = ""+Tapellido.charAt(0)+""+username[0];
         }
 
         function compararTexto() {
