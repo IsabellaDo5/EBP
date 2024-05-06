@@ -368,7 +368,7 @@ def add_cliente(request):
             telefono = request.POST['telefono']
             
             with connection.cursor() as cursor:
-             cursor.execute("EXEC sp_insert_cliente @nombre=%s, @apellido=%s, @direccion=%s, @cedula=%s, @telefono=%s",(nombre, apellido, direccion, cedula, telefono))
+             cursor.execute("EXEC addCliente @nombre=%s, @apellido=%s, @direccion=%s, @cedula=%s, @telefono=%s",(nombre, apellido, direccion, cedula, telefono))
             #sql_query = "INSERT INTO clientes (nombre, apellido, direccion, cedula, telefono) VALUES (%s, %s, %s,%s, %s)"
             #valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'])
             #cursor.execute(sql_query, valores)
@@ -463,7 +463,7 @@ def detalle_orden(request, id_orden):
         })
 
 
-def agregar_orden(request):
+def agregar_orden(request,id_mesa):
     if request.method == 'GET':
         with connection.cursor() as cursor:
             clientes = cursor.execute("exec VerClientes").fetchall()
@@ -477,14 +477,18 @@ def agregar_orden(request):
         return render(request, 'generar_orden.html', 
                       {'infopro': resultados,
                        'hora': hora_actual,
-                       'clientes_nombres': clientes_nombres})
+                       'clientes_nombres': clientes_nombres,
+                       'id_mesa': id_mesa})
     else:
         cant= request.POST.getlist('cantidad')
         ids= request.POST.getlist('id_producto')
         coment= request.POST['comentario']
+        idcliente=request.POST['cliente']
 
         with connection.cursor() as cursor:
                 # Aquí inserto descripcion y activo en la tabla ORDEN
+                query="exec addOrden %s %s %s %s"
+                valoress=(id_mesa, 1)
                 sql_query1 = "INSERT INTO orden(descripcion, activa) VALUES (%s, %s)"
                 valores1 = (coment, 1)
                 cursor.execute(sql_query1, valores1)
