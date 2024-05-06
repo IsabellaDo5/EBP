@@ -34,7 +34,9 @@ urlpatterns = [
     path('item/<int:id_item>/',views.edit_inventario),
     path('eliminar_inventario/<int:id_item>/',views.eliminar_item),
     #Seccion de platillos
+    path('platillos/', views.platillos, name='platillos'),
     path('agregar_platillo/', views.add_platillo, name='agregar-platillo'),
+    path('eliminar_platillo/<int:id_platillo>/', views.eliminar_platillo, name='eliminar_platillo'),
     #Alquileres
     path('alquiler/', views.alquiler),
     path('add_alquiler2/', views.add_alquiler2),

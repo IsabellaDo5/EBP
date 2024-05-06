@@ -255,13 +255,30 @@ def edit_inventario(request, id_item):
             return redirect('/inventario/')    
 #-----------------------------platillos----------------------------------
 
+def platillos(request):
+    if 'account_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method=='GET':
+            with connection.cursor() as cursor:
+                platillos= cursor.execute("EXEC info_platillos").fetchall()
+            
+
+
+            print("PLATILLOS:"+str(platillos))
+            return render(request, 'platillos.html', context={
+                'platillos': platillos,
+            })
+
+
 def add_platillo(request):
     if 'account_id' not in request.session:
         return redirect('/login')
     else:
         if request.method=='GET':
             with connection.cursor() as cursor:
-                lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=1").fetchall()
+                lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=2").fetchall()
+            print("INGREDIENTES: "+str(lista_ingredientes))
             return render(request, 'add_platillo.html', context={
                 'ingredientes': lista_ingredientes,
             })
@@ -280,7 +297,21 @@ def add_platillo(request):
                     filtro = (nombre_platillo, desc, precio, j,y)
                     cursor.execute(query, filtro)
                 connection.commit()
-            return redirect('/')
+            return redirect('/platillos/')
+
+def eliminar_platillo(request, id_platillo):
+    if 'account_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method=='POST':
+
+            return redirect('/platillos/')
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("EXEC eliminar_platillo %s", str(id_platillo))
+            connection.commit()
+            return redirect('/platillos/')
+        
 
 #------------------------------alquiler----------------------------------  
 def alquiler(request):
@@ -355,7 +386,7 @@ def eliminar_alquiler(request,id_alquiler):
 
 def add_alquiler_cliente(request):
     with connection.cursor() as cursor:
-        clientes=cursor.execute("sp_get_clientes").fetchall()
+        clientes=cursor.execute("VerClientes").fetchall()
          
     print(clientes)    
     return render(request, 'add_alquiler_cliente.html', context={
