@@ -15,9 +15,7 @@ def login(request):
 
         username= request.POST['username']
         password = request.POST['password']
-        
 
-        # Encripta la contraseña
         h = hashlib.new("SHA256")
         password = request.POST['password']
         h.update(password.encode())
@@ -25,49 +23,55 @@ def login(request):
 
 
         with connection.cursor() as cursor:
+            # Busca la cuenta en la db
             query="EXEC buscar_cuenta %s"
             filtro = (username,)
             cursor.execute(query, filtro)
-
-            # Obtiene los resultados
             user = cursor.fetchall()
+
+
+            
+            # Obtiene los resultados
+            
         connection.commit()
 
-        # Almacena en un diccionario el id del usuario que acaba de ingresar sesión
-        user_info={
-            'account_id': user[0][0]
-        }
         print("CONTRASEÑA BD:"+str(user[0][2]))
         print("CONTRASEÑA hash:"+str(password_hash))
         if len(user)==0:
-            # Si no encuentra el usuario en la db marca error
+
             messages.error(request, "ERROR:Credenciales no válidas.")
             return render(request, 'login.html')
         
-        if password_hash == user[0][2]:
+        if password_hash == user[0][2]:#--->esto es la contraseña
+            with connection.cursor() as cursor:
+                query= "select id_empleado from empleados where id_cuenta = %s"
+                filtro = (user[0][0],)
+                cursor.execute(query, filtro)
+                id_empleado_actual= cursor.fetchall()
+                
 
-            # Guarda en una sesión el id del usuario que acaba de loggearse
-            request.session['account_id'] = user_info
+                print("ID EMPLEADO LOGEADO"+str(id_empleado_actual[0][0]))
+                user_info={ 'empleado_id': id_empleado_actual[0][0]
+                }       
+
+            request.session['empleado_id'] = user_info
             return redirect('/')
         else:
-
-            #Manda un mensaje de error si no encuentra coincidencias en la db
             messages.error(request, "ERROR:Credenciales no válidas.")
             return render(request, 'login.html')
     else:
         return render(request, 'login.html')
-    
 # Cerrar sesión    
 def cerrar_sesion(request):
     
-    del request.session['account_id']
+    del request.session['empleado_id']
     return redirect('/')
 
 # Pagina de inicio
 def inicio(request):
     ### DESCOMENTARIA TODO ESTO CUANDO AGREGGUES UNA CUENTA
     # Si no encuentra una variable 'account_id' en request.session, entonces lo redirige a la pagina de Login
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
        return redirect('/login')
     else:
     # Si encuentra 'account_id' en request.session, imprime el id del usuario que inició sesión y le permite ver la página de inicio
@@ -76,7 +80,7 @@ def inicio(request):
 
 # Muestra la lista de empleados
 def empleados(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
     #trabajadores = Empleado.objects.all().values
@@ -90,7 +94,7 @@ def empleados(request):
 
 # Editar la información de los empleados
 def edit_empleados(request, id_emp):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -125,7 +129,7 @@ def edit_empleados(request, id_emp):
         
 # Agregar un empleado   
 def agregar_empleado(request):
-    #if 'account_id' not in request.session:
+    #if 'empleado_id' not in request.session:
      #   return redirect('/login')
     #else:
         if request.method == 'GET':
@@ -164,7 +168,7 @@ def eliminar_empleado(request, id_emp):
 
 #----------------------------inventario-------------------------------------
 def inventario(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -177,7 +181,7 @@ def inventario(request):
                 })
 
 def agregar_inventario(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -220,7 +224,7 @@ def eliminar_item(request,id_item):
     return redirect('/inventario/')
     
 def edit_inventario(request, id_item):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
@@ -256,7 +260,7 @@ def edit_inventario(request, id_item):
 #-----------------------------platillos----------------------------------
 
 def platillos(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method=='GET':
@@ -272,7 +276,7 @@ def platillos(request):
 
 
 def add_platillo(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method=='GET':
@@ -300,7 +304,7 @@ def add_platillo(request):
             return redirect('/platillos/')
 
 def eliminar_platillo(request, id_platillo):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method=='POST':
@@ -315,7 +319,7 @@ def eliminar_platillo(request, id_platillo):
 
 #------------------------------alquiler----------------------------------  
 def alquiler(request):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
@@ -327,7 +331,7 @@ def alquiler(request):
     }) 
 
 def edit_alquiler(request, id_alquiler):
-    if 'account_id' not in request.session:
+    if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
         if request.method == 'GET':
