@@ -469,6 +469,7 @@ def detalle_orden(request, id_orden):
 def agregar_orden(request,id_mesa):
     if request.method == 'GET':
         with connection.cursor() as cursor:
+            #obtenemos la lista de clientes, platillos, y consumibles del menu
             clientes = cursor.execute("exec VerClientes").fetchall()
             resultados = cursor.execute("SELECT * FROM VerMenu").fetchall()
             platillos = cursor.execute("SELECT * FROM platillos").fetchall()
@@ -496,33 +497,42 @@ def agregar_orden(request,id_mesa):
         desc= request.POST['comentario']
         cliente=str(request.POST['cliente'])
         #---------------------------------------ID DEL CLIENTE-------------------------------------------        
-        #HAY QU CONEVERTIR EL nombre del cliente a un id para el procedimiento almacenado        
-        # Dividir la cadena en palabras
+        #Hay que convertir nombre del cliente a un id para ingresar a la orden       
+        #Dividir la cadena en palabras
         palabras = cliente.split()
         # Tomar los dos primeros elementos de la lista de palabras
         nombreCliente = " ".join(palabras[:2])
-        argumentosbuscar=(nombreCliente,)
 
         with connection.cursor() as cursor:
             #id_cliente = cursor.execute("exec buscarClientePorNombre %s ", argumentosbuscar).fetchone()
             
-            query="exec buscarClientePorNombre %s"
+            query="exec buscarClientePorNombre @nombre= %s"
             valores1=(nombreCliente,)
+            id=cursor.execute(query, valores1).fetchone()
+            id_cliente = id[0]
+            
 
-            id_cliente=cursor.execute(query, valores1)
+              
         connection.commit()
         #----------------------------------------ID DEL EMPLEADO--------------------------------------
         idempleado=request.session['empleado_id']
-
+        idempleadoint=idempleado.get('empleado_id')
+        #------------------------------------------Ingresamos la orden
         with connection.cursor() as cursor:
                 # Aquí inserto descripcion y activo en la tabla ORDEN
-                query="exec addOrden %s %s %s %s"
-                valores1=(id_mesa,id_cliente[0], idempleado.get('empleado_id'),desc)
+                queryAddOrden="exec addOrden %s, %s, %s, %s"
+                print (str(type(id_mesa)) + str(id_mesa))  
+                print (str(type(id_cliente)) +str(id_cliente))  
+                print (str(type(idempleadoint))+ str(idempleadoint))  
+                print (str(type(desc))+ str(desc))  
+                print(queryAddOrden)
+                valoresOrden=(id_mesa,id_cliente, idempleadoint,desc)
+                print("mierdaaa")
+                cursor.execute(queryAddOrden, valoresOrden)
 
-                cursor.execute(query, valores1)
-
+                print("mierda")
                 # Selecciono el ultimo registro en la tabla orden
-                id_orden = cursor.execute("SELECT TOP 1 * FROM orden ORDER BY id_orden DESC;").fetchone()
+                id_orden = cursor.execute("SELECT TOP 1 * FROM ordenes ORDER BY id_orden DESC;").fetchone()
         connection.commit()
         print("id_orden: "+str(id_orden))
         
@@ -531,14 +541,14 @@ def agregar_orden(request,id_mesa):
         for cantidad, iditem in zip(cantidad_items, ids_items):
             with connection.cursor() as cursor:
             # Ejecutar el procedimiento almacenado con la cantidad y el iditem
-                cursor.execute("exec addItemAOrden %s %s %s", (id_orden, iditem, cantidad))
+                cursor.execute("exec addItemAOrden %s, %s, %s", (id_orden, iditem, cantidad))
             connection.commit()
         
         for cantidad, idplatillo in zip(cantidad_platillo, ids_platillos):
             idPlatilloInt = int(idplatillo.split('+')[1])
             with connection.cursor() as cursor:
             # Ejecutar el procedimiento almacenado con la cantidad y el iditem
-                cursor.execute("exec addPlatilloAOrden %s %s %s", (id_orden, idPlatilloInt, cantidad))
+                cursor.execute("exec addPlatilloAOrden %s, %s, %s", (id_orden, idPlatilloInt, cantidad))
             connection.commit()
         return redirect('/orden_detalle/'+str(id_orden))
     
