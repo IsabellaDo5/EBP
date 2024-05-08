@@ -73,7 +73,7 @@ Añadir nuevo platillo
                 <div class="col-md-6">
                 <label for="exampleDataList" class="form-label">Nombre</label>
                 <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
-                    placeholder="Buscar ingredientes...">
+                    placeholder="Buscar ingredientes disponibles ...">
                 <datalist id="datalistOptions">
                 {% for x in ingredientes %}
                     <option value={{x.nombre}}>
