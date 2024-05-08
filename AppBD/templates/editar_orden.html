@@ -23,6 +23,7 @@ Registrar una orden
         <div class="card-body">
             <div class="input-group">
                 <span class="input-group-text">{{x.nombre}}</span>
+                <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
                 <input type="hidden" name="id_producto" value="{{x.id_item}}" class="form-control">
                 <!--INPUT DONDE SOLO SE MUESTRA EL PRECIO DEL PRODUCTO-->
                 <input type="text" id="precio{{x.id_item}}" value="{{x.precio}}" class="form-control" disabled>
