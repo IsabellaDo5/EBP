@@ -527,12 +527,12 @@ def agregar_orden(request,id_mesa):
                 print (str(type(desc))+ str(desc))  
                 print(queryAddOrden)
                 valoresOrden=(id_mesa,id_cliente, idempleadoint,desc)
-                print("mierdaaa")
+    
                 cursor.execute(queryAddOrden, valoresOrden)
 
-                print("mierda")
                 # Selecciono el ultimo registro en la tabla orden
-                id_orden = cursor.execute("SELECT TOP 1 * FROM ordenes ORDER BY id_orden DESC;").fetchone()
+                ultimaorden = cursor.execute("SELECT TOP 1 * FROM ordenes ORDER BY id_orden DESC;").fetchone()
+                id_orden=ultimaorden[0]
         connection.commit()
         print("id_orden: "+str(id_orden))
         
@@ -541,9 +541,13 @@ def agregar_orden(request,id_mesa):
         for cantidad, iditem in zip(cantidad_items, ids_items):
             with connection.cursor() as cursor:
             # Ejecutar el procedimiento almacenado con la cantidad y el iditem
+                print("tipos")
+                print (str(type(id_orden)) + str(id_orden))  
+                print (str(type(iditem)) + str(iditem))  
+                print (str(type(cantidad)) + str(cantidad))  
                 cursor.execute("exec addItemAOrden %s, %s, %s", (id_orden, iditem, cantidad))
             connection.commit()
-        
+
         for cantidad, idplatillo in zip(cantidad_platillo, ids_platillos):
             idPlatilloInt = int(idplatillo.split('+')[1])
             with connection.cursor() as cursor:
@@ -618,15 +622,15 @@ def mesas(request):
 def mesa_orden(request, id_mesa):
     if request.method == 'GET':
         with connection.cursor() as cursor:
-            query="exec VerOrdenesActivasMesa %s"
+            query="exec VerOrdenesActivasMesa @mesa= %s"
             
             mesa=(id_mesa,)
             cursor.execute(query, mesa)
-            ordenes_mesa=cursor.fetchall()
+            ordenes=cursor.fetchall()
            
-
+            print(ordenes)
 
         return render(request, 'mesa_orden.html', context={
-            'id_mesa': id_mesa,
-            'ordenes_mesa': ordenes_mesa
+            'ordenes': ordenes,
+            'id_mesa': id_mesa,        
         })
