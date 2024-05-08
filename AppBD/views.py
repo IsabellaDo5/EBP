@@ -535,16 +535,24 @@ def agregar_orden(request,id_mesa):
         #Hay que convertir nombre del cliente a un id para ingresar a la orden       
         #Dividir la cadena en palabras
         palabras = cliente.split()
-        # Tomar los dos primeros elementos de la lista de palabras
-        nombreCliente = " ".join(palabras[:2])
-
+        
+        if len(palabras)==3:
+            nombreCliente = " ".join(palabras[:1])
+            
+        else:
+            # Tomar los dos primeros elementos de la lista de palabras
+            nombreCliente = " ".join(palabras[:2])
+        
+        print(nombreCliente)
+        
         with connection.cursor() as cursor:
             #id_cliente = cursor.execute("exec buscarClientePorNombre %s ", argumentosbuscar).fetchone()
             
             query="exec buscarClientePorNombre @nombre= %s"
             valores1=(nombreCliente,)
-            id=cursor.execute(query, valores1).fetchone()
+            id =cursor.execute(query, valores1).fetchone()
             id_cliente = id[0]
+            print(id)
             
 
               
