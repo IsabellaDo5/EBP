@@ -599,6 +599,73 @@ def agregar_orden(request,id_mesa):
             connection.commit()
         return redirect('/orden_detalle/'+str(id_orden))
     
+
+#----------------------------------------------editar orden--------------------------------------------------
+def editar_orden(request,id_orden):
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            #obtenemos la lista de clientes, platillos, y consumibles del menu
+            resultados = cursor.execute("SELECT * FROM VerMenu").fetchall()
+            platillos = cursor.execute("SELECT * FROM platillos").fetchall()
+            
+            #obtenemos los detalles de la orden
+            queryorden="EXEC verOrdenEspecifica %s"
+            orden=cursor.execute(queryorden, (id_orden,)).fetchone()
+            
+        hora_actual = str(datetime.datetime.now())   
+
+        return render(request, 'editar_orden.html', 
+                      {'infopro': resultados,
+                       'platillos': platillos,
+                       'hora': hora_actual,
+                       'orden': orden,
+                       'id_orden': id_orden})
+    else:
+        #Inventario(Bebidas)
+        cantidad_items= request.POST.getlist('cantidad')
+        ids_items= request.POST.getlist('id_producto')
+        
+        #Platillos
+        cantidad_platillo= request.POST.getlist('cantidad_platillo')
+        ids_platillos= request.POST.getlist('id_platillo')
+        
+        desc= request.POST['comentario']
+
+        print(desc)
+        #------------------------idorden
+        with connection.cursor() as cursor:
+                # Selecciono el ultimo registro en la tabla orden
+                ultimaorden = cursor.execute("SELECT TOP 1 * FROM ordenes ORDER BY id_orden DESC;").fetchone()
+                id_orden=ultimaorden[0]
+        connection.commit()
+        
+        #-----------------------actualizando comentario
+        with connection.cursor() as cursor:
+                querycom="exec cambiarComentarioOrden @idorden=%s, @desc= %s"
+                val=(id_orden, desc)
+
+                cursor.execute(querycom,val)
+        connection.commit()
+        
+        #-----------------------ingesar a la orden
+        for cantidad, iditem in zip(cantidad_items, ids_items):
+            with connection.cursor() as cursor:
+            # Ejecutar el procedimiento almacenado con la cantidad y el iditem
+                print("tipos")
+                print (str(type(id_orden)) + str(id_orden))  
+                print (str(type(iditem)) + str(iditem))  
+                print (str(type(cantidad)) + str(cantidad))  
+                cursor.execute("exec addItemAOrden %s, %s, %s", (id_orden, iditem, cantidad))
+            connection.commit()
+
+        for cantidad, idplatillo in zip(cantidad_platillo, ids_platillos):
+            idPlatilloInt = int(idplatillo.split('+')[1])
+            with connection.cursor() as cursor:
+            # Ejecutar el procedimiento almacenado con la cantidad y el iditem
+                cursor.execute("exec addPlatilloAOrden %s, %s, %s", (id_orden, idPlatilloInt, cantidad))
+            connection.commit()
+            
+        return redirect('/mesas/')    
 ################ HASTA AQUÍ LLEGA AGREGAR_ORDEN #############################
 
 #---------------------facturas alquiler------------------------------------------

@@ -59,12 +59,13 @@ urlpatterns = [
     path('facturas_alquiler/', views.ver_facturas_alquiler),
     path('add_factura_alquiler/', views.add_factura_alquiler),
 
-    #Facturas orden
-    #path('facturas_orden/', views.facturas, name='facturas'),
-    #path('add_factura_orden/', views.add_factura_orden),
+    
 
     #orden hotep
     path('mesas/', views.mesas, name="mesas"),
     path('mesa_orden/<int:id_mesa>/', views.mesa_orden),
+
+    #Facturas orden
+    path('editar_orden/<int:id_orden>/', views.editar_orden),
 
 ]
