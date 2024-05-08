@@ -20,7 +20,7 @@ Editar registro
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="nombre" class="form-control" id="nombre" value="" required>
+                <input type="text" name="nombre" class="form-control" id="nombre" value="" required autocomplete="off">
             </div>
         </div>
 
@@ -28,11 +28,11 @@ Editar registro
         <div class="col-md-6">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Apellido</label>
-                <input type="text" readonly class="form-control-plaintext"  value="Apellido">
+                <input type="text" readonly class="form-control-plaintext"  value="Apellido" >
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="apellido" class="form-control" id="apellido" value="" required>
+                <input type="text" name="apellido" class="form-control" id="apellido" value="" required autocomplete="off">
             </div>
         </div>
 
@@ -44,7 +44,7 @@ Editar registro
             </div>
             <div class="col-auto">
                 <!--Agregué esta etiqueta-->
-                <select class="form-select" aria-label="Default select example" name="sexo" required>
+                <select class="form-select" aria-label="Default select example" name="sexo" required autocomplete="off">
                     <option selected value="">Seleccionar</option>
                     <option value="F">Femenino</option>
                     <option value="M">Masculino</option>
@@ -83,7 +83,7 @@ Editar registro
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="direccion" class="form-control" id="inputPassword2" row="2" value="" required>
+                <input type="text" name="direccion" class="form-control" id="inputPassword2" row="2" value="" required autocomplete="off">
             </div>
         </div>
 
@@ -92,12 +92,12 @@ Editar registro
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Cédula</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
-                    value="Cédula (Sin guiones ni espacios)">
+                    value="Cédula">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" value=""
-                    required>
+                <input type="text" maxlength="16" name="cedula" class="form-control" id="inputPassword2" value=""
+                required autocomplete="off"  required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY">
             </div>
         </div>
 
@@ -106,12 +106,12 @@ Editar registro
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Teléfono </label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
-                    value="Teléfono (Formato: 88886666)">
+                    value="Teléfono ">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
                 <input type="text" maxlength="8" name="telefono" class="form-control" id="inputPassword2" value=""
-                    required>
+                required autocomplete="off" required pattern="^\d{8}$" title="XXXXYYYY">
             </div>
         </div>
     </div>
@@ -128,12 +128,12 @@ Editar registro
             <div class="mb-3">
                 <label for="formGroupExampleInput2" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="formGroupExampleInput2"
-                    placeholder="Escribe aquí tu contraseña" name="password" required >
+                    placeholder="Escribe aquí tu contraseña" name="password" required autocomplete="off" >
             </div>
             <div class="mb-3">
                 <label for="formGroupExampleInput2" class="form-label">Confirma tu contraseña</label>
                 <input type="password" class="form-control" id="formGroupExampleInput3"
-                    placeholder="Escribe nuevamente tu contraseña" name="confirmpassword" required >
+                    placeholder="Escribe nuevamente tu contraseña" name="confirmpassword" required autocomplete="off" >
             </div>
             <p id="mensaje"></p>
         </div>
