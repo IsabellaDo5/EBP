@@ -49,7 +49,7 @@ urlpatterns = [
     path('eliminar_cliente/<int:id_clientes>/',views.eliminar_cliente),
 
     #Orden isa
-    path('generar_orden/', views.agregar_orden, name="gen_orden"),
+    path('generar_orden/<int:id_mesa>', views.agregar_orden, name="gen_orden"),
     path('orden_detalle/<int:id_orden>', views.detalle_orden),
     path('ver_ordenes', views.ver_ordenes, name='ordenes'),
 
