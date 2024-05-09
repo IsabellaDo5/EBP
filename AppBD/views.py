@@ -608,7 +608,7 @@ def agregar_orden(request,id_mesa):
                 # Ejecutar el procedimiento almacenado con la cantidad y el iditem
                     cursor.execute("exec addPlatilloAOrden %s, %s, %s", (id_orden, idPlatilloInt, cantidad))
                 connection.commit()
-        return redirect('/orden_detalle/'+str(id_orden))
+        return redirect('/mesas/')
     
 
 #----------------------------------------------editar orden--------------------------------------------------

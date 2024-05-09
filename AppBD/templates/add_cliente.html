@@ -55,19 +55,19 @@
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="cedula" class="form-control" id="inputPassword2" value="" required autocomplete="off">
+                <input type="text" name="cedula" class="form-control" id="inputPassword2" value="" required autocomplete="off"  required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY">
             </div>
         </div>
 
          <!--telefono-->
          <div class="col-sm-4">
-            <div class="col-auto">
+            <div class="col-auto">      
                 <label for="staticEmail2" class="visually-hidden">Telefono</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Telefono">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="telefono" class="form-control" id="inputPassword2" value="" required autocomplete="off">
+                <input type="text" name="telefono" class="form-control" id="inputPassword2" value="" required autocomplete="off" required pattern="^\d{8}$" title="XXXXYYYY">
             </div>
         </div>
     </div>             

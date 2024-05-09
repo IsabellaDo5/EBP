@@ -22,7 +22,7 @@ Editar registro
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
                 <input type="text" name="nombre" class="form-control" id="inputPassword2" maxlength="25" required
-                    value="{{x.1}}">
+                    value="{{x.1}}" required autocomplete="off" >
             </div>
         </div>
 
@@ -35,7 +35,7 @@ Editar registro
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
                 <input type="text" name="apellido" class="form-control" id="inputPassword2" maxlength="25" required
-                    value="{{x.2}}">
+                    value="{{x.2}}" required autocomplete="off">
             </div>
         </div>
 
@@ -72,7 +72,7 @@ Editar registro
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
                 <input type="text" name="direccion" class="form-control" id="inputPassword2" maxlength="25" required
-                    value="{{x.3}}">
+                    value="{{x.3}}" required autocomplete="off">
             </div>
         </div>
 
@@ -81,12 +81,12 @@ Editar registro
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Cédula</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
-                    value="Cédula (Sin guiones ni espacios)">
+                    value="Cédula">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" maxlength="14" name="cedula" class="form-control" id="inputPassword2" maxlength="25"
-                    required value="{{x.4}}">
+                <input type="text" maxlength="16" name="cedula" class="form-control" id="inputPassword2" maxlength="25"
+                    required value="{{x.4}}"   required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY">
             </div>
         </div>
 
@@ -95,12 +95,12 @@ Editar registro
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Teléfono </label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
-                    value="Teléfono (Formato: 88886666)">
+                    value="Teléfono ">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
                 <input type="text" maxlength="8" name="telefono" class="form-control" id="inputPassword2" maxlength="25"
-                    required value="{{x.5}}">
+                    required value="{{x.5}}" required autocomplete="off"  required pattern="^\d{8}$" title="XXXXYYYY">
             </div>
         </div>
     </div>

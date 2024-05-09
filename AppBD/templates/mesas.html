@@ -9,12 +9,10 @@
 
 <div class="container">
   <div class="row">
-    <div class="col">
-      <div class="card">
-        <div class="card-body">
+
+
           
-          <div class="row">
-            <div class="col-md-6" style="width: 35%;">
+            <div class="col-md-4" >
 
               <div class="card">
                 <div class="card-body">
@@ -27,9 +25,9 @@
               </div>
                 
             </div>
-            <div class="col-md-6" style="width: 60%;margin-right: 5%;">
+            <div class="col-md-8" class="carta-orden">
               <div style="height:65vh;width:100%;border:1px;overflow:auto;">                     
-                <h2>Todas las ordenes de la mesa {{id_mesa}}:</h2>
+                <h2>Todas las ordenes:</h2>
                 <!-- Contenido de la primera columna -->
                 
                 {% for x in ordenes %}
@@ -77,12 +75,8 @@
               
               {% endfor %}
               
-              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
   </div>
-</div>
   {% endblock %}
