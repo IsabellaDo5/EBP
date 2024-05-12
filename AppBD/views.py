@@ -300,6 +300,60 @@ def add_platillo(request):
                 connection.commit()
             return redirect('/platillos/')
 
+def editar_platillo(request, id_platillo):
+    if 'empleado_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method=='POST':
+            nombre_platillo= request.POST['nombre']
+            desc= request.POST['desc']
+            precio=request.POST['precio']
+            ingrediente= request.POST.getlist('nombre_ingredientes')
+            cantidad = request.POST.getlist('cantidad')
+
+            print("Ingredientes: "+str(ingrediente)+"cantidad: "+str(cantidad))
+
+            # Elimina todos los registros anteriores de platillo_detalle
+            with connection.cursor() as cursor:
+                query="DELETE FROM platillo_detalle where id_platillo= %s"
+                filtro = (id_platillo,)
+                cursor.execute(query, filtro)
+            connection.commit()
+
+            for j,y in zip(ingrediente,cantidad):
+
+                if len(j)!=0:
+                    
+                    print("guardando: "+ str(j))
+
+                    with connection.cursor() as cursor:
+                        query="EXEC modificar_platillo %s, %s, %s,%s, %s"
+                        filtro = (nombre_platillo, desc, precio, j,y)
+                        cursor.execute(query, filtro)
+                    connection.commit()
+            return redirect('/platillos/')
+        else:
+            with connection.cursor() as cursor:
+                    
+                    lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=2").fetchall()
+
+                    query="SELECT * FROM platillos WHERE id_platillo= %s"
+                    filtro = (id_platillo,)
+                    info_general=cursor.execute(query, filtro).fetchall()
+
+                    query="EXEC ingredientes_por_platillo %s"
+                    filtro = (id_platillo,)
+                    ingredientes=cursor.execute(query, filtro).fetchall()
+
+            connection.commit()
+
+            return render(request,'editar_platillo.html', context={
+                'id_platillo': info_general[0][0],
+                'info_general': info_general,
+                'ingredientes':ingredientes,
+                'catalogo_ingredientes': lista_ingredientes,
+            })
+
 def eliminar_platillo(request, id_platillo):
     if 'empleado_id' not in request.session:
         return redirect('/login')
