@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Agregar un alquiler
+Agregar un alquiler
 {% endblock %}
 
 {% block content %}
@@ -11,43 +11,104 @@
     {% csrf_token %}
     <!--PRIMERA FILA-->
     <div class="row">
-        <!--Horas-->
+        <!--Fecha-->
         <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Horas</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Horas">
+            <div class="col">
+                <label for="fecha">Selecciona una fecha:</label>
             </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="horas" class="form-control" id="inputPassword2" value="">
+            <div class="col">
+                <input type="date" class="form-control" id="fecha" name="fecha" min="" required>
+            </div>
+
+        </div>
+
+        <div class="col-sm-4">
+            <div class="col">
+                <label for="horaInicio">Hora de inicio:</label>
+
+            </div>
+
+            <div class="col">
+                <input type="time" id="horaInicio" class="form-control" name="horaInicio" min="09:00" max="18:00"
+                    required />
             </div>
         </div>
-        
+
+        <div class="col-sm-4">
+            <div class="col">
+                <label for="horaFin">Hora de fin:</label>
+
+            </div>
+
+            <div class="col">
+                <input type="time" id="horaFin" class="form-control" name="horaFin" min="09:00" max="18:00" required />
+            </div>
+        </div>
         <!--TIPO ALQUILER-->
+
         <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Tipo Alquiler</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Tipo Alquiler">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_tipoAlquiler" class="form-control" id="inputPassword2" value="">
-            </div>
+            <label for="tipoAlquiler" class="form-label">Tipo de alquiler:</label>
+            <select class="form-select" aria-label="Default select example" id="tipoAlquiler">
+                {% for tipo in tipoAlquiler %}
+                <option value="{{tipo.0}}">{{tipo.1}} | Tarifa/hora: {{tipo.2}}</option>
+                {% endfor %}
+            </select>
         </div>
-         
-        <!--ID CLIENTE-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">ID CLIENTE: </label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID CLIENTE">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_clientes" class="form-control" id="inputPassword2" value="{{x.0}}">
-            </div>
+
+
+        <!--CLIENTES-->
+        <div class="col-sm-6">
+            <label for="exampleDataList" class="form-label">Nombre</label>
+            <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
+                placeholder="Buscar clientes...." value="">
+            <datalist id="datalistOptions">
+                {% for x in clientes %}
+                <option value="{{x}}">
+                    {% endfor %}
+            </datalist>
         </div>
-    </div>             
+
+    </div>
     <button type="submit" class="btn btn-secondary">Guardar alquiler</button>
 </form>
 
+<script>
+
+    const horaInicioInput = document.getElementById('horaInicio');
+    const horaFinInput = document.getElementById('horaFin');
+
+    // Obtener la fecha actual en la zona horaria de Nicaragua (UTC-6)
+    const today = new Date();
+    const nicaraguaTimezoneOffset = -6 * 60; // UTC-6 en minutos
+    today.setMinutes(today.getMinutes() - nicaraguaTimezoneOffset);
+
+    // Formatear la fecha actual en formato ISO (YYYY-MM-DD)
+    const formattedDate = today.toISOString().split('T')[0];
+
+    // Asignar la fecha actual al atributo min del input de fecha
+    document.getElementById('fecha').min = formattedDate;
+
+
+    horaInicioInput.addEventListener('input', deshabilitarHorasAnteriores);
+
+    function deshabilitarHorasAnteriores() {
+        const horaInicio = horaInicioInput.value;
+        horaFinInput.value = ''; // Reiniciar el valor del campo de hora de fin
+        if (horaInicio) {
+            const horaInicioDate = new Date(`2000-01-01T${horaInicio}`);
+            const opcionesHoraFin = horaFinInput.querySelectorAll('option');
+            opcionesHoraFin.forEach(opcion => {
+                const hora = opcion.value;
+                if (hora) {
+                    const horaDate = new Date(`2000-01-01T${hora}`);
+                    opcion.disabled = horaDate <= horaInicioDate;
+                }
+            });
+        } else {
+            // Si no se ha seleccionado ninguna hora de inicio, habilitar todas las opciones
+            const opcionesHoraFin = horaFinInput.querySelectorAll('option');
+            opcionesHoraFin.forEach(opcion => opcion.disabled = false);
+        }
+    }
+</script>
 {% endblock %}

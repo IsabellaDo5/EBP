@@ -222,6 +222,8 @@ def edit_inventario(request, id_item):
         return redirect('/login')
     else:
         if request.method == 'GET':
+
+            print("MI ID ITEM ES: "+str(id_item))
             with connection.cursor() as cursor:
                 query="EXEC obtener_info_item %s"
                 filtro = (id_item,)
@@ -233,13 +235,15 @@ def edit_inventario(request, id_item):
                 print("Obtener info item: "+str(info))
             with connection.cursor() as cursor:
                 catalogo_tipoItem = cursor.execute("SELECT nombre FROM tipoItem").fetchall()
+                catalogo_medidas = cursor.execute("SELECT id_medida, nombre FROM medidas").fetchall()
 
             #info = Empleado.objects.filter(id_empleado=id_emp)
             return render(request, 'editar_item.html', context={
                 'info': info,
                 'catalogo_tipoItem': catalogo_tipoItem,
+                'catalogo_medidas':catalogo_medidas
             })
-        elif request.method == 'POST':
+        else:
             try:
                 unidad_medida= request.POST['unidad_medida']
                 print("UNIDAD DE MEDIDA try:"+str(unidad_medida))
@@ -248,7 +252,10 @@ def edit_inventario(request, id_item):
                 print("UNIDAD DE MEDIDA except: "+str(unidad_medida))
 
             with connection.cursor() as cursor:
-                sql_query = "EXEC editar_info_item %s,%s,%s,%s,%s,%s"
+
+                print("id_item:"+str(id_item)+" unidad medida dentro de cursor: "+str(unidad_medida))
+
+                sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
             connection.commit()
@@ -374,7 +381,7 @@ def alquiler(request):
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
-            resultados=cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquiler a JOIN clientes c ON a.id_clientes = c.id_clientes JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
+            resultados=cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquileres a JOIN clientes c ON a.id_cliente = c.id_cliente JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
             
         print(resultados)    
         return render(request, 'alquiler.html', context={
@@ -417,8 +424,22 @@ def edit_alquiler(request, id_alquiler):
 
 def add_alquiler2(request):
     if request.method == 'GET':
-        return render(request, 'add_alquiler2.html')
+        with connection.cursor() as cursor:
+            clientes= cursor.execute("exec verClientes").fetchall()
+
+            clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]
+
+            print(clientes_nombres)
+            tipoAlquiler= cursor.execute("SELECT * FROM tipoAlquiler").fetchall()
+
+        connection.commit()
+
+        return render(request, 'add_alquiler2.html', context={
+            'tipoAlquiler': tipoAlquiler,
+            'clientes': clientes_nombres,
+        })
     else:
+
         with connection.cursor() as cursor:
             sql_query = "INSERT INTO alquiler (horas, id_tipoAlquiler, id_clientes) VALUES (%s, %s, %s)"
             valores = (request.POST['horas'], request.POST['id_tipoAlquiler'], request.POST['id_clientes'])
