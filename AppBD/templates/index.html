@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Inicio
+Inicio
 {% endblock %}
 
 {% block content %}
@@ -9,38 +9,31 @@
 
 <div class="container ">
   <div class="row">
-    <div class="col-md">
-      <div class="card">
-        <div class="card-body">
-          <h2>General</h2>
-                <a href="/empleados/"><button class="btn btn-primary" type="button">Empleados</button></a>
-                <a href="/inventario/"><button class="btn btn-primary" type="button">Inventario</button></a>
-                <a href="/agregar_platillo/"><button class="btn btn-primary" type="button">Platillos</button></a>
-                <a href="/add_alquiler_cliente/"><button class="btn btn-primary" type="button">Clientes</button></a>
+      <h4>Productos próximos a terminarse (Quedan menos de 10 unidades)</h4>
+      {% for x in productos %}
+      <div class="col">
+        <div class="card" width="100% !important;"">
+          <div class="card-body">
+            <h5 class="card-title">{{x.1}}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
+            <p class="card-text">Precio: C${{x.2}} <br> Cantidad disponible: {{x.3}}
+            </p>
+        
+            <div>
+              <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar <i class="bi bi-pencil-square"></i></button></a>
+              <a href="/eliminar_inventario/{{x.id_item}}"> <button type="button" class="btn btn-outline-danger">Eliminar
+                <i class="bi bi-trash3-fill"></i></button></a>
+        
+            </div>
+        
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-md">
-      <div class="card">
-        <div class="card-body">
-          <h2>Órdenes</h2>
-                <a href="{% url 'mesas' %}"><button class="btn btn-primary" type="button">Ordenes
-                </button></a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md">
-      <div class="card">
-        <div class="card-body">
-          <h2>Alquiler</h2>
-              <a href="/alquiler/"><button class="btn btn-primary" type="button">Alquileres</button></a>
-              <a href="/add_factura_alquiler/"><button class="btn btn-primary" type="button">Facturar Alquiler</button></a>
-              <a href="/facturas_alquiler/"><button class="btn btn-primary" type="button">Ver facturas de alquiler</button></a>
-        </div>
-      </div>
-      <a href="/logout/"><button class="btn btn-warning" type="button">Cerrar sesión</button></a>
-    </div>
+      {% endfor %}
+
+
+
   </div>
 </div>
 
-  {% endblock %}
+{% endblock %}

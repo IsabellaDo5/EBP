@@ -10,73 +10,73 @@ Agregar un alquiler
     <p></p>
     {% csrf_token %}
     <!--PRIMERA FILA-->
+
     <div class="row">
         <!--Fecha-->
-        <div class="col-sm-4">
+        <div class="col-md-5">
             <div class="col">
                 <label for="fecha">Selecciona una fecha:</label>
             </div>
             <div class="col">
                 <input type="date" class="form-control" id="fecha" name="fecha" min="" required>
             </div>
-
         </div>
+    </div>
 
-        <div class="col-sm-4">
+    <div class="row">
+        <!--HORA DE INICIO-->
+        <div class="col-md-4">
             <div class="col">
                 <label for="horaInicio">Hora de inicio:</label>
 
             </div>
-
             <div class="col">
-                <input type="time" id="horaInicio" class="form-control" name="horaInicio" min="09:00" max="18:00"
+                <input type="time" id="horaInicio" class="form-control" name="horaInicio" min="14:00" max="02:00"
                     required />
             </div>
         </div>
 
-        <div class="col-sm-4">
+        <!--HORA DE FIN-->
+        <div class="col-md-4">
             <div class="col">
                 <label for="horaFin">Hora de fin:</label>
-
             </div>
-
             <div class="col">
-                <input type="time" id="horaFin" class="form-control" name="horaFin" min="09:00" max="18:00" required />
+                <input type="time" id="horaFin" class="form-control" name="horaFin" min="14:00" max="02:00" required />
             </div>
         </div>
-        <!--TIPO ALQUILER-->
 
-        <div class="col-sm-4">
+    </div>
+
+    <div class="row">
+         <!--TIPO ALQUILER-->
+
+         <div class="col-md-4">
             <label for="tipoAlquiler" class="form-label">Tipo de alquiler:</label>
-            <select class="form-select" aria-label="Default select example" id="tipoAlquiler">
+            <select class="form-select" name="tipoAlquiler" aria-label="Default select example" id="tipoAlquiler" >
                 {% for tipo in tipoAlquiler %}
-                <option value="{{tipo.0}}">{{tipo.1}} | Tarifa/hora: {{tipo.2}}</option>
+                <option value="{{tipo.0}}">{{tipo.1}} | Tarifa/hora: C$ {{tipo.2}}</option>
                 {% endfor %}
             </select>
         </div>
 
 
         <!--CLIENTES-->
-        <div class="col-sm-6">
+        <div class="col-md-6">
             <label for="exampleDataList" class="form-label">Nombre</label>
-            <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
-                placeholder="Buscar clientes...." value="">
+            <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombreCliente"
+                placeholder="Buscar clientes...." value="" required>
             <datalist id="datalistOptions">
                 {% for x in clientes %}
                 <option value="{{x}}">
                     {% endfor %}
             </datalist>
         </div>
-
     </div>
     <button type="submit" class="btn btn-secondary">Guardar alquiler</button>
 </form>
 
 <script>
-
-    const horaInicioInput = document.getElementById('horaInicio');
-    const horaFinInput = document.getElementById('horaFin');
-
     // Obtener la fecha actual en la zona horaria de Nicaragua (UTC-6)
     const today = new Date();
     const nicaraguaTimezoneOffset = -6 * 60; // UTC-6 en minutos
@@ -89,26 +89,5 @@ Agregar un alquiler
     document.getElementById('fecha').min = formattedDate;
 
 
-    horaInicioInput.addEventListener('input', deshabilitarHorasAnteriores);
-
-    function deshabilitarHorasAnteriores() {
-        const horaInicio = horaInicioInput.value;
-        horaFinInput.value = ''; // Reiniciar el valor del campo de hora de fin
-        if (horaInicio) {
-            const horaInicioDate = new Date(`2000-01-01T${horaInicio}`);
-            const opcionesHoraFin = horaFinInput.querySelectorAll('option');
-            opcionesHoraFin.forEach(opcion => {
-                const hora = opcion.value;
-                if (hora) {
-                    const horaDate = new Date(`2000-01-01T${hora}`);
-                    opcion.disabled = horaDate <= horaInicioDate;
-                }
-            });
-        } else {
-            // Si no se ha seleccionado ninguna hora de inicio, habilitar todas las opciones
-            const opcionesHoraFin = horaFinInput.querySelectorAll('option');
-            opcionesHoraFin.forEach(opcion => opcion.disabled = false);
-        }
-    }
 </script>
 {% endblock %}

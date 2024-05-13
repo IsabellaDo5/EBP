@@ -5,6 +5,7 @@ from django.contrib.auth import login, logout
 from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.models import User
+import time
 import hashlib
 import datetime
 # Create your views here.
@@ -70,8 +71,11 @@ def inicio(request):
     if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
-        #print(request.session['account_id'])
-        return render(request, 'index.html')
+        with connection.cursor() as cursor:
+            productos=cursor.execute("select * from inventario where cantidad<10").fetchall()
+        return render(request, 'index.html', context={
+            'productos': productos,
+        })
 
 # Muestra la lista de empleados
 def empleados(request):
@@ -246,14 +250,11 @@ def edit_inventario(request, id_item):
         else:
             try:
                 unidad_medida= request.POST['unidad_medida']
-                print("UNIDAD DE MEDIDA try:"+str(unidad_medida))
             except:
                 unidad_medida=""
-                print("UNIDAD DE MEDIDA except: "+str(unidad_medida))
 
             with connection.cursor() as cursor:
 
-                print("id_item:"+str(id_item)+" unidad medida dentro de cursor: "+str(unidad_medida))
 
                 sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
@@ -381,11 +382,12 @@ def alquiler(request):
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
-            resultados=cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquileres a JOIN clientes c ON a.id_cliente = c.id_cliente JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
-            
+            resultados=cursor.execute("exec ver_info_alquiler").fetchall()
+            horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
         print(resultados)    
         return render(request, 'alquiler.html', context={
             'alquiler': resultados,
+            'tiempo': horas[0][0],
     }) 
 
 def edit_alquiler(request, id_alquiler):
@@ -394,7 +396,7 @@ def edit_alquiler(request, id_alquiler):
     else:
         if request.method == 'GET':
             with connection.cursor() as cursor:
-                query="SELECT * FROM alquiler WHERE id_alquiler = %s"
+                query="exec ver_info_alquiler %s"
                 filtro = (id_alquiler,)
                 cursor.execute(query, filtro)
 
@@ -439,10 +441,32 @@ def add_alquiler2(request):
             'clientes': clientes_nombres,
         })
     else:
+        
+        cliente= request.POST['nombreCliente']
+        fecha = request.POST['fecha']
+        horaInicio = formatear_hora(request.POST['horaInicio'])
+        horaFin = formatear_hora(request.POST['horaFin'])
+        tipoAlquiler = request.POST['tipoAlquiler']
+
+
+        nombreapellido = cliente.split()
+
+        if len(nombreapellido)==3:
+            nombreCliente = " ".join(nombreapellido[:1])
+            apellidoCliente = " ".join(nombreapellido[-2:])
+        else:
+            # Tomar los dos primeros elementos de la lista de palabras
+            nombreCliente = " ".join(nombreapellido[:2])
+            apellidoCliente = " ".join(nombreapellido[-2:])
+
+
+        print("nombre: "+nombreCliente+" apellido: "+apellidoCliente)
+        print(""+str(fecha)+" "+str(horaInicio)+" "+str(horaFin))
+
 
         with connection.cursor() as cursor:
-            sql_query = "INSERT INTO alquiler (horas, id_tipoAlquiler, id_clientes) VALUES (%s, %s, %s)"
-            valores = (request.POST['horas'], request.POST['id_tipoAlquiler'], request.POST['id_clientes'])
+            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s, %s"
+            valores = (fecha, horaInicio, horaFin, nombreCliente, apellidoCliente, tipoAlquiler)
             cursor.execute(sql_query, valores)
 
         connection.commit()
@@ -763,3 +787,12 @@ def mesa_orden(request, id_mesa):
             'ordenes': ordenes,
             'id_mesa': id_mesa,        
         })
+
+# Formatea la hora para almacenarlo en sql server
+def formatear_hora(hora):
+        hora_struct = time.strptime(hora, '%H:%M')
+        # Obtener el formato deseado para almacenar en SQL Server
+        hora_formateada = time.strftime('%H:%M:%S', hora_struct)
+
+        return hora_formateada
+    

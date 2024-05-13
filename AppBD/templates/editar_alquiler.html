@@ -13,14 +13,14 @@
     <!--PRIMERA FILA-->
     <div class="row">
         <!--horas-->
-        <div class="col-sm-4">
+        <div class="col-sm-2">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Horas</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Horas">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="horas" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.1}}" >
+                <input type="text" name="horas" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.0}}" disabled>
             </div>
         </div>
 
@@ -32,22 +32,47 @@
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_tipoAlquiler" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.2}}" >
+                <input type="text" name="id_tipoAlquiler" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.8}}" >
             </div>
         </div>
 
         <!--id_cliente-->
         <div class="col-sm-4">
             <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">ID del cliente</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID del cliente">
+                <label for="staticEmail2" class="visually-hidden">Cliente</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cliente">
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_clientes" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.3}}" >
+                <input type="text" name="id_clientes" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.6}} {{x.7}}" >
             </div>
         </div>
   
+    </div>
+
+    <div class="row">
+        <!--HORA DE INICIO-->
+        <div class="col-md-4">
+            <div class="col">
+                <label for="horaInicio">Hora de inicio:</label>
+
+            </div>
+            <div class="col">
+                <input type="time" id="horaInicio" class="form-control" name="horaInicio" value="{{x.4}}" min="14:00" max="02:00"
+                    required />
+            </div>
+        </div>
+
+        <!--HORA DE FIN-->
+        <div class="col-md-4">
+            <div class="col">
+                <label for="horaFin">Hora de fin:</label>
+            </div>
+            <div class="col">
+                <input type="time" id="horaFin" class="form-control" name="horaFin" min="14:00" max="02:00" value="{{x.5}}" required />
+            </div>
+        </div>
+
     </div>
     <button type="submit" class="btn btn-secondary">Guardar cambios</button>
 </form>
