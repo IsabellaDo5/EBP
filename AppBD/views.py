@@ -681,7 +681,7 @@ def agregar_orden(request,id_mesa):
         #----------------------------------------ID DEL EMPLEADO--------------------------------------
         idempleado=request.session['empleado_id']
         idempleadoint=idempleado.get('empleado_id')
-        #------------------------------------------Ingresamos la orden
+        #------------------------------------------Ingresamos la orden------------------------------------
         with connection.cursor() as cursor:
                 # Aquí inserto descripcion y activo en la tabla ORDEN
                 queryAddOrden="exec addOrden %s, %s, %s, %s"
@@ -703,8 +703,7 @@ def agregar_orden(request,id_mesa):
         
         #--------------------------------Orden ya creada, aqui comenzamos a meter a item orden-----------------------------------------
         for cantidad, iditem in zip(cantidad_items, ids_items):
-
-            if cantidad != 0:
+            if cantidad != "0":
                 with connection.cursor() as cursor:
                 # Ejecutar el procedimiento almacenado con la cantidad y el iditem
                     print("tipos")
@@ -712,14 +711,12 @@ def agregar_orden(request,id_mesa):
                     print (str(type(iditem)) + str(iditem))  
                     print (str(type(cantidad)) + str(cantidad))
 
-                    
-
                     cursor.execute("exec addItemAOrden %s, %s, %s", (id_orden, iditem, cantidad))
             connection.commit()
 
         for cantidad, idplatillo in zip(cantidad_platillo, ids_platillos):
 
-            if cantidad != 0:
+            if cantidad != "0":
                 idPlatilloInt = int(idplatillo.split('+')[1])
 
                 with connection.cursor() as cursor:
@@ -778,23 +775,27 @@ def editar_orden(request,id_orden):
         
         #-----------------------ingesar a la orden
         for cantidad, iditem in zip(cantidad_items, ids_items):
-            with connection.cursor() as cursor:
-            # Ejecutar el procedimiento almacenado con la cantidad y el iditem
-                print("tipos")
-                print (str(type(id_orden)) + str(id_orden))  
-                print (str(type(iditem)) + str(iditem))  
-                print (str(type(cantidad)) + str(cantidad))  
-                cursor.execute("exec addItemAOrden %s, %s, %s", (id_orden, iditem, cantidad))
+
+            if cantidad != 0:
+                with connection.cursor() as cursor:
+                # Ejecutar el procedimiento almacenado con la cantidad y el iditem
+                    print("tipos")
+                    print (str(type(id_orden)) + str(id_orden))  
+                    print (str(type(iditem)) + str(iditem))  
+                    print (str(type(cantidad)) + str(cantidad))
+                    cursor.execute("exec addItemAOrden %s, %s, %s", (id_orden, iditem, cantidad))
             connection.commit()
 
         for cantidad, idplatillo in zip(cantidad_platillo, ids_platillos):
-            idPlatilloInt = int(idplatillo.split('+')[1])
-            with connection.cursor() as cursor:
-            # Ejecutar el procedimiento almacenado con la cantidad y el iditem
-                cursor.execute("exec addPlatilloAOrden %s, %s, %s", (id_orden, idPlatilloInt, cantidad))
-            connection.commit()
-            
-        return redirect('/mesas/')    
+
+            if cantidad != 0:
+                idPlatilloInt = int(idplatillo.split('+')[1])
+
+                with connection.cursor() as cursor:
+                # Ejecutar el procedimiento almacenado con la cantidad y el iditem
+                    cursor.execute("exec addPlatilloAOrden %s, %s, %s", (id_orden, idPlatilloInt, cantidad))
+                connection.commit()
+        return redirect('/mesas/') 
 ################ HASTA AQUÍ LLEGA AGREGAR_ORDEN #############################
 
 #---------------------facturas alquiler------------------------------------------
