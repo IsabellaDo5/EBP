@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Inicio
+  Alquileres
 {% endblock %}
 
 {% block content %}
@@ -18,10 +18,10 @@
                         ID Alquiler: {{x.id_alquiler}}
                       </div>
                       <div class="col">
-                        Cliente : {{x.nombre}} {{x.apellido}}
+                        Cliente : {{x.6}} {{x.7}}
                       </div>
                       <div class="col">
-                        Tipo de alquiler: {{x.nombrealq}}
+                        Tipo de alquiler: {{x.8}}
                       </div>
                       <div class="col">
                         <a href="/alquiler/{{x.id_alquiler}}"> <button type="button" class="btn btn-outline-secondary">Editar Alquiler</button></a>
@@ -35,14 +35,15 @@
                     </div>
                     <div class="row">
                       <div class="col">
-                        Horas Alquiladas: {{x.horas}}
+                        Hora inicio: {{x.4}}
                       </div>
                       <div class="col">
-                        
+                        Hora fin: {{x.5}}
                       </div>
                       <div class="col">
-                        
+                        Horas Alquiladas: {{tiempo}}
                       </div>
+                      
                       <div class="col">
                         <a href="/eliminar_alquiler/{{x.id_alquiler}}"> <button type="button" class="btn btn-outline-secondary">Eliminar Alquiler</button></a>
                     

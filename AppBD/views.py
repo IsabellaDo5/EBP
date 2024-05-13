@@ -5,6 +5,7 @@ from django.contrib.auth import login, logout
 from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.models import User
+import time
 import hashlib
 import datetime
 # Create your views here.
@@ -70,8 +71,11 @@ def inicio(request):
     if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
-        #print(request.session['account_id'])
-        return render(request, 'index.html')
+        with connection.cursor() as cursor:
+            productos=cursor.execute("select * from inventario where cantidad<10").fetchall()
+        return render(request, 'index.html', context={
+            'productos': productos,
+        })
 
 # Muestra la lista de empleados
 def empleados(request):
@@ -222,6 +226,8 @@ def edit_inventario(request, id_item):
         return redirect('/login')
     else:
         if request.method == 'GET':
+
+            print("MI ID ITEM ES: "+str(id_item))
             with connection.cursor() as cursor:
                 query="EXEC obtener_info_item %s"
                 filtro = (id_item,)
@@ -233,22 +239,24 @@ def edit_inventario(request, id_item):
                 print("Obtener info item: "+str(info))
             with connection.cursor() as cursor:
                 catalogo_tipoItem = cursor.execute("SELECT nombre FROM tipoItem").fetchall()
+                catalogo_medidas = cursor.execute("SELECT id_medida, nombre FROM medidas").fetchall()
 
             #info = Empleado.objects.filter(id_empleado=id_emp)
             return render(request, 'editar_item.html', context={
                 'info': info,
                 'catalogo_tipoItem': catalogo_tipoItem,
+                'catalogo_medidas':catalogo_medidas
             })
-        elif request.method == 'POST':
+        else:
             try:
                 unidad_medida= request.POST['unidad_medida']
-                print("UNIDAD DE MEDIDA try:"+str(unidad_medida))
             except:
                 unidad_medida=""
-                print("UNIDAD DE MEDIDA except: "+str(unidad_medida))
 
             with connection.cursor() as cursor:
-                sql_query = "EXEC editar_info_item %s,%s,%s,%s,%s,%s"
+
+
+                sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
             connection.commit()
@@ -300,6 +308,60 @@ def add_platillo(request):
                 connection.commit()
             return redirect('/platillos/')
 
+def editar_platillo(request, id_platillo):
+    if 'empleado_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method=='POST':
+            nombre_platillo= request.POST['nombre']
+            desc= request.POST['desc']
+            precio=request.POST['precio']
+            ingrediente= request.POST.getlist('nombre_ingredientes')
+            cantidad = request.POST.getlist('cantidad')
+
+            print("Ingredientes: "+str(ingrediente)+"cantidad: "+str(cantidad))
+
+            # Elimina todos los registros anteriores de platillo_detalle
+            with connection.cursor() as cursor:
+                query="DELETE FROM platillo_detalle where id_platillo= %s"
+                filtro = (id_platillo,)
+                cursor.execute(query, filtro)
+            connection.commit()
+
+            for j,y in zip(ingrediente,cantidad):
+
+                if len(j)!=0:
+                    
+                    print("guardando: "+ str(j))
+
+                    with connection.cursor() as cursor:
+                        query="EXEC modificar_platillo %s, %s, %s,%s, %s"
+                        filtro = (nombre_platillo, desc, precio, j,y)
+                        cursor.execute(query, filtro)
+                    connection.commit()
+            return redirect('/platillos/')
+        else:
+            with connection.cursor() as cursor:
+                    
+                    lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=2").fetchall()
+
+                    query="SELECT * FROM platillos WHERE id_platillo= %s"
+                    filtro = (id_platillo,)
+                    info_general=cursor.execute(query, filtro).fetchall()
+
+                    query="EXEC ingredientes_por_platillo %s"
+                    filtro = (id_platillo,)
+                    ingredientes=cursor.execute(query, filtro).fetchall()
+
+            connection.commit()
+
+            return render(request,'editar_platillo.html', context={
+                'id_platillo': info_general[0][0],
+                'info_general': info_general,
+                'ingredientes':ingredientes,
+                'catalogo_ingredientes': lista_ingredientes,
+            })
+
 def eliminar_platillo(request, id_platillo):
     if 'empleado_id' not in request.session:
         return redirect('/login')
@@ -320,11 +382,12 @@ def alquiler(request):
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
-            resultados=cursor.execute("SELECT a.*, c.*, d.nombre AS nombrealq FROM alquiler a JOIN clientes c ON a.id_clientes = c.id_clientes JOIN tipoAlquiler d ON a.id_tipoAlquiler=d.id_tipoAlquiler;").fetchall()
-            
+            resultados=cursor.execute("exec ver_info_alquileres").fetchall()
+            horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
         print(resultados)    
         return render(request, 'alquiler.html', context={
             'alquiler': resultados,
+            'tiempo': horas[0][0],
     }) 
 
 def edit_alquiler(request, id_alquiler):
@@ -333,41 +396,96 @@ def edit_alquiler(request, id_alquiler):
     else:
         if request.method == 'GET':
             with connection.cursor() as cursor:
-                query="SELECT * FROM alquiler WHERE id_alquiler = %s"
+                query="exec ver_info_alquiler %s"
                 filtro = (id_alquiler,)
                 cursor.execute(query, filtro)
-
-                # Obtiene los resultados
                 info = cursor.fetchall()
-                print("Info del item:"+str(info))
 
-            #info = Empleado.objects.filter(id_empleado=id_emp)
+            with connection.cursor() as cursor:    
+                tipoAlquiler= cursor.execute("SELECT * from tipoAlquiler").fetchall()
+                
+
+            hora_Inicio = info[0][4].strftime("%H:%M")
+            hora_Fin= info[0][5].strftime("%H:%M")
+            fecha_formateada = info[0][3].strftime("%Y-%m-%d")
+
             return render(request, 'editar_alquiler.html', context={
                 'info': info,
+                'tipoAlquiler':tipoAlquiler,
+                'horaInicio': hora_Inicio,
+                'horaFin': hora_Fin,
+                'fecha': fecha_formateada,
             })
         else:
+            cliente= request.POST['nombreCliente']
+            fecha = request.POST['fecha']
+            horaInicio = formatear_hora(request.POST['horaInicio'])
+            horaFin = formatear_hora(request.POST['horaFin'])
+            tipoAlquiler = request.POST['id_tipoAlquiler']
+
+            nombreapellido = cliente.split()
+
+            if len(nombreapellido)==3:
+                nombreCliente = " ".join(nombreapellido[:1])
+                apellidoCliente = " ".join(nombreapellido[-2:])
+            else:
+                # Tomar los dos primeros elementos de la lista de palabras
+                nombreCliente = " ".join(nombreapellido[:2])
+                apellidoCliente = " ".join(nombreapellido[-2:])
+
+            print("info: "+ cliente+""+fecha+""+horaInicio+""+horaFin+""+tipoAlquiler)
             with connection.cursor() as cursor:
-            # Define tu consulta SQL de actualización
-                sql_query = "UPDATE alquiler SET horas = %s, id_tipoAlquiler = %s, id_clientes=%s WHERE id_alquiler= %s"
-            
-            # Define los nuevos valores
-                nuevos_valores = (request.POST['horas'], request.POST['id_tipoAlquiler'], request.POST['id_clientes'], id_alquiler)
-
-            # Ejecuta la consulta SQL de actualización
+                sql_query = "exec modificar_alquiler %s, %s, %s, %s, %s, %s, %s"
+                nuevos_valores = (id_alquiler,fecha, horaInicio, horaFin, nombreCliente, apellidoCliente, tipoAlquiler)
                 cursor.execute(sql_query, nuevos_valores)
-
-        # Asegúrate de realizar un commit para aplicar los cambios en la base de datos
+            
             connection.commit()
             
             return redirect('/alquiler/')
 
 def add_alquiler2(request):
     if request.method == 'GET':
-        return render(request, 'add_alquiler2.html')
-    else:
         with connection.cursor() as cursor:
-            sql_query = "INSERT INTO alquiler (horas, id_tipoAlquiler, id_clientes) VALUES (%s, %s, %s)"
-            valores = (request.POST['horas'], request.POST['id_tipoAlquiler'], request.POST['id_clientes'])
+            clientes= cursor.execute("exec verClientes").fetchall()
+
+            clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]
+
+            print(clientes_nombres)
+            tipoAlquiler= cursor.execute("SELECT * FROM tipoAlquiler").fetchall()
+
+        connection.commit()
+
+        return render(request, 'add_alquiler2.html', context={
+            'tipoAlquiler': tipoAlquiler,
+            'clientes': clientes_nombres,
+        })
+    else:
+        
+        cliente= request.POST['nombreCliente']
+        fecha = request.POST['fecha']
+        horaInicio = formatear_hora(request.POST['horaInicio'])
+        horaFin = formatear_hora(request.POST['horaFin'])
+        tipoAlquiler = request.POST['tipoAlquiler']
+
+
+        nombreapellido = cliente.split()
+
+        if len(nombreapellido)==3:
+            nombreCliente = " ".join(nombreapellido[:1])
+            apellidoCliente = " ".join(nombreapellido[-2:])
+        else:
+            # Tomar los dos primeros elementos de la lista de palabras
+            nombreCliente = " ".join(nombreapellido[:2])
+            apellidoCliente = " ".join(nombreapellido[-2:])
+
+
+        print("nombre: "+nombreCliente+" apellido: "+apellidoCliente)
+        print(""+str(fecha)+" "+str(horaInicio)+" "+str(horaFin))
+
+
+        with connection.cursor() as cursor:
+            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s, %s"
+            valores = (fecha, horaInicio, horaFin, nombreCliente, apellidoCliente, tipoAlquiler)
             cursor.execute(sql_query, valores)
 
         connection.commit()
@@ -755,3 +873,12 @@ def mesa_orden(request, id_mesa):
             'ordenes': ordenes,
             'id_mesa': id_mesa,        
         })
+
+# Formatea la hora para almacenarlo en sql server
+def formatear_hora(hora):
+        hora_struct = time.strptime(hora, '%H:%M')
+        # Obtener el formato deseado para almacenar en SQL Server
+        hora_formateada = time.strftime('%H:%M:%S', hora_struct)
+
+        return hora_formateada
+    

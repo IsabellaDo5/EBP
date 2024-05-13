@@ -37,6 +37,7 @@ urlpatterns = [
     path('platillos/', views.platillos, name='platillos'),
     path('agregar_platillo/', views.add_platillo, name='agregar-platillo'),
     path('eliminar_platillo/<int:id_platillo>/', views.eliminar_platillo, name='eliminar_platillo'),
+    path('modificar_platillo/<int:id_platillo>/', views.editar_platillo),
     #Alquileres
     path('alquiler/', views.alquiler),
     path('add_alquiler2/', views.add_alquiler2),

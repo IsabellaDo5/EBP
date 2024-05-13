@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Modificar un platillo
+{% endblock %}
+
+{% block content %}
+<h3>Agregar un platillo nuevo al inventario</h3>
+
+<form action="/modificar_platillo/{{id_platillo}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    {% csrf_token %}
+    <!--PRIMERA FILA-->
+    {% for platillo in info_general%}
+    <div class="row">
+
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" value="{{platillo.1}}"
+                    required>
+            </div>
+        </div>
+
+        <!--DESCRIPCION-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Descripcion</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Descripcion">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="desc" class="form-control" id="inputPassword2" value="{{platillo.2}}" required>
+            </div>
+        </div>
+
+        <!--PRECIO-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Precio C$:</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Precio C$:">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="number" name="precio" class="form-control" id="inputPassword2" value="{{platillo.4}}"
+                    required>
+            </div>
+        </div>
+
+        {% endfor%}
+        <br>
+        <hr>
+        <div class="row">
+            <h3>Ingredientes</h3>
+
+            {% for info in ingredientes %}
+            <div class="col-sm-6">
+                <label for="exampleDataList" class="form-label">Nombre</label>
+                <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
+                    placeholder="Buscar ingredientes disponibles ..." value="{{info.0}}">
+                <datalist id="datalistOptions">
+                    {% for x in catalogo_ingredientes %}
+                    <option value={{x.nombre}}>
+                        {% endfor %}
+                </datalist>
+            </div>
+
+            <div class="col-sm-4">
+                <label for="formGroupExampleInput" class="form-label">Cantidad</label>
+                <input type="number" name="cantidad" class="form-control" id="formGroupExampleInput" value="{{info.1}}"
+                    placeholder="¿Cuántos necesitas para elaborarlo?">
+            </div>
+            <!--<div class="col">
+                <button type="button" name="" id="eliminarIng" class="btn btn-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path
+                            d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                    </svg>
+                </button>
+            </div>-->
+
+
+            {% endfor %}
+
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-primary" id="agregar_ingredientes">Añadir
+                    ingredientes</button>
+            </div>
+
+        </div>
+        <div class="row" id="ingredientes">
+
+        </div>
+        <button type="submit" class="btn btn-secondary">Guardar</button>
+    </div>
+      
+</form>
+
+<script>
+
+    // Para agregar un nuevo ingrediente
+    const botonAgregar = document.getElementById('agregar_ingredientes');
+    const contenedor = document.getElementById('ingredientes');
+    
+
+    //
+
+    // Agregamos un event listener al botón
+    botonAgregar.addEventListener('click', function () {
+
+        const htmlAgregado = `
+                <div class="col-md-6">
+                <label for="exampleDataList" class="form-label">Nombre</label>
+                <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
+                    placeholder="Buscar ingredientes disponibles ...">
+                <datalist id="datalistOptions">
+                {% for x in ingredientes %}
+                    <option value={{x.nombre}}>
+                {% endfor %}
+                </datalist>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="formGroupExampleInput" class="form-label">Cantidad</label>
+                    <input type="number" name="cantidad" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
+                </div>
+            </div>
+            `;
+       
+        // Agregamos el nuevo div al contenedor
+        contenedor.insertAdjacentHTML('afterbegin', htmlAgregado);
+    });
+
+
+</script>
+
+{% endblock %}

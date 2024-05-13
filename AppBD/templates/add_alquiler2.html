@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Editar registro
+Agregar un alquiler
 {% endblock %}
 
 {% block content %}
@@ -10,44 +10,84 @@
     <p></p>
     {% csrf_token %}
     <!--PRIMERA FILA-->
+
     <div class="row">
-        <!--Horas-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Horas</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Horas">
+        <!--Fecha-->
+        <div class="col-md-5">
+            <div class="col">
+                <label for="fecha">Selecciona una fecha:</label>
             </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="horas" class="form-control" id="inputPassword2" value="">
+            <div class="col">
+                <input type="date" class="form-control" id="fecha" name="fecha" min="" required>
             </div>
         </div>
-        
-        <!--TIPO ALQUILER-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Tipo Alquiler</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Tipo Alquiler">
+    </div>
+
+    <div class="row">
+        <!--HORA DE INICIO-->
+        <div class="col-md-4">
+            <div class="col">
+                <label for="horaInicio">Hora de inicio:</label>
+
             </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_tipoAlquiler" class="form-control" id="inputPassword2" value="">
-            </div>
-        </div>
-         
-        <!--ID CLIENTE-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">ID CLIENTE: </label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID CLIENTE">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_clientes" class="form-control" id="inputPassword2" value="{{x.0}}">
+            <div class="col">
+                <input type="time" id="horaInicio" class="form-control" name="horaInicio" min="14:00" max="02:00"
+                    required />
             </div>
         </div>
-    </div>             
+
+        <!--HORA DE FIN-->
+        <div class="col-md-4">
+            <div class="col">
+                <label for="horaFin">Hora de fin:</label>
+            </div>
+            <div class="col">
+                <input type="time" id="horaFin" class="form-control" name="horaFin" min="14:00" max="02:00" required />
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+         <!--TIPO ALQUILER-->
+
+         <div class="col-md-4">
+            <label for="tipoAlquiler" class="form-label">Tipo de alquiler:</label>
+            <select class="form-select" name="tipoAlquiler" aria-label="Default select example" id="tipoAlquiler" >
+                {% for tipo in tipoAlquiler %}
+                <option value="{{tipo.0}}">{{tipo.1}} | Tarifa/hora: C$ {{tipo.2}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <!--CLIENTES-->
+        <div class="col-md-6">
+            <label for="exampleDataList" class="form-label">Nombre</label>
+            <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombreCliente"
+                placeholder="Buscar clientes...." value="" required>
+            <datalist id="datalistOptions">
+                {% for x in clientes %}
+                <option value="{{x}}">
+                    {% endfor %}
+            </datalist>
+        </div>
+    </div>
     <button type="submit" class="btn btn-secondary">Guardar alquiler</button>
 </form>
 
+<script>
+    // Obtener la fecha actual en la zona horaria de Nicaragua (UTC-6)
+    const today = new Date();
+    const nicaraguaTimezoneOffset = -6 * 60; // UTC-6 en minutos
+    today.setMinutes(today.getMinutes() - nicaraguaTimezoneOffset);
+
+    // Formatear la fecha actual en formato ISO (YYYY-MM-DD)
+    const formattedDate = today.toISOString().split('T')[0];
+
+    // Asignar la fecha actual al atributo min del input de fecha
+    document.getElementById('fecha').min = formattedDate;
+
+
+</script>
 {% endblock %}

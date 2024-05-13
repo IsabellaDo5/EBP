@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'sidebar.css' %}">
 
-    <link rel="stylesheet" href="{% static 'prueba.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 
 <body>
@@ -76,7 +76,13 @@
                         Alquileres
                     </li>
                     <li class="sidebar-item">
-                        <a href="/" class="sidebar-link">
+                        <a href="/alquiler/" class="sidebar-link">
+                            <i class="fa-solid fa-list pe-2"></i>
+                            Ver alquileres
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/add_alquiler2/" class="sidebar-link">
                             <i class="fa-solid fa-list pe-2"></i>
                             Agregar un alquiler
                         </a>
@@ -89,29 +95,6 @@
                             <i class="fa-solid fa-list pe-2"></i>
                             Facturar una orden
                         </a>
-                    </li>
-                    <li class="sidebar-header">
-                        Multi Level Menu
-                    </li>
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link collapsed" data-bs-target="#multi" data-bs-toggle="collapse"
-                            aria-expanded="false"><i class="fa-solid fa-share-nodes pe-2"></i>
-                            Multi Dropdown
-                        </a>
-                        <ul id="multi" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link collapsed" data-bs-target="#level-1"
-                                    data-bs-toggle="collapse" aria-expanded="false">Level 1</a>
-                                <ul id="level-1" class="sidebar-dropdown list-unstyled collapse">
-                                    <li class="sidebar-item">
-                                        <a href="#" class="sidebar-link">Level 1.1</a>
-                                    </li>
-                                    <li class="sidebar-item">
-                                        <a href="#" class="sidebar-link">Level 1.2</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
                     </li>
                 </ul>
             </div>
@@ -138,14 +121,14 @@
                 </div>
             </nav>
             <main class="content px-3 py-2">
-                <div class="container-fluid">
+                <div class="container">
                     {% block content %}
                     {% endblock %}
                 </div>
             </main>
             <a href="#" class="theme-toggle">
-                <i class="fa-regular fa-moon"></i>
-                <i class="fa-regular fa-sun"></i>
+                <i class="bi bi-moon-stars"></i>
+                <i class="bi bi-brightness-high-fill"></i>
             </a>
         </div>
     </div>
