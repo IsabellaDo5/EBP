@@ -382,7 +382,7 @@ def alquiler(request):
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
-            resultados=cursor.execute("exec ver_info_alquiler").fetchall()
+            resultados=cursor.execute("exec ver_info_alquileres").fetchall()
             horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
         print(resultados)    
         return render(request, 'alquiler.html', context={
@@ -399,27 +399,46 @@ def edit_alquiler(request, id_alquiler):
                 query="exec ver_info_alquiler %s"
                 filtro = (id_alquiler,)
                 cursor.execute(query, filtro)
-
-                # Obtiene los resultados
                 info = cursor.fetchall()
-                print("Info del item:"+str(info))
 
-            #info = Empleado.objects.filter(id_empleado=id_emp)
+            with connection.cursor() as cursor:    
+                tipoAlquiler= cursor.execute("SELECT * from tipoAlquiler").fetchall()
+                
+
+            hora_Inicio = info[0][4].strftime("%H:%M")
+            hora_Fin= info[0][5].strftime("%H:%M")
+            fecha_formateada = info[0][3].strftime("%Y-%m-%d")
+
             return render(request, 'editar_alquiler.html', context={
                 'info': info,
+                'tipoAlquiler':tipoAlquiler,
+                'horaInicio': hora_Inicio,
+                'horaFin': hora_Fin,
+                'fecha': fecha_formateada,
             })
         else:
+            cliente= request.POST['nombreCliente']
+            fecha = request.POST['fecha']
+            horaInicio = formatear_hora(request.POST['horaInicio'])
+            horaFin = formatear_hora(request.POST['horaFin'])
+            tipoAlquiler = request.POST['id_tipoAlquiler']
+
+            nombreapellido = cliente.split()
+
+            if len(nombreapellido)==3:
+                nombreCliente = " ".join(nombreapellido[:1])
+                apellidoCliente = " ".join(nombreapellido[-2:])
+            else:
+                # Tomar los dos primeros elementos de la lista de palabras
+                nombreCliente = " ".join(nombreapellido[:2])
+                apellidoCliente = " ".join(nombreapellido[-2:])
+
+            print("info: "+ cliente+""+fecha+""+horaInicio+""+horaFin+""+tipoAlquiler)
             with connection.cursor() as cursor:
-            # Define tu consulta SQL de actualización
-                sql_query = "UPDATE alquiler SET horas = %s, id_tipoAlquiler = %s, id_clientes=%s WHERE id_alquiler= %s"
-            
-            # Define los nuevos valores
-                nuevos_valores = (request.POST['horas'], request.POST['id_tipoAlquiler'], request.POST['id_clientes'], id_alquiler)
-
-            # Ejecuta la consulta SQL de actualización
+                sql_query = "exec modificar_alquiler %s, %s, %s, %s, %s, %s, %s"
+                nuevos_valores = (id_alquiler,fecha, horaInicio, horaFin, nombreCliente, apellidoCliente, tipoAlquiler)
                 cursor.execute(sql_query, nuevos_valores)
-
-        # Asegúrate de realizar un commit para aplicar los cambios en la base de datos
+            
             connection.commit()
             
             return redirect('/alquiler/')
