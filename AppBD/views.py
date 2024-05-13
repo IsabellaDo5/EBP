@@ -222,6 +222,8 @@ def edit_inventario(request, id_item):
         return redirect('/login')
     else:
         if request.method == 'GET':
+
+            print("MI ID ITEM ES: "+str(id_item))
             with connection.cursor() as cursor:
                 query="EXEC obtener_info_item %s"
                 filtro = (id_item,)
@@ -233,27 +235,29 @@ def edit_inventario(request, id_item):
                 print("Obtener info item: "+str(info))
             with connection.cursor() as cursor:
                 catalogo_tipoItem = cursor.execute("SELECT nombre FROM tipoItem").fetchall()
+                catalogo_medidas = cursor.execute("SELECT id_medida, nombre FROM medidas").fetchall()
 
             #info = Empleado.objects.filter(id_empleado=id_emp)
             return render(request, 'editar_item.html', context={
                 'info': info,
                 'catalogo_tipoItem': catalogo_tipoItem,
+                'catalogo_medidas':catalogo_medidas
             })
-        elif request.method == 'POST':
+        else:
             try:
                 unidad_medida= request.POST['unidad_medida']
-                print("UNIDAD DE MEDIDA try:"+str(unidad_medida))
             except:
                 unidad_medida=""
-                print("UNIDAD DE MEDIDA except: "+str(unidad_medida))
 
             with connection.cursor() as cursor:
-                sql_query = "EXEC editar_info_item %s,%s,%s,%s,%s,%s"
+
+
+                sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
             connection.commit()
             
-            return redirect('/inventario/')    
+            return redirect('/inventario/')
 #-----------------------------platillos----------------------------------
 
 def platillos(request):
