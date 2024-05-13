@@ -67,7 +67,7 @@ Editar registro
             </div>
             <div class="col-auto">
                 <!--Agregué esta etiqueta-->
-            <select class="form-select" aria-label="Default select example" name="unidad_medida" id="unidad_medida" disabled> 
+            <select class="form-select" aria-label="Default select example" name="unidad_medida" id="unidad_medida" > 
                 <option selected disabled value=" " >Seleccionar</option>
                 {% for x in unidadesdeMedida %}
                 <option value="{{x.nombre}}">{{x.nombre}}</option>
@@ -80,19 +80,5 @@ Editar registro
     <button type="submit" class="btn btn-secondary">Guardar producto nuevo</button>
 </form>
 
-<script>
-    var tipo_item = document.getElementById('inputState');
-    var unidad_medida = document.getElementById('unidad_medida');
 
-    tipo_item.addEventListener("change", function() {
-        if(tipo_item.value === "Ingrediente"){
-            unidad_medida.disabled = false;
-        }
-        else{
-            unidad_medida.disabled = true;
-        }
-        console.log(tipo_item.value)
-
-    })
-</script>
 {% endblock %}

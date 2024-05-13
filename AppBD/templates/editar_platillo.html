@@ -64,7 +64,7 @@ Modificar un platillo
                     placeholder="Buscar ingredientes disponibles ..." value="{{info.0}}">
                 <datalist id="datalistOptions">
                     {% for x in catalogo_ingredientes %}
-                    <option value={{x.nombre}}>
+                    <option value={{x.1}}>
                         {% endfor %}
                 </datalist>
             </div>
@@ -86,8 +86,8 @@ Modificar un platillo
 
 
             {% endfor %}
-
-            <div class="col-auto">
+            
+            <div class="col-auto" style="margin-top: 2vh !important;">
                 <button type="button" class="btn btn-outline-primary" id="agregar_ingredientes">Añadir
                     ingredientes</button>
             </div>

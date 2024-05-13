@@ -213,7 +213,7 @@ def agregar_inventario(request):
     
 def eliminar_item(request,id_item):
     with connection.cursor() as cursor:
-        sql_query = "DELETE FROM item WHERE id_item = %s"
+        sql_query = "DELETE FROM inventario WHERE id_item = %s"
         valores = (id_item,)
         cursor.execute(sql_query, valores)
 
@@ -255,7 +255,7 @@ def edit_inventario(request, id_item):
 
             with connection.cursor() as cursor:
 
-
+                print("UNIDAD DE MEDIDA: "+unidad_medida)
                 sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
@@ -286,7 +286,7 @@ def add_platillo(request):
     #else:
         if request.method=='GET':
             with connection.cursor() as cursor:
-                lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=2").fetchall()
+                lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=1").fetchall()
             print("INGREDIENTES: "+str(lista_ingredientes))
             return render(request, 'add_platillo.html', context={
                 'ingredientes': lista_ingredientes,
@@ -343,7 +343,7 @@ def editar_platillo(request, id_platillo):
         else:
             with connection.cursor() as cursor:
                     
-                    lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=2").fetchall()
+                    lista_ingredientes= cursor.execute("SELECT * FROM inventario WHERE id_tipoItem=1").fetchall()
 
                     query="SELECT * FROM platillos WHERE id_platillo= %s"
                     filtro = (id_platillo,)
@@ -355,6 +355,7 @@ def editar_platillo(request, id_platillo):
 
             connection.commit()
 
+            print("LISTA DE INGREDIENTES:"+str(lista_ingredientes))
             return render(request,'editar_platillo.html', context={
                 'id_platillo': info_general[0][0],
                 'info_general': info_general,
@@ -504,12 +505,13 @@ def eliminar_alquiler(request,id_alquiler):
 #--------------------------clientes--------------------------------
 
 def add_alquiler_cliente(request):
-    with connection.cursor() as cursor:
-        clientes=cursor.execute("exec VerClientes").fetchall()
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            clientes=cursor.execute("exec VerClientes").fetchall()
 
-           
-    return render(request, 'add_alquiler_cliente.html', context={
-        'clientes': clientes,
+            
+        return render(request, 'add_alquiler_cliente.html', context={
+            'clientes': clientes,
 }) 
 
 def add_cliente(request):
@@ -539,7 +541,7 @@ def add_cliente(request):
 def edit_cliente(request, id_clientes):
     if request.method == 'GET':
         with connection.cursor() as cursor:
-            query="SELECT * FROM clientes WHERE id_clientes = %s"
+            query="SELECT * FROM clientes WHERE id_cliente = %s"
             filtro = (id_clientes,)
             cursor.execute(query, filtro)
 
@@ -554,7 +556,7 @@ def edit_cliente(request, id_clientes):
     else:
         with connection.cursor() as cursor:
         # Define tu consulta SQL de actualización
-            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE id_clientes= %s"
+            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE id_cliente= %s"
         
         # Define los nuevos valores
             nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'], id_clientes)

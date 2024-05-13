@@ -7,7 +7,7 @@ Editar item
 {% block content %}
 <h3>Editar información</h3>
 {% for x in info %}
-<form action="/item/{{x.4}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+<form action="/item/{{x.5}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
     {% csrf_token %}
     <!--PRIMERA FILA-->
     <div class="row">
@@ -73,8 +73,8 @@ Editar item
                 {% for unidad in catalogo_medidas %}
 
 
-                {% if unidad.1 == x.7 %}
-                <option selected value="{{x.7}}">{{ unidad.1 }}</option>
+                {% if unidad.0 == x.5 %}
+                <option selected value="{{x.5}}">{{ unidad.1 }}</option>
                 {%else%}
                 <option value="{{ unidad.0 }}">{{ unidad.1 }}</option>
 
