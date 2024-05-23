@@ -5,12 +5,12 @@ Modificar un platillo
 {% endblock %}
 
 {% block content %}
-<h3>Agregar un platillo nuevo al inventario</h3>
+<h3>Modificar un platillo</h3>
 
 <form action="/modificar_platillo/{{id_platillo}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
     {% csrf_token %}
     <!--PRIMERA FILA-->
-    {% for platillo in info_general%}
+    {% for platillo in info_general %}
     <div class="row">
 
         <!--NOMBRE-->
@@ -51,101 +51,102 @@ Modificar un platillo
             </div>
         </div>
 
-        {% endfor%}
-        <br>
-        <hr>
-        <div class="row">
-            <h3>Ingredientes</h3>
-
-            {% for info in ingredientes %}
-            <div class="col-sm-6">
-                <label for="exampleDataList" class="form-label">Nombre</label>
-                <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
-                    placeholder="Buscar ingredientes disponibles ..." value="{{info.0}}">
-                <datalist id="datalistOptions">
-                    {% for x in catalogo_ingredientes %}
-                    <option value={{x.1}}>
-                        {% endfor %}
-                </datalist>
-            </div>
-
-            <div class="col-sm-4">
-                <label for="formGroupExampleInput" class="form-label">Cantidad</label>
-                <input type="number" name="cantidad" class="form-control" id="formGroupExampleInput" value="{{info.1}}"
-                    placeholder="¿Cuántos necesitas para elaborarlo?">
-            </div>
-            <!--<div class="col">
-                <button type="button" name="" id="eliminarIng" class="btn btn-danger">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path
-                            d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                    </svg>
-                </button>
-            </div>-->
-
-
-            {% endfor %}
-            
-            <div class="col-auto" style="margin-top: 2vh !important;">
-                <button type="button" class="btn btn-outline-primary" id="agregar_ingredientes">Añadir
-                    ingredientes</button>
-            </div>
-
-        </div>
-        <div class="row" id="ingredientes">
-
-        </div>
-        <button type="submit" class="btn btn-secondary">Guardar</button>
     </div>
-      
+    {% endfor %}
+    <br>
+    <hr>
+    <div class="row">
+        <h3>Ingredientes</h3>
+
+        {% for info in ingredientes %}
+        <div class="col-sm-6">
+            <label for="exampleDataList" class="form-label">Nombre</label>
+            <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
+                placeholder="Buscar ingredientes disponibles ..." value="{{info.0}}">
+            <datalist id="datalistOptions">
+                {% for x in catalogo_ingredientes %}
+                <option value="{{ x.1 }}"></option>
+                {% endfor %}
+            </datalist>
+        </div>
+
+        <div class="col-sm-4">
+            <label for="formGroupExampleInput" class="form-label">Cantidad</label>
+            <input type="number" name="cantidad" class="form-control" id="formGroupExampleInput" value="{{info.1}}"
+                placeholder="¿Cuántos necesitas para elaborarlo?">
+        </div>
+        <!--<div class="col">
+            <button type="button" name="" id="eliminarIng" class="btn btn-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path
+                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                </svg>
+            </button>
+        </div>-->
+        {% endfor %}
+        
+        <div class="col-auto" style="margin-top: 2vh !important;">
+            <button type="button" class="btn btn-outline-primary" id="agregar_ingredientes">Añadir
+                ingredientes</button>
+        </div>
+    </div>
+    <div class="row" id="ingredientes"></div>
+    <button type="submit" class="btn btn-secondary">Guardar</button>
 </form>
 
 <script>
-
     // Para agregar un nuevo ingrediente
     const botonAgregar = document.getElementById('agregar_ingredientes');
     const contenedor = document.getElementById('ingredientes');
-    
 
-    //
-
+    let contador = 0;
     // Agregamos un event listener al botón
     botonAgregar.addEventListener('click', function () {
-
         const htmlAgregado = `
-        {% for x in ingredientes %}
-                <div class="col-md-6" id="{{x.nombre}}">
+        <div class="row" id=`+contador+`>
+                <div class="col-md-6" id="">
                 <label for="exampleDataList" class="form-label">Nombre</label>
-                <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
-                    placeholder="Buscar ingredientes disponibles ...">
-                <datalist id="datalistOptions">
-                
-                    <option value={{x.nombre}}>
-                
-                </datalist>
+                <div>
+                    <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
+                        placeholder="Buscar ingredientes disponibles ...">
+                    
+                    <datalist id="datalistOptions">
+                        {% for x in catalogo_ingredientes %}
+                            <option value="{{ x.1 }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1" id="medida`+contador+`">@</span>
+                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                 </div>
 
                 <div class="col-md-4">
                     <label for="formGroupExampleInput" class="form-label">Cantidad</label>
-                    <input type="number" name="cantidad" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
-                    <button type="button" class="btn btn-danger" onclick="eliminarIngrediente(event, {{x.nombre}})" id="eliminar_ingrediente" >Eliminar</button>
+                    <input type="number" name="cantidad" step="0.1" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger" onclick="eliminarIngrediente(event,`+contador+`)" id="eliminar_ingrediente">Eliminar</button> 
                 </div>
             </div>
-            {% endfor %}
-            `;
-       
+        </div>
+        `;
+        contador += 1;    
         // Agregamos el nuevo div al contenedor
-        contenedor.insertAdjacentHTML('afterbegin', htmlAgregado);
+        contenedor.insertAdjacentHTML('beforeend', htmlAgregado);
     });
 
-    function eliminarIngrediente(nombre){
-        console.log(nombre);
-        const ingrediente = document.getElementById(nombre);
-        
-        //ingrediente.remove();
-        
+    function eliminarIngrediente(event, id) {
+        console.log(id);
+        const ingrediente = document.getElementById(id);
+        ingrediente.remove();
+    }
 
+    function obtenerID(event, id_padre, id_item, unidad_medida) {
+        medida_label = document.getElementById("medida" + id_padre);
     }
 </script>
 

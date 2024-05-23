@@ -348,6 +348,7 @@ def editar_platillo(request, id_platillo):
                     query="SELECT * FROM platillos WHERE id_platillo= %s"
                     filtro = (id_platillo,)
                     info_general=cursor.execute(query, filtro).fetchall()
+                    print(info_general)
 
                     query="EXEC ingredientes_por_platillo %s"
                     filtro = (id_platillo,)

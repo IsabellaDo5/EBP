@@ -77,11 +77,13 @@ Añadir nuevo platillo
                 <label for="exampleDataList" class="form-label">Nombre</label>
                 <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
                     placeholder="Buscar ingredientes disponibles ...">
-                <datalist id="datalistOptions">
-                {% for x in ingredientes %}
-                    <option value={{x.nombre}} oninput="obtenerID(event,`+contador+`,{{x.id_item}})" id="{{x.id_item}}">
-                {% endfor %}
-                </datalist>
+                
+                
+                    <datalist id="datalistOptions">
+                        {% for x in ingredientes %}
+                        <option value="{{x.1}}" oninput="obtenerID(event,`+contador+`,{{x.id_item}})" id="{{x.id_item}}">
+                            {% endfor %}
+                    </datalist>
                 </div>
 
                 <div class="input-group mb-3">
@@ -91,7 +93,7 @@ Añadir nuevo platillo
 
                 <div class="col-md-4">
                     <label for="formGroupExampleInput" class="form-label">Cantidad</label>
-                    <input type="number" name="cantidad" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
+                    <input type="number" name="cantidad" step="0.1" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
                 </div>
 
                 <div class="col-md-2">
@@ -116,8 +118,6 @@ Añadir nuevo platillo
 
     function obtenerID(event,id_padre, id_item, unidad_medida){
         medida_label = document.getElementById("medida"+id_padre);
-
-        medida_label =
     }
     
 </script>
