@@ -5,6 +5,7 @@ from django.contrib.auth import login, logout
 from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 import time
 import hashlib
 import datetime
@@ -263,6 +264,14 @@ def edit_inventario(request, id_item):
             
             return redirect('/inventario/')    
 #-----------------------------platillos----------------------------------
+
+def obtenerMedidaItem(request, nombreMedida):
+    with connection.cursor() as cursor:
+        cursor.execute("exec VerMedidaItem %s", (nombreMedida,))
+        query = cursor.fetchall()
+        # Convierte los resultados a una lista de diccionarios
+        medidaNombre = [{'medidaNombre': query[0]}]
+    return JsonResponse(medidaNombre, safe=False)
 
 def platillos(request):
     if 'empleado_id' not in request.session:
