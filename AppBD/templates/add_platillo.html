@@ -80,7 +80,7 @@ Añadir nuevo platillo
                 <label for="exampleDataList" class="form-label">Nombre</label>
                 <div>
                     <input class="form-control" list="datalistOptions" id="input${contador}" name="nombre_ingredientes"
-                        placeholder="Buscar ingredientes disponibles ..." oninput="actualizarMedidasHtml2(event,'input${contador}','medida${contador}')">
+                        placeholder="Buscar ingredientes disponibles ..." ">
                     
                     <datalist id="datalistOptions">
                         {% for x in catalogo_ingredientes %}
@@ -104,7 +104,7 @@ Añadir nuevo platillo
         
       // Agregamos el nuevo div al contenedor
         contenedor.insertAdjacentHTML('beforeend', htmlAgregado);
-         /* actualizarMedidasHtml(contador)*/
+
         contador += 1;    
         //Agregar event listener para actualizar la medida
     });
@@ -197,7 +197,7 @@ Añadir nuevo platillo
 
 
 
-
+    setInterval(actualizarMedidasHtml,100)
 </script>
 
 {% endblock %}
