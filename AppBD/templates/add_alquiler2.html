@@ -61,16 +61,18 @@ Agregar un alquiler
         </div>
 
 
-        <!--CLIENTES-->
-        <div class="col-md-6">
-            <label for="exampleDataList" class="form-label">Nombre</label>
-            <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombreCliente"
-                placeholder="Buscar clientes...." value="" required>
-            <datalist id="datalistOptions">
-                {% for x in clientes %}
-                <option value="{{x}}">
-                    {% endfor %}
-            </datalist>
+        <!--CEDULA-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Cédula</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Cédula">
+            </div>
+            <div class="col-auto">
+                <label for="cedula" class="visually-hidden"></label>
+                <input type="text" maxlength="16" name="cedula" class="form-control" id="cedula" value=""
+                required autocomplete="off"  required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY">
+            </div>
         </div>
     </div>
     <button type="submit" class="btn btn-secondary">Guardar alquiler</button>
@@ -78,6 +80,7 @@ Agregar un alquiler
 
 <script>
     // Obtener la fecha actual en la zona horaria de Nicaragua (UTC-6)
+    const cedulaInput = document.getElementById('cedula')
     const today = new Date();
     const nicaraguaTimezoneOffset = -6 * 60; // UTC-6 en minutos
     today.setMinutes(today.getMinutes() - nicaraguaTimezoneOffset);
@@ -87,6 +90,18 @@ Agregar un alquiler
 
     // Asignar la fecha actual al atributo min del input de fecha
     document.getElementById('fecha').min = formattedDate;
+
+
+
+
+    //on input de la cedula
+    cedulaInput.addEventListener("input", confirmarCliente);
+
+    function confirmarCliente(){
+        let cedulaTexto = cedulaInput.value
+
+        console.log(cedulaTexto + "tipo: " +typeof cedulaTexto)
+    }
 
 
 </script>

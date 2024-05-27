@@ -80,7 +80,7 @@ Añadir nuevo platillo
                 <label for="exampleDataList" class="form-label">Nombre</label>
                 <div>
                     <input class="form-control" list="datalistOptions" id="input${contador}" name="nombre_ingredientes"
-                        placeholder="Buscar ingredientes disponibles ...">
+                        placeholder="Buscar ingredientes disponibles ..." oninput="actualizarMedidasHtml2(event,'input${contador}','medida${contador}')">
                     
                     <datalist id="datalistOptions">
                         {% for x in catalogo_ingredientes %}
@@ -101,17 +101,14 @@ Añadir nuevo platillo
             </div>
         </div>
         `;
-
         
-        
-        // Agregamos el nuevo div al contenedor
+      // Agregamos el nuevo div al contenedor
         contenedor.insertAdjacentHTML('beforeend', htmlAgregado);
-        actualizarMedidasHtml(contador)
+         /* actualizarMedidasHtml(contador)*/
         contador += 1;    
         //Agregar event listener para actualizar la medida
     });
 
-    setInterval(actualizarMedidasHtml,10)
     
 
     function eliminarIngrediente(event, id){
@@ -175,7 +172,28 @@ Añadir nuevo platillo
         }
     }
 
+    function actualizarMedidasHtml2(event,itemdiv,medidadiv){
 
+
+            let itemDiv=document.getElementById(itemdiv);
+
+            console.log(itemdiv);
+            console.log(medidadiv);
+            let medidaDiv=document.getElementById(medidadiv);
+            if (itemDiv) {
+               let nombreItem = itemDiv.value; 
+
+               obtenerNombreMedida(nombreItem);
+               let nombremedida=medidaNombreObtenida
+               console.log(typeof nombremedida +" x "+ nombremedida)
+               medidaDiv.textContent=nombremedida
+               //console.log("medidaaa "+medidaDiv.textContent + "tipo: " +typeof medidaDiv.textContent)
+
+             } else {
+                  console.error("Elemento no encontrado con ID 'input" + x + "'");         
+           }
+
+    }
 
 
 

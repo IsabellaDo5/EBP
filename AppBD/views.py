@@ -457,46 +457,26 @@ def edit_alquiler(request, id_alquiler):
 def add_alquiler2(request):
     if request.method == 'GET':
         with connection.cursor() as cursor:
-            clientes= cursor.execute("exec verClientes").fetchall()
 
-            clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]
-
-            print(clientes_nombres)
             tipoAlquiler= cursor.execute("SELECT * FROM tipoAlquiler").fetchall()
-
         connection.commit()
 
         return render(request, 'add_alquiler2.html', context={
             'tipoAlquiler': tipoAlquiler,
-            'clientes': clientes_nombres,
+
         })
     else:
-        
-        cliente= request.POST['nombreCliente']
+        cedula=request.POST['cedula']
         fecha = request.POST['fecha']
         horaInicio = formatear_hora(request.POST['horaInicio'])
         horaFin = formatear_hora(request.POST['horaFin'])
         tipoAlquiler = request.POST['tipoAlquiler']
 
 
-        nombreapellido = cliente.split()
-
-        if len(nombreapellido)==3:
-            nombreCliente = " ".join(nombreapellido[:1])
-            apellidoCliente = " ".join(nombreapellido[-2:])
-        else:
-            # Tomar los dos primeros elementos de la lista de palabras
-            nombreCliente = " ".join(nombreapellido[:2])
-            apellidoCliente = " ".join(nombreapellido[-2:])
-
-
-        print("nombre: "+nombreCliente+" apellido: "+apellidoCliente)
-        print(""+str(fecha)+" "+str(horaInicio)+" "+str(horaFin))
-
 
         with connection.cursor() as cursor:
-            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s, %s"
-            valores = (fecha, horaInicio, horaFin, nombreCliente, apellidoCliente, tipoAlquiler)
+            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s"
+            valores = (fecha, horaInicio, horaFin, cedula, tipoAlquiler)
             cursor.execute(sql_query, valores)
 
         connection.commit()
