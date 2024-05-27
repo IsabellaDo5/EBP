@@ -39,8 +39,7 @@ urlpatterns = [
     path('eliminar_platillo/<int:id_platillo>/', views.eliminar_platillo, name='eliminar_platillo'),
     path('modificar_platillo/<int:id_platillo>/', views.editar_platillo),
 
-
-    path('obtenerMedidaItem/<str:nombreMedida>/', views.obtenerMedidaItem),
+    path('obtenerMedidaItem/<str:nombreItem>/', views.obtenerMedidaItem),
     #Alquileres
     path('alquiler/', views.alquiler),
     path('add_alquiler2/', views.add_alquiler2),

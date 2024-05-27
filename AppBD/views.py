@@ -265,9 +265,9 @@ def edit_inventario(request, id_item):
             return redirect('/inventario/')    
 #-----------------------------platillos----------------------------------
 
-def obtenerMedidaItem(request, nombreMedida):
+def obtenerMedidaItem(request, nombreItem):
     with connection.cursor() as cursor:
-        cursor.execute("exec VerMedidaItem %s", (nombreMedida,))
+        cursor.execute("exec VerMedidaItem %s", (nombreItem,))
         query = cursor.fetchall()
         # Convierte los resultados a una lista de diccionarios
         medidaNombre = [{'medidaNombre': query[0]}]

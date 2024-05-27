@@ -4,6 +4,7 @@
 Añadir nuevo platillo
 {% endblock %}
 
+
 {% block content %}
 <h3>Agregar un platillo nuevo al inventario</h3>
 
@@ -62,70 +63,123 @@ Añadir nuevo platillo
     <button type="submit" class="btn btn-secondary">Guardar</button>
 </form>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script>
+    
+
     const botonAgregar = document.getElementById('agregar_ingredientes');
     const contenedor = document.getElementById('ingredientes');
-
     let contador = 0;
+    
     // Agregamos un event listener al botón
     botonAgregar.addEventListener('click', function () {
-
-
         const htmlAgregado = `
         <div class="row" id=`+contador+`>
                 <div class="col-md-6" id="">
                 <label for="exampleDataList" class="form-label">Nombre</label>
-                <input class="form-control" list="datalistOptions" id="exampleDataList" name="nombre_ingredientes"
-                    placeholder="Buscar ingredientes disponibles ...">
-                
-                
-                    <datalist id="datalistOptions">
-                        {% for x in ingredientes %}
-                        <option value="{{x.1}}" oninput="obtenerID(event,`+contador+`,{{x.id_item}})" id="{{x.id_item}}">
-                            {% endfor %}
-                    </datalist>
-                </div>
-
-                <div class= "row">
-                    <div class="col-md-2">
-                      <label for="formGroupExampleInput" class="form-label">Cantidad</label>
-                      <input type="number" name="cantidad" step="0.1" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="exampleDataList" class="form-label" top="50%" left="50%">Nombre</label>
-                    </div>
+                <div>
+                    <input class="form-control" list="datalistOptions" id="input${contador}" name="nombre_ingredientes"
+                        placeholder="Buscar ingredientes disponibles ...">
                     
+                    <datalist id="datalistOptions">
+                        {% for x in catalogo_ingredientes %}
+                            <option value="{{ x.1 }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </div>
 
                 <div class="col-md-4">
                     <label for="formGroupExampleInput" class="form-label">Cantidad</label>
                     <input type="number" name="cantidad" step="0.1" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
+                    <label for="formGroupExampleInput" class="form-label" id="medida${contador}">asd</label>
                 </div>
 
                 <div class="col-md-2">
                     <button type="button" class="btn btn-danger" onclick="eliminarIngrediente(event,`+contador+`)" id="eliminar_ingrediente">Eliminar</button> 
-
                 </div>
             </div>
         </div>
-            `;
-        contador+=1;    
+        `;
+
+        
+        
         // Agregamos el nuevo div al contenedor
         contenedor.insertAdjacentHTML('beforeend', htmlAgregado);
+        actualizarMedidasHtml(contador)
+        contador += 1;    
+        //Agregar event listener para actualizar la medida
     });
 
+    setInterval(actualizarMedidasHtml,3000)
+    
+
     function eliminarIngrediente(event, id){
-        console.log(id)
+        console.log(id);
         const ingrediente = document.getElementById(id);
 
        ingrediente.remove();
-
     }
 
     function obtenerID(event,id_padre, id_item, unidad_medida){
         medida_label = document.getElementById("medida"+id_padre);
     }
-    
+
+
+
+
+
+    //cosa rara
+
+    let medidaNombreObtenida = ""; 
+
+    function obtenerNombreMedida(nombreItem) {
+    let url = "/obtenerMedidaItem/" + encodeURIComponent(nombreItem) + "/";
+    console.log(url);
+
+    axios.get(url)
+        .then(response => {
+            let diccionario = response.data;
+
+            // Cambiando el valor de la variable medidaNombreObtenida a lo que viene del get dentro del diccionario
+            //lo pongo dentro de una variable global para acceder en otra funcion           
+            medidaNombreObtenida = diccionario[0].medidaNombre[0];
+            //print para ver lo qeu mando
+            console.log("Medida Nombre Obtenida:"+ medidaNombreObtenida+" tipo: "+typeof medidaNombreObtenida);
+        })
+        .catch(error =>{
+            console.error('', error);
+
+        });
+    }
+
+    //esta funcion es la que voy a poner en repeat para actualizar en tiempo real las cosas
+    function actualizarMedidasHtml(){
+        console.log("Entra a funcion");
+        for (let x=contador-1;x>=0;x--){
+            console.log("Entra a for");
+            let itemDiv=document.getElementById("input"+x);
+            let medidaDiv=document.getElementById("medida"+x);
+            if (itemDiv) {
+               let nombreItem = itemDiv.value; 
+
+               obtenerNombreMedida(nombreItem)
+               let nombremedida=medidaNombreObtenida
+               console.log(typeof nombremedida +" x "+ nombremedida)
+
+               console.log("medidaaa"+medidaDiv.value)
+
+             } else {
+                  console.error("Elemento no encontrado con ID 'input" + x + "'");         
+           }
+        }
+    }
+
+
+
+
+
+
 </script>
 
 {% endblock %}
