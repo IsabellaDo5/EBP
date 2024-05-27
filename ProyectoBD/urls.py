@@ -42,7 +42,7 @@ urlpatterns = [
 
     path('obtenerMedidaItem/<str:nombreMedida>/', views.obtenerMedidaItem),
     #Alquileres
-    path('alquiler/', views.alquiler),
+    path('alquiler/', views.alquiler, name="alquileres"),
     path('add_alquiler2/', views.add_alquiler2),
     path('alquiler/<int:id_alquiler>/',views.edit_alquiler),
     path('eliminar_alquiler/<int:id_alquiler>/',views.eliminar_alquiler),

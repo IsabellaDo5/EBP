@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import *
@@ -9,6 +10,8 @@ from django.http import JsonResponse
 import time
 import hashlib
 import datetime
+from datetime import datetime, time
+
 # Create your views here.
 def login(request):
     if request.method=='POST':
@@ -394,12 +397,25 @@ def alquiler(request):
     else:
         with connection.cursor() as cursor:
             resultados=cursor.execute("exec ver_info_alquileres").fetchall()
-            horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
-        print(resultados)    
+            #horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
+            alquileres = []
+
+            for r in resultados:
+                alquileres.append({
+                    "id": r[0],
+                    "title": f"{r[6]} {r[7]}",
+                    "start": f"{r[3]} {r[4]}",
+                    "end": f"{r[3]} {r[5]}"
+                })
+
+        print(alquileres)
+        # Si la solicitud es AJAX, devolver los datos en formato JSON
+        if request.is_ajax():
+            return JsonResponse(alquileres, safe=False)
+
         return render(request, 'alquiler.html', context={
-            'alquiler': resultados,
-            'tiempo': horas[0][0],
-    }) 
+            'alquileres': json.dumps(alquileres)
+        })
 
 def edit_alquiler(request, id_alquiler):
     if 'empleado_id' not in request.session:
@@ -419,9 +435,12 @@ def edit_alquiler(request, id_alquiler):
             hora_Inicio = info[0][4].strftime("%H:%M")
             hora_Fin= info[0][5].strftime("%H:%M")
             fecha_formateada = info[0][3].strftime("%Y-%m-%d")
+            
+            diferencia = calcular_tiempo(hora_Inicio, hora_Fin)
 
             return render(request, 'editar_alquiler.html', context={
                 'info': info,
+                'hora':diferencia,
                 'tipoAlquiler':tipoAlquiler,
                 'horaInicio': hora_Inicio,
                 'horaFin': hora_Fin,
@@ -889,9 +908,18 @@ def mesa_orden(request, id_mesa):
 
 # Formatea la hora para almacenarlo en sql server
 def formatear_hora(hora):
-        hora_struct = time.strptime(hora, '%H:%M')
-        # Obtener el formato deseado para almacenar en SQL Server
-        hora_formateada = time.strftime('%H:%M:%S', hora_struct)
+    hora_struct = datetime.strptime(hora, '%H:%M')
+    # Obtener el formato deseado para almacenar en SQL Server
+    hora_formateada = hora_struct.strftime('%H:%M:%S')
 
-        return hora_formateada
-    
+    return hora_formateada
+
+def calcular_tiempo(inicio,fin):
+    # Convierte las cadenas a objetos datetime
+    hora_Inicio2 = datetime.strptime(inicio, "%H:%M")
+    hora_Fin2 = datetime.strptime(fin, "%H:%M")
+
+    # Calcula la diferencia
+    diferencia = hora_Fin2 - hora_Inicio2 
+
+    return diferencia
