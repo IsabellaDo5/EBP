@@ -92,7 +92,7 @@ Añadir nuevo platillo
                 <div class="col-md-4">
                     <label for="formGroupExampleInput" class="form-label">Cantidad</label>
                     <input type="number" name="cantidad" step="0.1" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
-                    <label for="formGroupExampleInput" class="form-label" id="medida${contador}">asd</label>
+                    <label for="formGroupExampleInput" class="form-label" id="medida${contador}" >asd</label>
                 </div>
 
                 <div class="col-md-2">
@@ -111,7 +111,7 @@ Añadir nuevo platillo
         //Agregar event listener para actualizar la medida
     });
 
-    setInterval(actualizarMedidasHtml,3000)
+    setInterval(actualizarMedidasHtml,10)
     
 
     function eliminarIngrediente(event, id){
@@ -166,8 +166,8 @@ Añadir nuevo platillo
                obtenerNombreMedida(nombreItem)
                let nombremedida=medidaNombreObtenida
                console.log(typeof nombremedida +" x "+ nombremedida)
-
-               console.log("medidaaa"+medidaDiv.value)
+               medidaDiv.textContent=nombremedida
+               //console.log("medidaaa "+medidaDiv.textContent + "tipo: " +typeof medidaDiv.textContent)
 
              } else {
                   console.error("Elemento no encontrado con ID 'input" + x + "'");         
