@@ -265,13 +265,7 @@ def edit_inventario(request, id_item):
             return redirect('/inventario/')    
 #-----------------------------platillos----------------------------------
 
-def obtenerMedidaItem(request, nombreItem):
-    with connection.cursor() as cursor:
-        cursor.execute("exec VerMedidaItem %s", (nombreItem,))
-        query = cursor.fetchall()
-        # Convierte los resultados a una lista de diccionarios
-        medidaNombre = [{'medidaNombre': query[0]}]
-    return JsonResponse(medidaNombre, safe=False)
+
 
 def platillos(request):
     if 'empleado_id' not in request.session:
@@ -579,7 +573,7 @@ def factura_orden(request):
     })
     else:
         return redirect('/')
-#----------------------------------ordenes hotep-------------------------------------------
+
 
 #----------------------------------ordenes isa---------------------------------------------
 def ver_ordenes(request):
@@ -716,7 +710,7 @@ def agregar_orden(request,id_mesa):
                     cursor.execute("exec addPlatilloAOrden %s, %s, %s", (id_orden, idPlatilloInt, cantidad))
                 connection.commit()
         return redirect('/mesas/')
-    
+       
 
 #----------------------------------------------editar orden--------------------------------------------------
 def editar_orden(request,id_orden):

@@ -75,31 +75,36 @@ Añadir nuevo platillo
     // Agregamos un event listener al botón
     botonAgregar.addEventListener('click', function () {
         const htmlAgregado = `
-        <div class="row" id=`+contador+`>
-                <div class="col-md-6" id="">
-                <label for="exampleDataList" class="form-label">Nombre</label>
-                <div>
-                    <input class="form-control" list="datalistOptions" id="input${contador}" name="nombre_ingredientes"
-                        placeholder="Buscar ingredientes disponibles ..." ">
-                    
-                    <datalist id="datalistOptions">
-                        {% for x in catalogo_ingredientes %}
-                            <option value="{{ x.1 }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </div>
-
-                <div class="col-md-4">
-                    <label for="formGroupExampleInput" class="form-label">Cantidad</label>
-                    <input type="number" name="cantidad" step="0.1" class="form-control" id="formGroupExampleInput" placeholder="¿Cuántos necesitas para elaborarlo?">
-                    <label for="formGroupExampleInput" class="form-label" id="medida${contador}" >asd</label>
-                </div>
-
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger" onclick="eliminarIngrediente(event,`+contador+`)" id="eliminar_ingrediente">Eliminar</button> 
-                </div>
-            </div>
+        <div class="row" id="${contador}">
+    <label for="exampleDataList" class="form-label">Nombre</label>
+    <div class="col-md-5">
+        <div>
+            <input class="form-control" list="datalistOptions" id="input${contador}" name="nombre_ingredientes"
+                placeholder="Buscar ingredientes disponibles ..." oninput="actualizarMedidasHtml2(event,${contador})">
+            <datalist id="datalistOptions">
+                {% for x in ingredientes %}
+                    <option value="{{ x.1 }}"></option>
+                {% endfor %}
+            </datalist>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <label for="cantidadInput${contador}" class="form-label">Cantidad</label>
+            <div class="row">
+                <div class="col-md-9 d-flex align-items-center">
+                    <input type="number" name="cantidad" step="0.1" class="form-control" id="cantidadInput${contador}" placeholder="¿Cuántos necesitas para elaborarlo?">
+                </div> 
+                <div class="col-md-3 d-flex align-items-center">
+                    <label for="medida${contador}" class="form-label" id="medida${contador}" style="margin-bottom: 0; font-size: 1rem;"></label>
+                </div> 
+            </div>                       
+        </div>
+    </div>
+    <div class="col-md-2">
+        <button type="button" class="btn btn-danger" onclick="eliminarIngrediente(event,${contador})" id="eliminar_ingrediente" style="margin-top: 10%;">Eliminar</button> 
+    </div>
+</div>
         `;
         
       // Agregamos el nuevo div al contenedor
@@ -127,26 +132,24 @@ Añadir nuevo platillo
 
 
     //cosa rara
-
-    let medidaNombreObtenida = ""; 
-
     function obtenerNombreMedida(nombreItem) {
     let url = "/obtenerMedidaItem/" + encodeURIComponent(nombreItem) + "/";
     console.log(url);
 
-    axios.get(url)
+    return axios.get(url)
         .then(response => {
             let diccionario = response.data;
 
             // Cambiando el valor de la variable medidaNombreObtenida a lo que viene del get dentro del diccionario
             //lo pongo dentro de una variable global para acceder en otra funcion           
-            medidaNombreObtenida = diccionario[0].medidaNombre[0];
+            let medidaNombreObtenida = diccionario[0].medidaNombre[0];
             //print para ver lo qeu mando
-            console.log("Medida Nombre Obtenida:"+ medidaNombreObtenida+" tipo: "+typeof medidaNombreObtenida);
+            console.log("Medida Nombre Obtenida: "+ medidaNombreObtenida+" tipo: "+typeof medidaNombreObtenida);
+            return medidaNombreObtenida;
         })
         .catch(error =>{
-            console.error('', error);
-
+            console.error('Error en obtenerNombreMedida:', error);
+            throw error;
         });
     }
 
@@ -172,32 +175,29 @@ Añadir nuevo platillo
         }
     }
 
-    function actualizarMedidasHtml2(event,itemdiv,medidadiv){
-
-
-            let itemDiv=document.getElementById(itemdiv);
-
-            console.log(itemdiv);
-            console.log(medidadiv);
-            let medidaDiv=document.getElementById(medidadiv);
+    async function actualizarMedidasHtml2(event,x){
+            let idItemInput=("input"+x);
+            let idMedidaDiv=("medida"+x);
+            console.log("Input: " +idItemInput + "tipo: "+ typeof idItemInput)
+            console.log("Medida: " +idItemInput + "tipo: "+ typeof idItemInput)
+            const itemDiv=document.getElementById(idItemInput);
+            const medidaDiv=document.getElementById(idMedidaDiv);
+            
             if (itemDiv) {
-               let nombreItem = itemDiv.value; 
+               let nombreItem = itemDiv.value;
 
-               obtenerNombreMedida(nombreItem);
-               let nombremedida=medidaNombreObtenida
-               console.log(typeof nombremedida +" x "+ nombremedida)
-               medidaDiv.textContent=nombremedida
-               //console.log("medidaaa "+medidaDiv.textContent + "tipo: " +typeof medidaDiv.textContent)
+               try{
+                let nombreMedida = await obtenerNombreMedida(nombreItem);
 
+                medidaDiv.textContent=nombreMedida;
+                console.log("que paso")
+               }catch(error){
+                console.error("Error obtentiendo la medida",error);
+               }
              } else {
                   console.error("Elemento no encontrado con ID 'input" + x + "'");         
            }
-
     }
-
-
-
-    setInterval(actualizarMedidasHtml,100)
 </script>
 
 {% endblock %}

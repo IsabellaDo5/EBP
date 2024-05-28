@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from AppBD import views
+from AppBD import funciones
 
 
 urlpatterns = [
@@ -39,7 +40,7 @@ urlpatterns = [
     path('eliminar_platillo/<int:id_platillo>/', views.eliminar_platillo, name='eliminar_platillo'),
     path('modificar_platillo/<int:id_platillo>/', views.editar_platillo),
 
-    path('obtenerMedidaItem/<str:nombreItem>/', views.obtenerMedidaItem),
+    path('obtenerMedidaItem/<str:nombreItem>/', funciones.obtenerMedidaItem),
     #Alquileres
     path('alquiler/', views.alquiler),
     path('add_alquiler2/', views.add_alquiler2),
