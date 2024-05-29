@@ -90,8 +90,10 @@ Inventario
             <div>
                 <div class="row">
                     <div class="col-md-3" style="padding-right:0px;"> <!-- Colocar margen inferior -->
-                        <a><button class="btn btn-primary" type="button">
-                            MAS
+                        <a><button class="btn btn-primary" id="botonMas{{x.0}}" type="button" onclick="botonRestarPlatillo(event,'{{x.0}}')">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                            <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                          </svg>
                         </button></a>
                     </div>
                     <div class="col-md-3" style="padding:0px;"> <!-- Colocar margen inferior -->
@@ -100,8 +102,10 @@ Inventario
                         oninput="actualizarTotalPlatillos(event,'{{x.0}}')">
                     </div>
                     <div class="col-md-3" style="padding-left:0px;"> <!-- Colocar margen inferior -->
-                        <a><button class="btn btn-primary" type="button">
-                            men
+                        <a><button class="btn btn-primary" id="botonMenos{{x.0}}" type="button" onclick="botonSumarPlatillo(event,'{{x.0}}')">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                          </svg>
                         </button></a>
                     </div>    
                 </div>
@@ -161,14 +165,41 @@ Inventario
         console.error("No se pudo encontrar uno o más elementos:", { numeroInput, preciounit, preciototal });
       }
     }
+
+    function botonSumarPlatillo(event,id){
+      var numeroInput = document.getElementById("inputPlatillo" + id);
+      console.log(numeroInput)
+      var valor = parseInt(numeroInput.value)
+      valor +=1
+
+      if (valor > parseInt(numeroInput.max)) {
+        valor = parseInt(numeroInput.max);
+      }
+
+      numeroInput.value = valor;
+
+      actualizarTotalPlatillos(event, id)
+    }
+
+    function botonRestarPlatillo(event,id){
+      var numeroInput = document.getElementById("inputPlatillo" + id);
+      console.log(numeroInput)
+      var valor = parseInt(numeroInput.value)
+      valor -=1
+
+      if (valor < parseInt(numeroInput.min)) {
+        valor = parseInt(numeroInput.min);
+      }
+
+      numeroInput.value = valor;
+
+      actualizarTotalPlatillos(event, id)
+    }
   
     document.addEventListener('DOMContentLoaded', function () {
       // No necesitas agregar listeners aquí, ya que lo estás manejando con `oninput` en el HTML.
     });
   </script>
-
-
-
 
     <button type="submit" class="btn btn-success">Guardar</button>
     <!--<input type="hidden" id="postId" name="postId" value="34657" /> <input type="hidden" id="postId2" name="postId" value="5846" />-->
