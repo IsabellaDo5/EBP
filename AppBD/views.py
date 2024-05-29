@@ -265,7 +265,7 @@ def edit_inventario(request, id_item):
                 cursor.execute(sql_query, nuevos_valores)
             connection.commit()
             
-            return redirect('/inventario/')    
+            return redirect('/inventario/')
 #-----------------------------platillos----------------------------------
 
 
