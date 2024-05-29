@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-
+{% load static %}
 {% block title %}
 Editar registro de alquiler
 {% endblock %}
@@ -57,21 +57,21 @@ Editar registro de alquiler
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Horas">
             </div>
             <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="horas" class="form-control" id="inputPassword2" maxlength="25" required
-                    value="{{x.0}}" disabled>
+                <label for="tiempo" class="visually-hidden"></label>
+                <input type="text" name="horas" class="form-control" id="tiempo" maxlength="25" required
+                    value="{{hora}}" disabled>
             </div>
         </div>
 
         <!--id_tipoAlquiler-->
         <div class="col-sm-4">
             <label for="id_tipoAlquiler" class="form-label">Tipo de alquiler:</label>
-            <select class="form-select" aria-label="Seleccionar tipo de alquiler..." name="id_tipoAlquiler" id="id_tipoAlquiler">
+            <select class="form-select" onchange="calcular_tarifa(event)" aria-label="Seleccionar tipo de alquiler..." name="id_tipoAlquiler" id="id_tipoAlquiler">
             {%for tipos in tipoAlquiler%}
                 {% if   x.1 == tipos.0 %}
-                <option selected value="{{tipos.0}}">{{tipos.1}}</option>
+                <option selected value="{{tipos.0}}"  id="{{tipos.2}}">{{tipos.1}}</option>
                 {%else%}
-                <option value="{{tipos.0}}">{{tipos.1}}</option>
+                <option value="{{tipos.0}}" id="{{tipos.2}}">{{tipos.1}}</option>
                 {% endif %}
             {% endfor %}
             </select>
@@ -97,4 +97,9 @@ Editar registro de alquiler
     <button type="submit" class="btn btn-secondary">Guardar cambios</button>
 </form>
 {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'alquiler.js' %}"></script>
 {% endblock %}
