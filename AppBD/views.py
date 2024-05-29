@@ -614,22 +614,21 @@ def agregar_orden(request,id_mesa):
         with connection.cursor() as cursor:
             #obtenemos la lista de clientes, platillos, y consumibles del menu
             clientes = cursor.execute("exec VerClientes").fetchall()
-            resultados = cursor.execute("SELECT * FROM VerMenu").fetchall()
+            Bebidas = cursor.execute("SELECT * FROM VerMenu").fetchall()
             platillos = cursor.execute("SELECT * FROM platillos").fetchall()
             
-        clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]
-        print(clientes_nombres)
-        
+        clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]   
         hora_actual = str(datetime.datetime.now())   
 
-        return render(request, 'generar_orden.html', 
-                      {'infopro': resultados,
+        return render(request, 'generar_orden2.html', 
+                      {'bebidas': Bebidas,
                        'platillos': platillos,
                        'hora': hora_actual,
                        'clientes_nombres': clientes_nombres,
                        'id_mesa': id_mesa})
     else:
         #Inventario(Bebidas)
+        print("debug")
         cantidad_items= request.POST.getlist('cantidad')
         ids_items= request.POST.getlist('id_producto')
         
@@ -687,6 +686,7 @@ def agregar_orden(request,id_mesa):
         print("id_orden: "+str(id_orden))
         
         
+        print("orden ya creada")
         #--------------------------------Orden ya creada, aqui comenzamos a meter a item orden-----------------------------------------
         for cantidad, iditem in zip(cantidad_items, ids_items):
             if cantidad != "0":
