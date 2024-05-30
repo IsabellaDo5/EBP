@@ -72,9 +72,8 @@ def RestarPlatilloAOrden(request, idOrden, idPlatillo):
     except Exception as e:
         print(f"Error al restar platillo de la orden: {e}")
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    
 
-
+#No lo termine utilizando 
     
 def verCantidadBebidaEnOrden(request, idOrden,idItem):
     with connection.cursor() as cursor:
@@ -91,3 +90,12 @@ def verCantidadPlatilloEnOrden(request, idOrden,idPlatillo):
         # Convierte los resultados a una lista de diccionarios
         cantidad = [{'cantidad': query[0]}]
     return JsonResponse(cantidad, safe=False)
+
+
+def verDetallesDeOrden(request, idOrden):
+    with connection.cursor() as cursor:
+        cursor.execute("exec verDetallesDeOrden %s", (idOrden,))
+        columnas = [col[0] for col in cursor.description]  # Obtener los nombres de las columnas
+        resultados = [dict(zip(columnas, fila)) for fila in cursor.fetchall()]  # Convertir filas a diccionarios
+
+    return JsonResponse(resultados, safe=False)

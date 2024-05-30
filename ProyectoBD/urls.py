@@ -65,6 +65,7 @@ urlpatterns = [
     path('verCantidadPlatilloEnOrden/<int:idOrden>/<int:idPlatillo>/', funciones.verCantidadPlatilloEnOrden),
     path('verCantidadBebidaEnOrden/<int:idOrden>/<int:idItem>/', funciones.verCantidadBebidaEnOrden),
     
+    path('verDetallesDeOrden/<int:idOrden>/', funciones.verDetallesDeOrden),
 
     #Facturas alquiler
     path('facturas_alquiler/', views.ver_facturas_alquiler),

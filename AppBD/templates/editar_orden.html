@@ -358,94 +358,59 @@ Editar una orden
         //----------------ultima parte, uso para actualizar los inputs a la cantidad actual en la orden------------------
 
 
-        //funciones para acceder a la bd
-        function obtenerCantidadPlatilloEnOrden(idOrden,id_platillo) {
-        let url = "/verCantidadPlatilloEnOrden/" + idOrden + "/" +id_platillo+"/" ;
-        console.log(url);
-      
-        return axios.get(url)
-            .then(response => {
-               let diccionario = response.data;
-        
-               let cantidadObtenida = diccionario[0].cantidad[0];
-               //print para ver lo qeu mando
-               console.log("Cantidad del platoillo: "+ cantidadObtenida+" tipo: "+typeof cantidadObtenida);
-                  return cantidadObtenida;
-           })
-           .catch(error =>{
-               console.error('Error en obtenerCantidadPlatilloEnOrden:', error);
-               throw error;
-              });
-       }
-
-       function obtenerCantidadBebidaEnOrden(idOrden,idItem) {
-        let url = "/verCantidadBebidaEnOrden/" + idOrden + "/" +idItem+"/" ;
-        console.log(url);
-      
-        return axios.get(url)
-            .then(response => {
-               let diccionario = response.data;
-        
-               let cantidadObtenida = diccionario[0].cantidad[0];
-               //print para ver lo qeu mando
-               console.log("Cantidad de la bebida: "+ cantidadObtenida+" tipo: "+typeof cantidadObtenida);
-                  return cantidadObtenida;
-           })
-           .catch(error =>{
-               console.error('Error en obtenerCantidadBebidaEnOrden:', error);
-               throw error;
-              });
-       }
-
-
-       async function actualizarCantidadBebida(event,id){
-        console.log("me mato")
-            let idInputBebida=("inputBebida"+id);
-            const inputBebida=document.getElementById(idInputBebida);
-
-            const idOrdenInput = document.getElementById("idorden");
-     
-            if (inputBebida) {
-               try{
-                let idOrden=idOrdenInput.value
-                let cantidadBebida = await obtenerCantidadBebidaEnOrden(idOrden,id);
-
-                inputBebida.value=cantidadBebida;
-
-               }catch(error){
-                console.error("Error obtentiendo la cantidad",error);
-               }
-             } else {
-                  console.error("Elemento no encontrado con ID 'inputBebida" + x + "'");         
-           }
-        }
-
-        async function actualizarCantidadPlatillo(event,id){
-            let idInputPlatillo=("inputPlatillo"+id);
-            const inputPlatillo=document.getElementById(inputPlatillo);
-
-            const idOrdenInput = document.getElementById("idorden");
-     
-            if (inputBebida) {
-               try{
-                let idOrden=idOrdenInput.value
-                let cantidadPlatillo = await obtenerCantidadBebidaEnOrden(idOrden,id);
-
-                inputPlatillo.value=cantidadPlatillo;
-
-               }catch(error){
-                console.error("Error obtentiendo la cantidad",error);
-               }
-             } else {
-                  console.error("Elemento no encontrado con ID 'inputPlatillo" + x + "'");         
-           }
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            var detallesOrden = JSON.parse(document.getElementById('detallesOrden').textContent);
-            console.log(detallesOrden)
+          actuializarCantidades()
         });
+        
+
+        function obtenerDetallesOrden(){
+          //obteniendo la id de la orden de un inpu global q esta escondido para armar la url
+          const idOrdenInput = document.getElementById("idorden");
+          let idOrden=idOrdenInput.value
+
+          let url = "/verDetallesDeOrden/" + idOrden + "/";
+          return axios.get(url)
+           .then(response => {
+            let diccionario = response.data;
+
+            console.log(diccionario)
+
+            return diccionario;
+          })
+          .catch(error =>{
+            console.error('Error en detalles:', error);
+            throw error;
+          });
+        }
+
+        async function actuializarCantidades(){
+          
+          //obtenemos las listas aqui
+          try{
+            let detalles=await obtenerDetallesOrden()
+
+            //itero sobre la lista y los detalles de los item
+            for(x of detalles){
+              //estos ifs es por como esta estructurada la consuta de sql en 
+              //obtener detalles, todas las filas tienen columnas de idplatillo e id item pero
+              //siempre 1 de las 2 es null, depende de si esatmos hablando de un item o no
+              //entocnes, dependiendo de el que este, sabemos si es un item(bebida) o un platillo
+              if(x.id_platillo){
+                let inputPlatillo=document.getElementById("inputPlatillo"+x.id_platillo)
+                inputPlatillo.value=x.cantidad
+              }
+              if(x.id_item){
+                let inputBebida=document.getElementById("inputBebida"+x.id_item)
+                inputBebida.value=x.cantidad
+              }
+            }
+          }catch{
+            console.error("Error obteniendo la lista de obtenerDetallesOrden");    
+          }
+        }
       </script>
+
+      
 
       
 
