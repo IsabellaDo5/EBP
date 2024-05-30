@@ -9,6 +9,7 @@ Editar una orden
 <form action="/editar_orden/{{id_orden}}/" method="post">
     {% csrf_token %}
 
+
     <!--INPUT OCULTO DONDE SU VALUE ES EL ID DE LA ORDEN, PARA CCEDER A EL EN E LJS-->
     <input type="hidden" id="idorden" value="{{id_orden}}" class="form-control">
 
@@ -46,7 +47,7 @@ Editar una orden
             <div class="col" style="padding: 0%;">
                 <!-- INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR -->
                 <input type="number"   style="width: 80%; height: 80%;" name="cantidad" id="inputBebida{{x.0}}" value="0" min="0" max="{{x.cantidad}}" class="form-control"
-                oninput="actualizarTotalBebidas(event,'{{x.0}}')" disabled>
+                oninput="actualizarTotalBebidas(event,'{{x.0}}')" onload="actualizarCantidadBebida(event,'{{x.0}}')"disabled>
             </div>
             <div class="col"style="padding: 0%;" > 
                 <a><button class="btn btn-primary" style="width: 80%; height: 80%;" id="botonMenos{{x.0}}" type="button" onclick="botonSumarBebidas(event,'{{x.0}}')">
@@ -101,7 +102,7 @@ Editar una orden
                     <div class="col" style="padding: 0%;">
                         <!-- INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR -->
                         <input type="number"  style="width: 80%; height: 80%;" name="cantidad_platillo" id="inputPlatillo{{x.0}}" value="0" min="0" class="form-control"
-                        oninput="actualizarTotalPlatillos(event,'{{x.0}}')" disabled>
+                        oninput="actualizarTotalPlatillos(event,'{{x.0}}')" disabled onload="actualizarCantidadPlatillo(event,'{{x.0}}')">
                     </div>
                     <div class="col"style="padding: 0%;" > 
                         <a><button class="btn btn-primary" style="width: 80%; height: 80%;" id="botonMenos{{x.0}}" type="button" onclick="botonSumarPlatillo(event,'{{x.0}}')">
@@ -242,7 +243,7 @@ Editar una orden
         }
 
 
-      //FUNCIONES PARA ACTUALIZAR EN TIEMPO REAL 
+      //--------------------------------------------FUNCIONES PARA ACTUALIZAR EN TIEMPO REAL -------------------------------------------------------------
       //bebidas
         function sumarBebidaBD(event, id_item){
             //obtenemos el id orden con un input invisible y obtengo su vvalor
@@ -335,14 +336,6 @@ Editar una orden
         }
 
 
-
-
-
-
-
-
-
-
         //sinceramente esto de las cookies lo hice con chatgpt, no entiendo completamente ocmo funciona
         function getCookie(name) {
             let cookieValue = null;
@@ -362,7 +355,99 @@ Editar una orden
 
         
 
+        //----------------ultima parte, uso para actualizar los inputs a la cantidad actual en la orden------------------
+
+
+        //funciones para acceder a la bd
+        function obtenerCantidadPlatilloEnOrden(idOrden,id_platillo) {
+        let url = "/verCantidadPlatilloEnOrden/" + idOrden + "/" +id_platillo+"/" ;
+        console.log(url);
+      
+        return axios.get(url)
+            .then(response => {
+               let diccionario = response.data;
+        
+               let cantidadObtenida = diccionario[0].cantidad[0];
+               //print para ver lo qeu mando
+               console.log("Cantidad del platoillo: "+ cantidadObtenida+" tipo: "+typeof cantidadObtenida);
+                  return cantidadObtenida;
+           })
+           .catch(error =>{
+               console.error('Error en obtenerCantidadPlatilloEnOrden:', error);
+               throw error;
+              });
+       }
+
+       function obtenerCantidadBebidaEnOrden(idOrden,idItem) {
+        let url = "/verCantidadBebidaEnOrden/" + idOrden + "/" +idItem+"/" ;
+        console.log(url);
+      
+        return axios.get(url)
+            .then(response => {
+               let diccionario = response.data;
+        
+               let cantidadObtenida = diccionario[0].cantidad[0];
+               //print para ver lo qeu mando
+               console.log("Cantidad de la bebida: "+ cantidadObtenida+" tipo: "+typeof cantidadObtenida);
+                  return cantidadObtenida;
+           })
+           .catch(error =>{
+               console.error('Error en obtenerCantidadBebidaEnOrden:', error);
+               throw error;
+              });
+       }
+
+
+       async function actualizarCantidadBebida(event,id){
+        console.log("me mato")
+            let idInputBebida=("inputBebida"+id);
+            const inputBebida=document.getElementById(idInputBebida);
+
+            const idOrdenInput = document.getElementById("idorden");
+     
+            if (inputBebida) {
+               try{
+                let idOrden=idOrdenInput.value
+                let cantidadBebida = await obtenerCantidadBebidaEnOrden(idOrden,id);
+
+                inputBebida.value=cantidadBebida;
+
+               }catch(error){
+                console.error("Error obtentiendo la cantidad",error);
+               }
+             } else {
+                  console.error("Elemento no encontrado con ID 'inputBebida" + x + "'");         
+           }
+        }
+
+        async function actualizarCantidadPlatillo(event,id){
+            let idInputPlatillo=("inputPlatillo"+id);
+            const inputPlatillo=document.getElementById(inputPlatillo);
+
+            const idOrdenInput = document.getElementById("idorden");
+     
+            if (inputBebida) {
+               try{
+                let idOrden=idOrdenInput.value
+                let cantidadPlatillo = await obtenerCantidadBebidaEnOrden(idOrden,id);
+
+                inputPlatillo.value=cantidadPlatillo;
+
+               }catch(error){
+                console.error("Error obtentiendo la cantidad",error);
+               }
+             } else {
+                  console.error("Elemento no encontrado con ID 'inputPlatillo" + x + "'");         
+           }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var detallesOrden = JSON.parse(document.getElementById('detallesOrden').textContent);
+            console.log(detallesOrden)
+        });
       </script>
+
+      
 
     <button type="submit" class="btn btn-success">Guardar</button>
     <!--<input type="hidden" id="postId" name="postId" value="34657" /> <input type="hidden" id="postId2" name="postId" value="5846" />-->

@@ -59,8 +59,13 @@ urlpatterns = [
 
     path('AñadirItemAOrden/<int:idOrden>/<int:idItem>/', funciones.AñadirItemAOrden),
     path('RestarItemAOrden/<int:idOrden>/<int:idItem>/', funciones.RestarItemAOrden),
-    path('AñadirPlatilloAOrden/<int:idOrden>/<int:IdPlatillo>/', funciones.AñadirPlatilloAOrden),
-    path('RestarPlatilloAOrden/<int:idOrden>/<int:IdPlatillo>/', funciones.RestarPlatilloAOrden),
+    path('AñadirPlatilloAOrden/<int:idOrden>/<int:idPlatillo>/', funciones.AñadirPlatilloAOrden),
+    path('RestarPlatilloAOrden/<int:idOrden>/<int:idPlatillo>/', funciones.RestarPlatilloAOrden),
+
+    path('verCantidadPlatilloEnOrden/<int:idOrden>/<int:idPlatillo>/', funciones.verCantidadPlatilloEnOrden),
+    path('verCantidadBebidaEnOrden/<int:idOrden>/<int:idItem>/', funciones.verCantidadBebidaEnOrden),
+    
+
     #Facturas alquiler
     path('facturas_alquiler/', views.ver_facturas_alquiler),
     path('add_factura_alquiler/', views.add_factura_alquiler),
