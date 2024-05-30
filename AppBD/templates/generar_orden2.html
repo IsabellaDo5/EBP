@@ -37,31 +37,41 @@ Inventario
           <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
           <input type="hidden" name="id_producto" value="{{x.0}}" class="form-control">
           <!--INPUT oculto DONDE SOLO SE MUESTRA EL PRECIO DEL PRODUCTO-->
-          <input type="hidden" id="precio{{x.0}}" value="{{x.2}}" class="form-control" disabled>
+          <input type="hidden" id="precioBebida{{x.0}}" value="{{x.2}}" class="form-control" disabled>
   
           <h5 class="card-title">{{x.1}}</h5>
           <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
           <p class="card-text">Precio: C${{x.2}} <br> Cantidad disponible: {{x.3}}</p>
   
-          <div>
-            <!--
-            <a href="/item/{{x.id_item}}">
-              <button type="button" class="btn btn-outline-secondary">Editar <i class="bi bi-pencil-square"></i></button>
-            </a>-->
-  
-            <!--INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR-->
-            <input type="number" name="cantidad" id="inputBebida{{x.0}}" value="0" min="0" max="{{x.cantidad}}" class="form-control"
-            oninput="actualizarTotalBebidas(event,'{{x.0}}')">
+          <div class="row">
 
+            <div class="col"  > 
+                <a><button class="btn btn-primary" style="width: 80%; height: 80%;" id="botonMas{{x.0}}" type="button" onclick="botonRestarBebidas(event,'{{x.0}}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                  </svg>
+                </button></a>
+            </div>
+            <div class="col" style="padding: 0%;">
+                <!-- INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR -->
+                <input type="number"  style="width: 80%; height: 80%;" name="cantidad" id="inputBebida{{x.0}}" value="0" min="0" max="{{x.cantidad}}" class="form-control"
+                oninput="actualizarTotalBebidas(event,'{{x.0}}')" >
+            </div>
+            <div class="col"style="padding: 0%;" > 
+                <a><button class="btn btn-primary" style="width: 80%; height: 80%;" id="botonMenos{{x.0}}" type="button" onclick="botonSumarBebidas(event,'{{x.0}}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                  </svg>
+                </button></a>
+            </div>  
 
-            <!--
-            <a href="/eliminar_inventario/{{x.id_item}}">
-              <button type="button" class="btn btn-outline-danger">Eliminar <i class="bi bi-trash3-fill"></i></button>
-            </a>-->
-  
-            <input type="text" id="preciotot{{x.0}}" value="0" class="form-control" disabled>
           </div>
-  
+
+        <div class="row">
+            <div class="col"> 
+                <input type="text" id="preciototBebida{{x.0}}" value="0" class="form-control" disabled>
+            </div>
+        </div>
           
   
         </div>
@@ -76,7 +86,7 @@ Inventario
   <h3>Platillos</h3>
   <div class="row">
       {% for x in platillos %}
-      <div class="col-auto">
+      <div class="col-md-3">
         <div class="card" width="100% !important;">
           <div class="card-body">
             <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
@@ -87,37 +97,37 @@ Inventario
             <h5 class="card-title">{{x.1}}</h5>
             <p class="card-text">Precio: C${{x.4}} <br> Cantidad disponible:</p>
     
-            <div>
+            
                 <div class="row">
-                    <div class="col-md-3" style="padding-right:0px;"> <!-- Colocar margen inferior -->
-                        <a><button class="btn btn-primary" id="botonMas{{x.0}}" type="button" onclick="botonRestarPlatillo(event,'{{x.0}}')">
+
+                    <div class="col"  > 
+                        <a><button class="btn btn-primary" style="width: 80%; height: 80%;" id="botonMas{{x.0}}" type="button" onclick="botonRestarPlatillo(event,'{{x.0}}')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
                             <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
                           </svg>
                         </button></a>
                     </div>
-                    <div class="col-md-3" style="padding:0px;"> <!-- Colocar margen inferior -->
+                    <div class="col" style="padding: 0%;">
                         <!-- INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR -->
-                        <input type="number" name="cantidad_platillo" id="inputPlatillo{{x.0}}" value="0" min="0" max="{{x.cantidad}}" class="form-control"
+                        <input type="number"  style="width: 80%; height: 80%;" name="cantidad_platillo" id="inputPlatillo{{x.0}}" value="0" min="0" class="form-control"
                         oninput="actualizarTotalPlatillos(event,'{{x.0}}')">
                     </div>
-                    <div class="col-md-3" style="padding-left:0px;"> <!-- Colocar margen inferior -->
-                        <a><button class="btn btn-primary" id="botonMenos{{x.0}}" type="button" onclick="botonSumarPlatillo(event,'{{x.0}}')">
+                    <div class="col"style="padding: 0%;" > 
+                        <a><button class="btn btn-primary" style="width: 80%; height: 80%;" id="botonMenos{{x.0}}" type="button" onclick="botonSumarPlatillo(event,'{{x.0}}')">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                           </svg>
                         </button></a>
-                    </div>    
-                </div>
+                    </div>  
+
+                  </div>
+
                 <div class="row">
-                    <div class="col-md-9"> <!-- Utilizar el espacio restante -->
+                    <div class="col"> 
                         <input type="text" id="preciototPlatillo{{x.0}}" value="0" class="form-control" disabled>
                     </div>
                 </div>
-            </div>
-    
-            
-    
+   
           </div>
         </div>
       </div>
@@ -128,12 +138,13 @@ Inventario
 
 
   <script>
+    //funciones para el total de las bebidas
     function actualizarTotalBebidas(event, id) {
       console.log("ID recibido:", id);
       
       var numeroInput = document.getElementById("inputBebida" + id);
-      var preciounit = document.getElementById("precio" + id);
-      var preciototal = document.getElementById("preciotot" + id);
+      var preciounit = document.getElementById("precioBebida" + id);
+      var preciototal = document.getElementById("preciototBebida" + id);
   
       console.log("numeroInput:", numeroInput);
       console.log("preciounit:", preciounit);
@@ -141,7 +152,8 @@ Inventario
   
       if (numeroInput && preciounit && preciototal) {
         var cantidad = numeroInput.value;
-        preciototal.value = parseInt(cantidad, 10) * parseFloat(preciounit.value);
+        totalCalculado= parseInt(cantidad, 10) * parseFloat(preciounit.value);
+        preciototal.value = ("Total: C$"+totalCalculado)
       } else {
         console.error("No se pudo encontrar uno o más elementos:", { numeroInput, preciounit, preciototal });
       }
@@ -160,12 +172,17 @@ Inventario
   
       if (numeroInput && preciounit && preciototal) {
         var cantidad = numeroInput.value;
-        preciototal.value = parseInt(cantidad, 10) * parseFloat(preciounit.value);
+        totalCalculado= parseInt(cantidad, 10) * parseFloat(preciounit.value);
+        preciototal.value = ("Total: C$"+totalCalculado)
       } else {
         console.error("No se pudo encontrar uno o más elementos:", { numeroInput, preciounit, preciototal });
       }
     }
 
+
+
+    //funciones para los botones
+    //platillos
     function botonSumarPlatillo(event,id){
       var numeroInput = document.getElementById("inputPlatillo" + id);
       console.log(numeroInput)
@@ -195,13 +212,35 @@ Inventario
 
       actualizarTotalPlatillos(event, id)
     }
-  
-    document.addEventListener('DOMContentLoaded', function () {
-      // No necesitas agregar listeners aquí, ya que lo estás manejando con `oninput` en el HTML.
-    });
+
+    //Bebidas
+    function botonSumarBebidas(event,id){
+      var numeroInput = document.getElementById("inputBebida" + id);
+      console.log(numeroInput)
+      var valor = parseInt(numeroInput.value)
+      valor +=1
+
+      numeroInput.value = valor;
+
+      actualizarTotalBebidas(event, id)
+    }
+
+    function botonRestarBebidas(event,id){
+      var numeroInput = document.getElementById("inputBebida" + id);
+      console.log(numeroInput)
+      var valor = parseInt(numeroInput.value)
+      valor -=1
+
+      if (valor < parseInt(numeroInput.min)) {
+        valor = parseInt(numeroInput.min);
+      }
+
+      numeroInput.value = valor;
+
+      actualizarTotalBebidas(event, id)
+    }
   </script>
 
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <!--<input type="hidden" id="postId" name="postId" value="34657" /> <input type="hidden" id="postId2" name="postId" value="5846" />-->
+  <button type="submit" class="btn btn-success">Guardar</button>
 </form>
 {% endblock %}

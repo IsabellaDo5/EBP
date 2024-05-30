@@ -153,27 +153,6 @@ Añadir nuevo platillo
         });
     }
 
-    //esta funcion es la que voy a poner en repeat para actualizar en tiempo real las cosas
-    function actualizarMedidasHtml(){
-        console.log("Entra a funcion");
-        for (let x=contador-1;x>=0;x--){
-            console.log("Entra a for");
-            let itemDiv=document.getElementById("input"+x);
-            let medidaDiv=document.getElementById("medida"+x);
-            if (itemDiv) {
-               let nombreItem = itemDiv.value; 
-
-               obtenerNombreMedida(nombreItem)
-               let nombremedida=medidaNombreObtenida
-               console.log(typeof nombremedida +" x "+ nombremedida)
-               medidaDiv.textContent=nombremedida
-               //console.log("medidaaa "+medidaDiv.textContent + "tipo: " +typeof medidaDiv.textContent)
-
-             } else {
-                  console.error("Elemento no encontrado con ID 'input" + x + "'");         
-           }
-        }
-    }
 
     async function actualizarMedidasHtml2(event,x){
             let idItemInput=("input"+x);
