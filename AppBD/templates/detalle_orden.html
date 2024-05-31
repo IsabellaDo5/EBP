@@ -5,42 +5,225 @@ Orden
 {% endblock %}
 
 {% block content %}
-<h2>Orden no. {{num}}</h2>
-<div class="row">
-  <div class="col-md-8">
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Cantidad</th>
-          <th scope="col">Nombre</th>
-          <th scope="col">Precio unitario</th>
-          <th scope="col">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for x in info %}
-        <tr>
-          <td>{{x.1}}</td>
-          <td>{{x.0}}</td>
-          <td>{{x.2}}</td>
-          <td>{{x.3}}</td>
-        </tr>
-        {% endfor %}
-        <tr class="table-primary">
-          <td class="fw-bold">TOTAL:</td>
-          <td></td>
-          <td></td>
-          <td class="fw-bold">{{grantotal}}</td>
-      </tbody>
-    </table>
-  </div>
-  <div class="col-md-4">
-    <div class="card border-dark mb-3" style="max-width: 18rem;">
-      <div class="card-header fw-bold">Descripción de la orden: </div>
-      <div class="card-body ">
-        <p class="card-text">{{notas}}</p>
+<div id="SeccionFactura">
+
+  <!--INPUT OCULTO DONDE SU VALUE ES EL gran total, PARA CCEDER A EL EN E LJS-->
+  <input type="hidden" id="grantotal" value="{{grantotal}}" class="form-control">
+
+
+  <h2>Orden no. {{num}}</h2>
+  <div class="row">
+    <div class="col-md-8" id="FacturaImprimible"> <!-- Añadido un ID específico aquí -->
+      {% for x in detallesOrden %}
+      <div class="row" style="margin-bottom: 0px;">
+        <p><span class="fw-bold">Atendido por: {{ x.6 }}</span> <span> </span></p>
+      </div>
+      <div class="row" style="margin-bottom: 0px;">
+        <p><span class="fw-bold">Cliente: {{ x.7 }}</span> <span> </span></p>
+      </div>
+      {% endfor %}
+      
+      <div class="row" style="margin-bottom: 0px;">
+        <p><span class="fw-bold">Fecha: {{fecha}}</span> <span> </span></p>
+      </div>
+      
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Precio unitario</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for x in info %}
+          <tr>
+            <td>{{x.1}}</td>
+            <td>{{x.0}}</td>
+            <td>{{x.2}}</td>
+            <td>{{x.3}}</td>
+          </tr>
+          {% endfor %}
+          
+          <tr class="table-primary">
+            <td class="fw-bold">TOTAL:</td>
+            <td></td>
+            <td></td>
+            <td class="fw-bold" id="granTotalValue"></td>
+          </tr> 
+        </tbody>
+      </table>
+
+      <!-- cajitas de abono y descuento, respectivamente-->
+      <div class="row">
+        <div class="col-md-4">
+          <p><span class="fw-bold">Cantidad pagada: </span> <span> </span></p>
+        </div>
+        <div class="col-md-3">
+          <input type="number" style="width: 80%; height: 80%;" name="cantidad" id="inputPago" value="{{grantotal}}" class="form-control"
+          oninput="actualizarCantidadPagada()">
+        </div>
+
+        <div class="col">
+          <!-- Aviso que cambio desde el javascript si pone mal la cantidad-->
+          <input type="text" readonly class="form-control-plaintext" id="aviso" value="" style="color: red;">
+        </div>
+         
+        
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <p><span class="fw-bold">Descuento: </span> <span> </span></p>
+        </div>
+        <div class="col-md-3">
+          <input type="number" style="width: 80%; height: 80%;" name="cantidad" id="inputDescuento" value="0" min="0" max="100" class="form-control"
+          oninput="actualizarDescuento()">
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom: 0px;" id="cambio">
+        <p><span class="fw-bold">Cambio: </span> <span> </span></p>
       </div>
     </div>
+    
+    <div class="col-md-4"> <!-- Esta es la parte que no queremos imprimir -->
+      <div class="card border-dark mb-3" style="max-width: 18rem;">
+        <div class="card-header fw-bold">Descripción de la orden: </div>
+        <div class="card-body ">
+          <p class="card-text">{{notas}}</p>
+        </div>
+      </div>
+
+      
+    </div>
   </div>
-</div>
+</div> <!-- Hasta aquí imprime la factura -->
+
+<a>
+  <button id="botonImprimir" class="btn btn-primary" type="button" onclick="facturar(event)">
+    Imprimir Factura
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+      <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+      <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+    </svg>
+  </button>
+</a>
+
+<a>
+  <button id="botonFacturar" class="btn btn-success" type="button" >
+    Confirmar Facturacion
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-check" viewBox="0 0 16 16">
+      <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
+      <path d="M3 2.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 0 0-1h-.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1H12a.5.5 0 0 0 0 1h.5a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5z"/>
+      <path d="M10.854 7.854a.5.5 0 0 0-.708-.708L7.5 9.793 6.354 8.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
+    </svg>
+  </button>
+</a>
+
+<script>
+  //ESTA VARIABLE GLOBAL ES LA QUE VOY A USAR PARA CAMBIAR EL TOTAL EN TODO MOMENTO Y HACER OPERACIONES CON EL TOTAL
+  var totalActual 
+  document.addEventListener('DOMContentLoaded', function() {
+    //solo uso esto para actualizar el gran total al inicio
+    const granTotalDiv= document.getElementById("granTotalValue");
+    const granTotal= document.getElementById("grantotal").value;
+    totalActual=granTotal
+    
+    granTotalDiv.textContent=totalActual
+  });
+        
+
+  function facturar(event){
+    // Seleccionar solo la parte que queremos imprimir
+    const factura = document.getElementById("FacturaImprimible").innerHTML;
+
+    var ventana = window.open('', '', 'height=700,width=400');
+
+    // Insertar todo lo que queremos que esté en el HTML de la nueva ventana
+    ventana.document.write('<html><head><title>Factura</title>');
+    ventana.document.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
+    ventana.document.write('<style>body{ margin: 20px; }</style>'); // Puedes añadir más estilos personalizados aquí
+    ventana.document.write('</head><body>');
+    ventana.document.write(factura);
+    ventana.document.write('</body></html>');
+
+    ventana.document.close();
+
+    ventana.onload = function() {
+      // Esto hace que se abra automáticamente la función de imprimir y luego de elegir una opción, cerrar la ventana automáticamente
+      //ventana.print();
+      //ventana.close();
+    };
+  }
+
+  function actualizarCantidadPagada(){
+    const aviso=document.getElementById("aviso");
+    const botonImprimir=document.getElementById("botonImprimir");
+    const botonFacturar=document.getElementById("botonFacturar");
+    const cantidadInput=document.getElementById("inputPago").value;
+    let total=totalActual;
+
+    console.log(total)
+
+    //dependiendo de si es mayor la cantidad delpago a el total, apago lo sbotones
+    if(parseInt(cantidadInput)<parseInt(total) || cantidadInput==""){
+      botonImprimir.disabled=true
+      botonFacturar.disabled=true
+      aviso.value="El pago debe ser mayor que el total!"
+    }else{
+      console.log("asdasd: "+cantidadInput)
+      botonImprimir.disabled=false
+      botonFacturar.disabled=false
+      aviso.value=""
+    }
+
+    actualizarCambio()
+  }
+
+  //Esta jodida es la que mas clavo va a dar, porque hay que cambiar el total,y por ende actualizar el cambio
+  function actualizarDescuento(){
+    const inputDescuento=document.getElementById("inputDescuento");
+    let descuentoValue=document.getElementById("inputDescuento").value;
+
+    if(descuentoValue<0 || descuentoValue==""){
+      descuentoValue=0
+    }else if(descuentoValue>100){
+      descuentoValue=100
+    }
+
+    actualizarTotal()
+    actualizarCambio()
+  }
+
+
+  //funciones para actualizar los elementos, las uso en las OTRAS funciones para cuando 
+  //se modifiquen por consecuencia el vuelto y el total
+  function actualizarTotal(){
+    const granTotalDiv= document.getElementById("granTotalValue");
+    const granTotal= totalActual
+    const descuento= document.getElementById("inputDescuento").value;
+    
+
+    let total=parseInt(granTotal) - (parseInt(granTotal)*(parseInt(descuento)/100))
+    
+    granTotalDiv.textContent=total
+    console.log(total)
+  }
+
+  function actualizarCambio(){
+    const cambioDiv= document.getElementById("cambio");
+    const granTotal= totalActual;
+    const pago= document.getElementById("inputPago").value;
+    
+    let cambio=parseInt(pago) - parseInt(granTotal)
+
+    if(cambio<0){
+      cambioDiv.textContent= "Cambio: C$ -"
+    }else{
+      cambioDiv.textContent= "Cambio: C$"+cambio
+    }
+  }
+</script>
 {% endblock %}

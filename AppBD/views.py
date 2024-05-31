@@ -624,8 +624,18 @@ def detalle_orden(request, id_orden):
         notas = cursor.fetchone()
         #print(orden)
 
+        sql_query4 ="exec verOrdenEspecifica %s"
+        filtro = (id_orden,)
+        cursor.execute(sql_query4, filtro)
+        detallesOrden = cursor.fetchall()
+
+        fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
+        print(fecha)
+
     return render(request, 'detalle_orden.html', context={
-            'info': orden, 'num': int(id_orden), 
+            'fecha': fecha,
+            'info': orden, 'num': int(id_orden),
+            'detallesOrden': detallesOrden,
             'grantotal': total[0][2], 'notas':notas[0]
         })
 
@@ -639,7 +649,7 @@ def agregar_orden(request,id_mesa):
             platillos = cursor.execute("SELECT * FROM platillos").fetchall()
             
         clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]   
-        hora_actual = str(datetime.datetime.now())   
+        hora_actual = str(datetime.datetime.now().strftime('%Y-%m-%d'))
 
         return render(request, 'generar_orden2.html', 
                       {'bebidas': Bebidas,

@@ -398,10 +398,13 @@ Editar una orden
               if(x.id_platillo){
                 let inputPlatillo=document.getElementById("inputPlatillo"+x.id_platillo)
                 inputPlatillo.value=x.cantidad
+                actualizarTotalPlatillos(event,x.id)
+                
               }
               if(x.id_item){
                 let inputBebida=document.getElementById("inputBebida"+x.id_item)
                 inputBebida.value=x.cantidad
+                actualizarTotalBebidas(event,x.id_item)
               }
             }
           }catch{
