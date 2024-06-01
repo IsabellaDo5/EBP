@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Inventario
+{% endblock %}
+
+{% block content %}
+<h3>Registrar una orden</h3>
+<form action="/generar_orden/{{id_mesa}}" method="post">
+    {% csrf_token %}
+
+<div class="input-group mb-3">
+    <span for="exampleDataList" class="input-group-text">Cliente: </span>
+    <input name ="cliente"class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search...">
+    <datalist id="datalistOptions">
+        {% for x in clientes_nombres %}
+        <option value="{{x}}">
+            {% endfor %}
+    </datalist>
+
+</div>
+
+
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Agregar un comentario:</span>
+    <input type="text" name="comentario" class="form-control" placeholder="" aria-describedby="basic-addon1">
+</div>
+
+
+
+<h3>Bebidas</h3>
+<div class="row">
+    {% for x in bebidas %}
+    <div class="col-auto">
+      <div class="card" width="100% !important;">
+        <div class="card-body">
+          <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
+          <input type="hidden" name="id_producto" value="{{x.0}}" class="form-control">
+          <!--INPUT oculto DONDE SOLO SE MUESTRA EL PRECIO DEL PRODUCTO-->
+          <input type="hidden" id="precio{{x.0}}" value="{{x.2}}" class="form-control" disabled>
+  
+          <h5 class="card-title">{{x.1}}</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
+          <p class="card-text">Precio: C${{x.2}} <br> Cantidad disponible: {{x.3}}</p>
+  
+          <div>
+            <!--
+            <a href="/item/{{x.id_item}}">
+              <button type="button" class="btn btn-outline-secondary">Editar <i class="bi bi-pencil-square"></i></button>
+            </a>-->
+  
+            <!--INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR-->
+            <input type="number" name="cantidad" id="inputBebida{{x.0}}" value="0" min="0" max="{{x.cantidad}}" class="form-control"
+            oninput="actualizarTotalBebidas(event,'{{x.0}}')">
+
+
+            <!--
+            <a href="/eliminar_inventario/{{x.id_item}}">
+              <button type="button" class="btn btn-outline-danger">Eliminar <i class="bi bi-trash3-fill"></i></button>
+            </a>-->
+  
+            <input type="text" id="preciotot{{x.0}}" value="0" class="form-control" disabled>
+          </div>
+  
+          
+  
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+
+
+
+  <h3>Platillos</h3>
+  <div class="row">
+      {% for x in platillos %}
+      <div class="col-auto">
+        <div class="card" width="100% !important;">
+          <div class="card-body">
+            <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
+            <input type="hidden" name="id_platillo" value="platillo+{{x.0}}" class="form-control">
+            <!--INPUT oculto DONDE SOLO SE MUESTRA EL PRECIO DEL PRODUCTO-->
+            <input type="hidden" id="precioPlatillo{{x.0}}" value="{{x.4}}" class="form-control" disabled>
+    
+            <h5 class="card-title">{{x.1}}</h5>
+            <p class="card-text">Precio: C${{x.4}} <br> Cantidad disponible:</p>
+    
+            <div>
+                <div class="row">
+                    <div class="col-md-3" style="padding-right:0px;"> <!-- Colocar margen inferior -->
+                        <a><button class="btn btn-primary" type="button">
+                            MAS
+                        </button></a>
+                    </div>
+                    <div class="col-md-3" style="padding:0px;"> <!-- Colocar margen inferior -->
+                        <!-- INPUT DONDE EL USUARIO INGRESA LA CANTIDAD DE PRODUCTOS QUE VA A LLEVAR -->
+                        <input type="number" name="cantidad_platillo" id="inputPlatillo{{x.0}}" value="0" min="0" max="{{x.cantidad}}" class="form-control"
+                        oninput="actualizarTotalPlatillos(event,'{{x.0}}')">
+                    </div>
+                    <div class="col-md-3" style="padding-left:0px;"> <!-- Colocar margen inferior -->
+                        <a><button class="btn btn-primary" type="button">
+                            men
+                        </button></a>
+                    </div>    
+                </div>
+                <div class="row">
+                    <div class="col-md-9"> <!-- Utilizar el espacio restante -->
+                        <input type="text" id="preciototPlatillo{{x.0}}" value="0" class="form-control" disabled>
+                    </div>
+                </div>
+            </div>
+    
+            
+    
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+
+
+
+  <script>
+    function actualizarTotalBebidas(event, id) {
+      console.log("ID recibido:", id);
+      
+      var numeroInput = document.getElementById("inputBebida" + id);
+      var preciounit = document.getElementById("precio" + id);
+      var preciototal = document.getElementById("preciotot" + id);
+  
+      console.log("numeroInput:", numeroInput);
+      console.log("preciounit:", preciounit);
+      console.log("preciototal:", preciototal);
+  
+      if (numeroInput && preciounit && preciototal) {
+        var cantidad = numeroInput.value;
+        preciototal.value = parseInt(cantidad, 10) * parseFloat(preciounit.value);
+      } else {
+        console.error("No se pudo encontrar uno o más elementos:", { numeroInput, preciounit, preciototal });
+      }
+    }
+
+    function actualizarTotalPlatillos(event, id) {
+      console.log("ID recibido:", id);
+      
+      var numeroInput = document.getElementById("inputPlatillo" + id);
+      var preciounit = document.getElementById("precioPlatillo" + id);
+      var preciototal = document.getElementById("preciototPlatillo" + id);
+  
+      console.log("numeroInput:", numeroInput);
+      console.log("preciounit:", preciounit);
+      console.log("preciototal:", preciototal);
+  
+      if (numeroInput && preciounit && preciototal) {
+        var cantidad = numeroInput.value;
+        preciototal.value = parseInt(cantidad, 10) * parseFloat(preciounit.value);
+      } else {
+        console.error("No se pudo encontrar uno o más elementos:", { numeroInput, preciounit, preciototal });
+      }
+    }
+  
+    document.addEventListener('DOMContentLoaded', function () {
+      // No necesitas agregar listeners aquí, ya que lo estás manejando con `oninput` en el HTML.
+    });
+  </script>
+
+
+
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <!--<input type="hidden" id="postId" name="postId" value="34657" /> <input type="hidden" id="postId2" name="postId" value="5846" />-->
+</form>
+{% endblock %}

@@ -268,13 +268,7 @@ def edit_inventario(request, id_item):
             return redirect('/inventario/')    
 #-----------------------------platillos----------------------------------
 
-def obtenerMedidaItem(request, nombreMedida):
-    with connection.cursor() as cursor:
-        cursor.execute("exec VerMedidaItem %s", (nombreMedida,))
-        query = cursor.fetchall()
-        # Convierte los resultados a una lista de diccionarios
-        medidaNombre = [{'medidaNombre': query[0]}]
-    return JsonResponse(medidaNombre, safe=False)
+
 
 def platillos(request):
     if 'empleado_id' not in request.session:
@@ -476,46 +470,26 @@ def edit_alquiler(request, id_alquiler):
 def add_alquiler2(request):
     if request.method == 'GET':
         with connection.cursor() as cursor:
-            clientes= cursor.execute("exec verClientes").fetchall()
 
-            clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]
-
-            print(clientes_nombres)
             tipoAlquiler= cursor.execute("SELECT * FROM tipoAlquiler").fetchall()
-
         connection.commit()
 
         return render(request, 'add_alquiler2.html', context={
             'tipoAlquiler': tipoAlquiler,
-            'clientes': clientes_nombres,
+
         })
     else:
-        
-        cliente= request.POST['nombreCliente']
+        cedula=request.POST['cedula']
         fecha = request.POST['fecha']
         horaInicio = formatear_hora(request.POST['horaInicio'])
         horaFin = formatear_hora(request.POST['horaFin'])
         tipoAlquiler = request.POST['tipoAlquiler']
 
 
-        nombreapellido = cliente.split()
-
-        if len(nombreapellido)==3:
-            nombreCliente = " ".join(nombreapellido[:1])
-            apellidoCliente = " ".join(nombreapellido[-2:])
-        else:
-            # Tomar los dos primeros elementos de la lista de palabras
-            nombreCliente = " ".join(nombreapellido[:2])
-            apellidoCliente = " ".join(nombreapellido[-2:])
-
-
-        print("nombre: "+nombreCliente+" apellido: "+apellidoCliente)
-        print(""+str(fecha)+" "+str(horaInicio)+" "+str(horaFin))
-
 
         with connection.cursor() as cursor:
-            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s, %s"
-            valores = (fecha, horaInicio, horaFin, nombreCliente, apellidoCliente, tipoAlquiler)
+            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s"
+            valores = (fecha, horaInicio, horaFin, cedula, tipoAlquiler)
             cursor.execute(sql_query, valores)
 
         connection.commit()
@@ -618,7 +592,7 @@ def factura_orden(request):
     })
     else:
         return redirect('/')
-#----------------------------------ordenes hotep-------------------------------------------
+
 
 #----------------------------------ordenes isa---------------------------------------------
 def ver_ordenes(request):
@@ -659,22 +633,21 @@ def agregar_orden(request,id_mesa):
         with connection.cursor() as cursor:
             #obtenemos la lista de clientes, platillos, y consumibles del menu
             clientes = cursor.execute("exec VerClientes").fetchall()
-            resultados = cursor.execute("SELECT * FROM VerMenu").fetchall()
+            Bebidas = cursor.execute("SELECT * FROM VerMenu").fetchall()
             platillos = cursor.execute("SELECT * FROM platillos").fetchall()
             
-        clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]
-        print(clientes_nombres)
-        
+        clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]   
         hora_actual = str(datetime.datetime.now())   
 
-        return render(request, 'generar_orden.html', 
-                      {'infopro': resultados,
+        return render(request, 'generar_orden2.html', 
+                      {'bebidas': Bebidas,
                        'platillos': platillos,
                        'hora': hora_actual,
                        'clientes_nombres': clientes_nombres,
                        'id_mesa': id_mesa})
     else:
         #Inventario(Bebidas)
+        print("debug")
         cantidad_items= request.POST.getlist('cantidad')
         ids_items= request.POST.getlist('id_producto')
         
@@ -732,6 +705,7 @@ def agregar_orden(request,id_mesa):
         print("id_orden: "+str(id_orden))
         
         
+        print("orden ya creada")
         #--------------------------------Orden ya creada, aqui comenzamos a meter a item orden-----------------------------------------
         for cantidad, iditem in zip(cantidad_items, ids_items):
             if cantidad != "0":
@@ -755,7 +729,7 @@ def agregar_orden(request,id_mesa):
                     cursor.execute("exec addPlatilloAOrden %s, %s, %s", (id_orden, idPlatilloInt, cantidad))
                 connection.commit()
         return redirect('/mesas/')
-    
+       
 
 #----------------------------------------------editar orden--------------------------------------------------
 def editar_orden(request,id_orden):

@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from AppBD import views
+from AppBD import funciones
 
 
 urlpatterns = [
@@ -39,8 +40,7 @@ urlpatterns = [
     path('eliminar_platillo/<int:id_platillo>/', views.eliminar_platillo, name='eliminar_platillo'),
     path('modificar_platillo/<int:id_platillo>/', views.editar_platillo),
 
-
-    path('obtenerMedidaItem/<str:nombreMedida>/', views.obtenerMedidaItem),
+    path('obtenerMedidaItem/<str:nombreItem>/', funciones.obtenerMedidaItem),
     #Alquileres
     path('alquiler/', views.alquiler, name="alquileres"),
     path('add_alquiler2/', views.add_alquiler2),
@@ -57,14 +57,15 @@ urlpatterns = [
     path('orden_detalle/<int:id_orden>', views.detalle_orden),
     path('ver_ordenes', views.ver_ordenes, name='ordenes'),
 
-    
-
+    path('AñadirItemAOrden/<int:idOrden>/<int:idItem>', funciones.AñadirItemAOrden),
+    path('RestarItemAOrden/<int:idOrden>/<int:idItem>', funciones.RestarItemAOrden),
+    path('AñadirPlatilloAOrden/<int:idOrden>/<int:IdPlatillo>', funciones.AñadirPlatilloAOrden),
+    path('RestarPlatilloAOrden/<int:id_clientes>/<int:IdPlatillo>', funciones.RestarPlatilloAOrden),
     #Facturas alquiler
     path('facturas_alquiler/', views.ver_facturas_alquiler),
     path('add_factura_alquiler/', views.add_factura_alquiler),
 
     
-
     #orden hotep
     path('mesas/', views.mesas, name="mesas"),
     path('mesa_orden/<int:id_mesa>/', views.mesa_orden),

@@ -74,7 +74,8 @@ WSGI_APPLICATION = 'ProyectoBD.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# AQUÍ ES DONDE USTEDES VAN A SUSTITUIR LOS DATOS CON LA INFORMACIÓN DE SU SERVIDOR SQL
+# AQUÍ ES DONDE USTE
+# DES VAN A SUSTITUIR LOS DATOS CON LA INFORMACIÓN DE SU SERVIDOR SQL
 # https://pypi.org/project/mssql-django/
 DATABASES = {
     'default': {
