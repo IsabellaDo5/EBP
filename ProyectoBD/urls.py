@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from AppBD import views
 from AppBD import funciones
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -79,4 +80,4 @@ urlpatterns = [
     #Facturas orden
     path('editar_orden/<int:id_orden>/', views.editar_orden),
 
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

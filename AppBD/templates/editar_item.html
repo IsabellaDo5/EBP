@@ -7,7 +7,7 @@ Editar item
 {% block content %}
 <h3>Editar información</h3>
 {% for x in info %}
-<form action="/item/{{x.5}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+<form action="/item/{{x.5}}/" method="post" class="row g-3" style="margin-top: 2% !important;" enctype="multipart/form-data">
     {% csrf_token %}
     <!--PRIMERA FILA-->
     <div class="row">
@@ -82,7 +82,13 @@ Editar item
                 {% endfor %}
             </select>
         </div>
+        <!--Añadir una imagen-->
+        <div class="col-md-4">
+  
+            <label for="imagen" class="form-label">Subir una imagen del producto</label>
+            <input type="file" class="form-control" name="icon" id="imagen" required>
 
+        </div>
 
 
     </div>

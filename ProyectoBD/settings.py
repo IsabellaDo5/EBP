@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -82,8 +83,8 @@ DATABASES = {
         'ENGINE': 'mssql',
         'NAME': 'EBP', # Nombre de su Base de datos, donde tienen sus tablas 
         'USER': 'sa', # El usuario donde tienen permisos de lectura, escritura,etc
-        'PASSWORD': '22480715', # Su contraseña ps obvio
-        'HOST': 'DESKTOP-FO9G4LP\SQLEXPRESS', # El nombre de su servidor
+        'PASSWORD': 'isabella2023', # Su contraseña ps obvio
+        'HOST': 'DESKTOP-TID2LDF\SQLEXPRESS', # El nombre de su servidor
         'PORT': '',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
@@ -130,3 +131,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT =  BASE_DIR + '/media'

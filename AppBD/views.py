@@ -7,6 +7,11 @@ from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+
+import os
+from django.conf import settings
+from django.utils.text import slugify
+
 import time
 import hashlib
 import datetime
@@ -182,6 +187,7 @@ def inventario(request):
                 print(resultados)    
                 return render(request, 'inventario.html', context={
                     'trab': resultados,
+                    'MEDIA_URL': settings.MEDIA_URL,
                 })
 
 def agregar_inventario(request):
@@ -266,7 +272,9 @@ def edit_inventario(request, id_item):
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
             connection.commit()
-            
+            print(request.POST)
+
+            upload_image(request, id_item, 1)
             return redirect('/inventario/')
 #-----------------------------platillos----------------------------------
 
@@ -879,3 +887,43 @@ def calcular_tiempo(inicio,fin):
     diferencia = hora_Fin2 - hora_Inicio2 
 
     return diferencia
+
+def upload_image(request, id_item, accion):
+
+    if request.method == 'POST':
+
+        if accion == 1:
+            title = "item_"+str(id_item)
+        elif accion == 2:
+            title = "platillo_"+str(id_item)
+
+        print(request.FILES)
+        image_file = request.FILES["icon"]
+        
+        # Renombrar la imagen
+        original_filename = image_file.name
+        extension = original_filename.split('.')[-1]
+        new_filename = f"{slugify(title)}.{extension}"
+        
+        # Guarda el archivo en el sistema de archivos
+        upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, new_filename)
+        with open(file_path, 'wb+') as destination:
+            for chunk in image_file.chunks():
+                destination.write(chunk)
+
+        if accion == 1:
+            # Guarda la imagen en la tabla de inventario
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE inventario  SET imagen = %s WHERE id_item = %s;",
+                    [ 'uploads/' + new_filename, id_item]
+                )
+        if accion == 2:
+            # Guarda la imagen en la tabla de platillos
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE platillos  SET imagen = %s WHERE id_platillo = %s;",
+                    [ 'uploads/' + new_filename, id_item]
+                )
