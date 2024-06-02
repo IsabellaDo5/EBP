@@ -15,6 +15,10 @@
 .bi-person-fill{
     font-size: 2rem ;
 }
+
+.tab-content>.active {
+    padding: 2rem !important;
+}
 @media only screen and (min-width: 400px) and (max-width: 600px){
     .carta-orden{
         width: 100%;
@@ -32,6 +36,13 @@
     }
     .thumbnail{
         width: 70vw;
+    }
+    .items_vendidos{
+        width: 100% !important;
+        height: 60vh !important;
+    }
+    canvas {
+        width: 100% !important;
     }
 
 }
@@ -57,5 +68,21 @@
     .thumbnail{
         width: 8rem; 
         height:6rem;
+    }
+    .items_vendidos{
+        max-width: 45vw !important;
+    }
+    canvas {
+        width: 100% !important;   }
+}
+
+@media (min-width: 768px) {
+    .carousel-item {
+        display: flex;
+    }
+
+    .carousel-item > .col-md-4 {
+        flex: 1;
+        display: flex;
     }
 }

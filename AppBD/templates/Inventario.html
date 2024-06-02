@@ -5,9 +5,143 @@ Inventario
 {% endblock %}
 
 {% block content %}
-<h3>Inventario</h3>
+<div class="hstack gap-3">
+  <div class="p-2"><h3>Inventario</h3></div>
+  <div class="p-2 ms-auto">Second item</div>
+  <div class="p-2"><a href="/add_inventario/"><button class="btn btn-primary" type="button">Agregar producto</button></a></div>
+</div>
 
+<div class="row">
+  <div class="container mt-5">
+    <ul class="nav nav-tabs" id="myTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1" aria-selected="true">Ingredientes</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2" aria-selected="false">Bebidas alcoholicas</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab" aria-controls="tab3" aria-selected="false">Bebidas sin alcohol</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabsContent">
+        <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+          <div class="row">
+            {% for x in trab %}
 
+            {% if x.6 == 1 %}
+            <div class="col-md">
+              <div class="card card_2" width="80% !important;">
+                {% if x.5 %}
+                <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top " alt="">
+                {% else %}
+                <img src="https://cdn3.iconfinder.com/data/icons/online-states/150/Photos-512.png" class="card-img-top " alt="">
+                {% endif %}
+                <div class="card-body">
+          
+                  <h5 class="card-title">{{x.1}}</h5>
+                  <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
+                  <strong>Precio:</strong> C${{x.2}}
+                  <br>
+                  <strong>Cantidad disponible:</strong> {{x.3 }}
+                  <br>
+          
+          
+                  <div>
+                    <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar <i
+                          class="bi bi-pencil-square"></i></button></a>
+                    <a href="/eliminar_inventario/{{x.id_item}}"> <button type="button" class="btn btn-outline-danger">Eliminar
+                        <i class="bi bi-trash3-fill"></i></button></a>
+          
+                  </div>
+          
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+            
+        </div>
+        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+          <div class="row">
+            {% for x in trab %}
+
+            {% if x.6 == 3 %}
+            <div class="col-md">
+              <div class="card card_2" width="80% !important;">
+                {% if x.5 %}
+                <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top " alt="">
+                {% else %}
+                <img src="https://cdn3.iconfinder.com/data/icons/online-states/150/Photos-512.png" class="card-img-top " alt="">
+                {% endif %}
+                <div class="card-body">
+          
+                  <h5 class="card-title">{{x.1}}</h5>
+                  <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
+                  <strong>Precio:</strong> C${{x.2}}
+                  <br>
+                  <strong>Cantidad disponible:</strong> {{x.3 }}
+                  <br>
+          
+          
+                  <div>
+                    <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar <i
+                          class="bi bi-pencil-square"></i></button></a>
+                    <a href="/eliminar_inventario/{{x.id_item}}"> <button type="button" class="btn btn-outline-danger">Eliminar
+                        <i class="bi bi-trash3-fill"></i></button></a>
+          
+                  </div>
+          
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+          <div class="row">
+
+            {% for x in trab %}
+
+            {% if x.6 == 2 %}
+            <div class="col-md">
+              <div class="card card_2" width="80% !important;">
+                {% if x.5 %}
+                <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top " alt="">
+                {% else %}
+                <img src="https://cdn3.iconfinder.com/data/icons/online-states/150/Photos-512.png" class="card-img-top " alt="">
+                {% endif %}
+                <div class="card-body">
+          
+                  <h5 class="card-title">{{x.1}}</h5>
+                  <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
+                  <strong>Precio:</strong> C${{x.2}}
+                  <br>
+                  <strong>Cantidad disponible:</strong> {{x.3 }}
+                  <br>
+          
+          
+                  <div>
+                    <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar <i
+                          class="bi bi-pencil-square"></i></button></a>
+                    <a href="/eliminar_inventario/{{x.id_item}}"> <button type="button" class="btn btn-outline-danger">Eliminar
+                        <i class="bi bi-trash3-fill"></i></button></a>
+          
+                  </div>
+          
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--
 <div class="row">
   {% for x in trab %}
   <div class="col-md">
@@ -36,7 +170,7 @@ Inventario
   </div>
   {% endfor %}
 </div>
+-->
 
 
-<a href="/add_inventario/"><button class="btn btn-primary" type="button">Agregar productos</button></a>
 {% endblock %}

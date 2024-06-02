@@ -1,18 +1,26 @@
 {% extends "layout.html" %}
-
+{% load static %}
 {% block title %}
 Inicio
 {% endblock %}
 
 {% block content %}
-<h3>Bienvenido al sistema de facturación e inventario de El Buen Punto</h3>
+<style>
+  @media (min-width: 768px) {
+      .carousel-item {
+          display: flex;
+      }
+  }
+</style>
+<h3 class="text-center">Bienvenido al sistema de facturación e inventario de El Buen Punto</h3>
 
 <div class="container ">
   <div class="row">
-      <h4>Productos próximos a terminarse (Quedan menos de 10 unidades)</h4>
+      <strong>Productos próximos a terminarse (Quedan menos de 10 unidades)</strong>
       {% for x in productos %}
-      <div class="col">
-        <div class="card" width="100% !important;"">
+      <div class="col-sm-4 col-md-4 col-lg-3" >
+        <div class="card" style="height:80% !important">
+          <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top " style="height:40% !important; object-fit: cover;" alt="">
           <div class="card-body">
             <h5 class="card-title">{{x.1}}</h5>
             <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
@@ -31,9 +39,42 @@ Inicio
       </div>
       {% endfor %}
 
+      
+      
 
 
   </div>
+
+
+  <div class="row">
+  
+  </div>
+  <div class="row">
+    <div class="col-md items_vendidos">
+      <strong>Bebidas más vendidas</strong>
+      <canvas id="items_chart" aria-label="Hello ARIA World" role="img"></canvas>
+    </div>
+    <div class="col-md items_vendidos">
+      <strong>Platillos más vendidos</strong>
+      <canvas id="platillos_chart" aria-label="Hello ARIA World" role="img"></canvas>
+    </div>
+  </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'graficos.js' %}"></script>
+<script>
+
+  const items_url = "{% url 'items_mas_vendidos' %}";
+  const platillos_url = "{% url 'platillos_mas_vendidos' %}";
+  document.addEventListener("DOMContentLoaded", (event) => {
+  ItemsMasVendidos();
+  PlatillosMasVendidos()
+});
+
+  
+</script>
 
 {% endblock %}

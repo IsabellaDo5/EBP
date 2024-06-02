@@ -28,6 +28,7 @@
                     <a href="/"><img src="{% static 'images/logo_EBP.png' %}" alt="" style="width:80%;"></a>
                 </div>
                 <ul class="sidebar-nav">
+                    
                     <li class="sidebar-item">
                         <a href="/" class="sidebar-link">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-fill" viewBox="0 0 16 16">
@@ -35,9 +36,10 @@
                                 <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z"/>
                               </svg>
                             <i class="fa-solid fa-list pe-2"></i>
-                            Ir a inicio
+                            Ir a inicio 
                         </a>
                     </li>
+                    {% if id_rol == 2 %}
                     <li class="sidebar-item">
                         <a href="/empleados/" class="sidebar-link">
                             <i class="fa-solid fa-list pe-2"></i>
@@ -56,12 +58,14 @@
                             Inventario
                         </a>
                     </li>
+                    
                     <li class="sidebar-item">
                         <a href="/platillos/" class="sidebar-link">
                             <i class="fa-solid fa-list pe-2"></i>
                             Platillos
                         </a>
                     </li>
+                    {% endif %}
                     <li class="sidebar-header">
                         Ordenes
                     </li>
@@ -139,7 +143,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>    
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js"></script>
     <script src="{% static 'script.js' %}"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     {% block scripts %}
     {% endblock %}
 </body>

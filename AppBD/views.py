@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import *
 from django.contrib.auth import login, logout
-from django.db import connection
+from django.db import OperationalError, connection
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -15,6 +15,34 @@ from django.utils.text import slugify
 import time
 import hashlib
 import datetime
+
+# FUNCIONES ASINCRONAS  
+def items_mas_vendidos(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT TOP 5 SUM(o.cantidad) AS CantidadVendida, inv.nombre FROM inventario inv INNER JOIN orden_detalle o ON inv.id_item = o.id_item GROUP BY inv.nombre ORDER BY CantidadVendida DESC")
+            # Obtiene los nombres de las columnas, 
+            columns = [col[0] for col in cursor.description]
+            # Obtener todos los resultados de la consulta como una lista de diccionarios [{"key":value, "key2": value2}]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    except OperationalError as e:
+        # Envia un error si la consulta falla
+        return JsonResponse({'error': str(e)}, status=500)
+    # Devuelve los datos como JSON
+    return JsonResponse(rows, safe=False)
+
+
+def platillos_mas_vendidos(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT TOP 5 SUM(o.cantidad) as CantidadVendida ,p.nombre from platillos p INNER JOIN orden_detalle o ON p.id_platillo = o.id_platillo GROUP BY p.nombre ORDER BY CantidadVendida DESC")
+            columns = [col[0] for col in cursor.description]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    except OperationalError as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse(rows, safe=False)
 
 
 
@@ -38,8 +66,6 @@ def login(request):
             filtro = (username,)
             cursor.execute(query, filtro)
             user = cursor.fetchall()
-
-
             
             # Obtiene los resultados
             
@@ -54,17 +80,19 @@ def login(request):
         
         if password_hash == user[0][2]:#--->esto es la contraseña
             with connection.cursor() as cursor:
-                query= "select id_empleado from empleados where id_cuenta = %s"
+                query= "select id_empleado, id_rol from empleados where id_cuenta = %s"
                 filtro = (user[0][0],)
                 cursor.execute(query, filtro)
-                id_empleado_actual= cursor.fetchall()
+                info_empleado_actual= cursor.fetchall()
                 
 
-                print("ID EMPLEADO LOGEADO"+str(id_empleado_actual[0][0]))
-                user_info={ 'empleado_id': id_empleado_actual[0][0]
-                }       
+                
+                user_info={ 'empleado_id': info_empleado_actual[0][0]
+                }
+                      
 
             request.session['empleado_id'] = user_info
+            request.session['id_rol'] =info_empleado_actual[0][1]
             return redirect('/')
         else:
             messages.error(request, "ERROR:Credenciales no válidas.")
@@ -86,6 +114,7 @@ def inicio(request):
             productos=cursor.execute("select * from inventario where cantidad<10").fetchall()
         return render(request, 'index.html', context={
             'productos': productos,
+            'MEDIA_URL': settings.MEDIA_URL,
         })
 
 # Muestra la lista de empleados
