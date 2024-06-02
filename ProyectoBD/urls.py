@@ -80,4 +80,5 @@ urlpatterns = [
     #Facturas orden
     path('editar_orden/<int:id_orden>/', views.editar_orden),
 
+    path('eliminar-imagen/', views.eliminar_imagen_bd, name="eliminar-imagen"),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

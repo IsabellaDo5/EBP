@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-
+{% load static %}
 {% block title %}
 Editar item
 {% endblock %}
@@ -7,10 +7,39 @@ Editar item
 {% block content %}
 <h3>Editar información</h3>
 {% for x in info %}
-<form action="/item/{{x.5}}/" method="post" class="row g-3" style="margin-top: 2% !important;" enctype="multipart/form-data">
+<form action="/item/{{x.5}}/" method="post" class="row g-3" style="margin-top: 2% !important;"
+    enctype="multipart/form-data">
     {% csrf_token %}
     <!--PRIMERA FILA-->
+
     <div class="row">
+        <div class="col-sm">
+            <img src="{{ MEDIA_URL }}{{x.8}}" class="card-img-top " alt="" id="icon_original" >
+            <button type="button" class="btn btn-danger" style="" id="btn_eliminar_icon" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar imagen</button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar acción</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Estás seguro de querer eliminar esta imagen? Esta acción no se puede deshacer. 
+                            Haga click en el botón "Eliminar" para confirmar esta acción.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="usuario_elimina_imagen(event)" data-bs-dismiss="modal">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
         <!--NOMBRE-->
         <div class="col-sm-4">
             <div class="col-auto">
@@ -84,9 +113,11 @@ Editar item
         </div>
         <!--Añadir una imagen-->
         <div class="col-md-4">
-  
+
             <label for="imagen" class="form-label">Subir una imagen del producto</label>
-            <input type="file" class="form-control" name="icon" id="imagen" required>
+            <input type="file" class="form-control" name="icon" id="imagen"
+                accept=".png, .jpeg, .jpg, .webp">
+            <input type="text" class="invisible" name="cambio_img" value="{{x.5}}" id="id_item">
 
         </div>
 
@@ -95,4 +126,16 @@ Editar item
     <button type="submit" class="btn btn-secondary">Guardar cambios</button>
 </form>
 {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'inventario.js' %}"></script>
+<script>
+    const url_delete = '{% url "eliminar-imagen" %}';
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+        mostrar_imagen();
+    });
+   
+  </script>
 {% endblock %}

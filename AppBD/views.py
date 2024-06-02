@@ -257,9 +257,11 @@ def edit_inventario(request, id_item):
             return render(request, 'editar_item.html', context={
                 'info': info,
                 'catalogo_tipoItem': catalogo_tipoItem,
-                'catalogo_medidas':catalogo_medidas
+                'catalogo_medidas':catalogo_medidas,
+                'MEDIA_URL': settings.MEDIA_URL,
             })
         else:
+            cambio = request.POST["cambio_img"]
             try:
                 unidad_medida= request.POST['unidad_medida']
             except:
@@ -267,14 +269,34 @@ def edit_inventario(request, id_item):
 
             with connection.cursor() as cursor:
 
+                img = cursor.execute("SELECT imagen from inventario WHERE id_item = %s", (id_item,)).fetchall()
                 print("UNIDAD DE MEDIDA: "+unidad_medida)
                 sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
+                
             connection.commit()
-            print(request.POST)
 
+            # Si le dio a eliminar la imagen entonces se elimina de la db
+            '''if int(cambio) == 0:
+                eliminar_imagen(request,1,img[0][0])
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE inventario SET imagen = '' WHERE id_item = %s", (id_item,))
+                connection.commit()'''
+
+            # comprueba si ya existe una imagen en la db
+            if len(img[0][0]) != 0:
+                try:
+                    request.FILES['icon']
+                    eliminar_imagen(request,1,img[0][0])
+                    upload_image(request,id_item,1)
+                except:
+                    print("No se subió ninguna img")
+            # Si no existe ninguna imagen entonces se sube la imagen sin más
+            else:
+                upload_image(request,id_item,1)
             upload_image(request, id_item, 1)
+            
             return redirect('/inventario/')
 #-----------------------------platillos----------------------------------
 
@@ -897,33 +919,68 @@ def upload_image(request, id_item, accion):
         elif accion == 2:
             title = "platillo_"+str(id_item)
 
-        print(request.FILES)
-        image_file = request.FILES["icon"]
+        try:
+            image_file = request.FILES["icon"]
         
-        # Renombrar la imagen
-        original_filename = image_file.name
-        extension = original_filename.split('.')[-1]
-        new_filename = f"{slugify(title)}.{extension}"
-        
-        # Guarda el archivo en el sistema de archivos
-        upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
-        os.makedirs(upload_dir, exist_ok=True)
-        file_path = os.path.join(upload_dir, new_filename)
-        with open(file_path, 'wb+') as destination:
-            for chunk in image_file.chunks():
-                destination.write(chunk)
+            # Renombrar la imagen
+            original_filename = image_file.name
+            extension = original_filename.split('.')[-1]
+            new_filename = f"{slugify(title)}.{extension}"
+            
+            # Guarda el archivo en el sistema de archivos
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
+            os.makedirs(upload_dir, exist_ok=True)
+            file_path = os.path.join(upload_dir, new_filename)
+            with open(file_path, 'wb+') as destination:
+                for chunk in image_file.chunks():
+                    destination.write(chunk)
 
-        if accion == 1:
-            # Guarda la imagen en la tabla de inventario
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "UPDATE inventario  SET imagen = %s WHERE id_item = %s;",
-                    [ 'uploads/' + new_filename, id_item]
+            if accion == 1:
+                # Guarda la imagen en la tabla de inventario
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE inventario  SET imagen = %s WHERE id_item = %s;",
+                        [ 'uploads/' + new_filename, id_item]
+                    )
+            if accion == 2:
+                # Guarda la imagen en la tabla de platillos
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE platillos  SET imagen = %s WHERE id_platillo = %s;",
+                        [ 'uploads/' + new_filename, id_item]
+                    )
+        except:
+            print("No se subió ninguna imagen.")
+
+def eliminar_imagen(request, accion, ruta_item):
+
+    if accion == 1:
+        ruta_imagen = os.path.join(settings.MEDIA_ROOT, ruta_item)
+    elif accion == 2: 
+        ruta_imagen = os.path.join(settings.MEDIA_ROOT, ruta_item)
+
+    print(ruta_imagen)
+    # Verificar si el archivo existe y eliminarlo
+    if os.path.isfile(ruta_imagen):
+        os.remove(ruta_imagen)
+        return HttpResponse('Imagen eliminada correctamente')
+    else:
+        return HttpResponse('La imagen no existe', status=404)
+    
+def eliminar_imagen_bd(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        id_item = data.get('id')
+        nuevo_valor = data.get('nuevo_valor')
+
+        print("ID:"+str(id_item))
+        print("nUEVO VALOR :"+str(nuevo_valor))
+        with connection.cursor() as cursor:
+            img = cursor.execute("SELECT imagen from inventario WHERE id_item = %s", (id_item,)).fetchall()
+            cursor.execute(
+                "UPDATE inventario  SET imagen = %s WHERE id_item = %s;",
+                    [ nuevo_valor, id_item]
                 )
-        if accion == 2:
-            # Guarda la imagen en la tabla de platillos
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "UPDATE platillos  SET imagen = %s WHERE id_platillo = %s;",
-                    [ 'uploads/' + new_filename, id_item]
-                )
+            
+        eliminar_imagen(request, 1,str(img[0][0]))
+        return JsonResponse({'status': 'success'})
