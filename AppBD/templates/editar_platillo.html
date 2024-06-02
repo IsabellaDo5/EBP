@@ -7,7 +7,7 @@ Modificar un platillo
 {% block content %}
 <h3>Modificar un platillo</h3>
 
-<form action="/modificar_platillo/{{id_platillo}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
+<form action="/modificar_platillo/{{id_platillo}}/" method="post" class="row g-3" style="margin-top: 2% !important;" enctype="multipart/form-data">
     {% csrf_token %}
     <!--PRIMERA FILA-->
     {% for platillo in info_general %}
@@ -48,6 +48,15 @@ Modificar un platillo
                 <label for="inputPassword2" class="visually-hidden"></label>
                 <input type="number" name="precio" class="form-control" id="inputPassword2" value="{{platillo.4}}"
                     required>
+            </div>
+        </div>
+
+        <!--IMAGEN -->
+        <div class="col-md">
+
+            <div class="col-auto">
+                <label for="icon" >Subir una imagen</label>
+                <input type="file" name="icon" class="form-control" id="icon" value="" required>
             </div>
         </div>
 

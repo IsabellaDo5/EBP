@@ -12,23 +12,50 @@
     width: 7rem; 
     height:5rem;
 }
-@media only screen and (max-width: 600px){
+.bi-person-fill{
+    font-size: 2rem ;
+}
+@media only screen and (min-width: 400px) and (max-width: 600px){
     .carta-orden{
         width: 100%;
         margin-right: 5%
     }
-    .card{
+    .carta-orden-2{
+        width: 40vw;
+    }
+    .carta-orden-icon{
+        width: 100% !important;
+        height: 20vh !important;
+    }
+    .card_2{
         width: 100% !important; 
+    }
+    .thumbnail{
+        width: 70vw;
+    }
+
+}
+
+@media only screen and (max-width: 400px){
+
+    .carta-orden-icon{
+        width: 100% !important;
+        height: 20vh !important;
+        object-fit: cover !important;
     }
 
 }
 @media only screen and (min-width: 800px){
-    .card{
-        width: 18rem !important; 
+    .card_2{
+        width: 14rem !important; 
     }
     .card-img-top{
         object-fit: cover;
-        width: 230px;
+        width: 100%;
         height: 230px;
+    }
+    .thumbnail{
+        width: 8rem; 
+        height:6rem;
     }
 }

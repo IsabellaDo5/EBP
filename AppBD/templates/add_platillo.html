@@ -8,13 +8,13 @@ Añadir nuevo platillo
 {% block content %}
 <h3>Agregar un platillo nuevo al inventario</h3>
 
-<form action="/agregar_platillo/" method="post" class="row g-3" style="margin-top: 2% !important;">
+<form action="/agregar_platillo/" method="post" class="row g-3" style="margin-top: 2% !important;" enctype="multipart/form-data">
     {% csrf_token %}
     <!--PRIMERA FILA-->
     <div class="row">
 
         <!--NOMBRE-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Nombre</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre">
@@ -26,7 +26,7 @@ Añadir nuevo platillo
         </div>
 
         <!--DESCRIPCION-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Descripcion</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Descripcion">
@@ -38,7 +38,7 @@ Añadir nuevo platillo
         </div>
 
         <!--PRECIO-->
-        <div class="col-sm-4">
+        <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Precio C$:</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Precio">

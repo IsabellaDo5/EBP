@@ -10,23 +10,27 @@ Inventario
 
 <div class="row">
   {% for x in trab %}
-  <div class="col-auto">
-    <div class="card" width="100% !important;">
+  <div class="col-md">
+    <div class="card card_2" width="80% !important;">
       <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top " alt="">
       <div class="card-body">
-        
+
         <h5 class="card-title">{{x.1}}</h5>
         <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
-        <p class="card-text">Precio: C${{x.2}} <br> Cantidad disponible: {{x.3}}
-        </p>
-    
+        <strong>Precio:</strong> C${{x.2}}
+        <br>
+        <strong>Cantidad disponible:</strong> {{x.3 }}
+        <br>
+
+
         <div>
-          <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar <i class="bi bi-pencil-square"></i></button></a>
+          <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar <i
+                class="bi bi-pencil-square"></i></button></a>
           <a href="/eliminar_inventario/{{x.id_item}}"> <button type="button" class="btn btn-outline-danger">Eliminar
-            <i class="bi bi-trash3-fill"></i></button></a>
-    
+              <i class="bi bi-trash3-fill"></i></button></a>
+
         </div>
-    
+
       </div>
     </div>
   </div>

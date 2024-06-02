@@ -277,13 +277,6 @@ def edit_inventario(request, id_item):
                 
             connection.commit()
 
-            # Si le dio a eliminar la imagen entonces se elimina de la db
-            '''if int(cambio) == 0:
-                eliminar_imagen(request,1,img[0][0])
-                with connection.cursor() as cursor:
-                    cursor.execute("UPDATE inventario SET imagen = '' WHERE id_item = %s", (id_item,))
-                connection.commit()'''
-
             # comprueba si ya existe una imagen en la db
             if len(img[0][0]) != 0:
                 try:
@@ -315,6 +308,7 @@ def platillos(request):
             print("PLATILLOS:"+str(platillos))
             return render(request, 'platillos.html', context={
                 'platillos': platillos,
+                'MEDIA_URL': settings.MEDIA_URL,
             })
 
 
@@ -361,6 +355,7 @@ def editar_platillo(request, id_platillo):
 
             # Elimina todos los registros anteriores de platillo_detalle
             with connection.cursor() as cursor:
+                img = cursor.execute("SELECT imagen from platillos WHERE id_platillo = %s", (id_platillo,)).fetchall()
                 query="DELETE FROM platillo_detalle where id_platillo= %s"
                 filtro = (id_platillo,)
                 cursor.execute(query, filtro)
@@ -377,6 +372,19 @@ def editar_platillo(request, id_platillo):
                         filtro = (nombre_platillo, desc, precio, j,y)
                         cursor.execute(query, filtro)
                     connection.commit()
+            print("IMAGEN: "+ str(img[0][0]))
+            # comprueba si ya existe una imagen en la db
+            if img[0][0] != None:
+                try:
+                    request.FILES['icon']
+                    eliminar_imagen(request,2,img[0][0])
+                    upload_image(request,id_platillo,2)
+                except:
+                    print("No se subió ninguna img")
+            # Si no existe ninguna imagen entonces se sube la imagen sin más
+            else:
+                print("No existe img en la db, entra a segundo if")
+                upload_image(request,id_platillo,2)
             return redirect('/platillos/')
         else:
             with connection.cursor() as cursor:
@@ -686,7 +694,8 @@ def agregar_orden(request,id_mesa):
                        'platillos': platillos,
                        'hora': hora_actual,
                        'clientes_nombres': clientes_nombres,
-                       'id_mesa': id_mesa})
+                       'id_mesa': id_mesa,
+                       'MEDIA_URL': settings.MEDIA_URL,})
     else:
         #Inventario(Bebidas)
         print("debug")
@@ -921,7 +930,8 @@ def upload_image(request, id_item, accion):
 
         try:
             image_file = request.FILES["icon"]
-        
+
+            print("Imagen retorno"+str(image_file))
             # Renombrar la imagen
             original_filename = image_file.name
             extension = original_filename.split('.')[-1]
@@ -943,10 +953,11 @@ def upload_image(request, id_item, accion):
                         [ 'uploads/' + new_filename, id_item]
                     )
             if accion == 2:
+                print("Entrando a guardar imagen del platillo con id: "+str(id_item))
                 # Guarda la imagen en la tabla de platillos
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE platillos  SET imagen = %s WHERE id_platillo = %s;",
+                        "UPDATE platillos SET imagen = %s WHERE id_platillo = %s;",
                         [ 'uploads/' + new_filename, id_item]
                     )
         except:
