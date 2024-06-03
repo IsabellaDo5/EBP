@@ -24,6 +24,8 @@ Orden
       </div>
       <div class="row" style="margin-bottom: 0px;">
         <p><span class="fw-bold">Cliente: {{ x.7 }}</span> <span> </span></p>
+          <!--Input oculto donde su valor es el nombre del cliente, para cceder a ek con django y guardarlo en la base de datos-->
+          <input type="hidden" name="nombreCliente" value="{{ x.7 }}" class="form-control">
       </div>
       {% endfor %}
       
@@ -72,7 +74,7 @@ Orden
           <p><span class="fw-bold">Cantidad pagada: </span> <span> </span></p>
         </div>
         <div class="col-md-3">
-          <input type="number" style="width: 80%; height: 80%;" name="cantidad" id="inputPago" value="{{grantotal}}" class="form-control"
+          <input type="number" style="width: 80%; height: 80%;" name="abono" id="inputPago" value="{{grantotal}}" class="form-control"
           oninput="manejarCantidadPagada()">
         </div>
 
@@ -119,7 +121,7 @@ Orden
           <p><span class="fw-bold">Descuento: </span> <span> </span></p>
         </div>
         <div class="col-md-4">
-          <input type="number" style="width: 80%; height: 80%;" name="cantidad" id="inputDescuento" value="0" min="0" max="100" class="form-control"
+          <input type="number" style="width: 80%; height: 80%;" name="descuentoFactura" id="inputDescuento" value="0" min="0" max="100" class="form-control"
           oninput="manejarDescuento()">
         </div>
       </div>

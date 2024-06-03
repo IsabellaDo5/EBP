@@ -640,9 +640,38 @@ def detalle_orden(request, id_orden):
             'id_orden': id_orden
         })
     else:
-        print("pene" + str(id_orden))
+       #necesito guardar en la bd ka factura, pero antes necesito obtener todo 
+       #fecha-------
+       fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
+       print("facturafecha: " +fecha)
+       
+       with connection.cursor() as cursor:
+            #descuento-------
+            descuento=float(request.POST['descuentoFactura'])
+            print("decsuento: " +str(descuento)+ str(type(descuento)))
+            #alcoholica-------
+            acloholica= cursor.execute("exec revisarOrdenAlcoholica %s",(id_orden,)).fetchone()
+            alcoholicaInt=acloholica[0]
+            #id_empleado-------
+            idempleado=request.session['empleado_id']
+            idempleadoint=idempleado.get('empleado_id')
+            #id_cliente-------
+            nombreCliente=str(request.POST['nombreCliente'])
+            print("nombre del cliente: " +str(nombreCliente)+ str(type(nombreCliente)))
+            cliente=cursor.execute("exec verClienteEspecificoNombre %s",(nombreCliente,)).fetchone()
+            id_cliente=cliente[0]
+            print("id del cliente: " +str(id_cliente)+ str(type(id_cliente)))
+            #id_alquiler(en este caso va a ser null)-------
+            id_alquiler=None
+            #abono-------
+            abono=float(request.POST['abono'])
+            print("abono: " +str(abono)+ str(type(abono)))
 
-        return redirect('/mesas/')
+
+            cursor.execute("EXEC facturarOrden @fecha=%s, @descuento=%s, @alcoholica=%s, @idEmpleado=%s, @idCliente=%s, @idOrden=%s, @idAlquiler=%s, @abono=%s"
+                                               ,(fecha,descuento,alcoholicaInt,idempleadoint,id_cliente,id_orden,id_alquiler,abono))
+       connection.commit()
+       return redirect('/mesas/')
 
 
     
