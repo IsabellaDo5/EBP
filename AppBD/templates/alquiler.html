@@ -43,6 +43,7 @@
       var calendarEl = document.getElementById('calendario');
       var calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
+          locale: 'es',  
           events: function(fetchInfo, successCallback, failureCallback) {
               fetch("{% url 'alquileres' %}", {
                   method: 'GET',

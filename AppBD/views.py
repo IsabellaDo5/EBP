@@ -15,7 +15,7 @@ from django.utils.text import slugify
 import time
 import hashlib
 import datetime
-
+from datetime import datetime
 # FUNCIONES ASINCRONAS  
 def items_mas_vendidos(request):
     try:
@@ -825,7 +825,7 @@ def editar_orden(request,id_orden):
             orden=cursor.execute(queryorden, (id_orden,)).fetchone()
             
         hora_actual = str(datetime.datetime.now())   
-
+        print(platillos)
         return render(request, 'editar_orden.html', 
                       {'bebidas': bebidas,
                        'platillos': platillos,

@@ -12,25 +12,22 @@ Inicio
       }
   }
 </style>
-<h3 class="text-center">Bienvenido al sistema de facturación e inventario de El Buen Punto</h3>
 
 <div class="container ">
   <div class="row">
-      <strong>Productos próximos a terminarse (Quedan menos de 10 unidades)</strong>
+      <h3>Productos próximos a terminarse (Quedan menos de 10 unidades)</h3>
       {% for x in productos %}
-      <div class="col-sm-4 col-md-4 col-lg-3" >
-        <div class="card" style="height:80% !important">
-          <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top " style="height:40% !important; object-fit: cover;" alt="">
+      <div class="col-auto" >
+        <div class="card" >
+          <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top" style="object-fit: cover; height: 5rem;" alt="">
           <div class="card-body">
             <h5 class="card-title">{{x.1}}</h5>
             <h6 class="card-subtitle mb-2 text-body-secondary">{{x.7}}</h6>
-            <p class="card-text">Precio: C${{x.2}} <br> Cantidad disponible: {{x.3}}
+            <p class="card-text">Precio: C${{x.2}} <br> <strong>Cantidad disponible: {{x.3}} </strong> 
             </p>
         
             <div>
-              <a href="/item/{{x.id_item}}"> <button type="button" class="btn btn-outline-secondary">Editar <i class="bi bi-pencil-square"></i></button></a>
-              <a href="/eliminar_inventario/{{x.id_item}}"> <button type="button" class="btn btn-outline-danger">Eliminar
-                <i class="bi bi-trash3-fill"></i></button></a>
+              <a href="/item/{{x.id_item}}" class="btn btn-success">  <i class="bi bi-plus-square"></i> Agregar</a>
         
             </div>
         
@@ -39,23 +36,15 @@ Inicio
       </div>
       {% endfor %}
 
-      
-      
-
-
   </div>
 
-
-  <div class="row">
-  
-  </div>
   <div class="row">
     <div class="col-md items_vendidos">
-      <strong>Bebidas más vendidas</strong>
+      <h4>Bebidas más vendidas</h4>
       <canvas id="items_chart" aria-label="Hello ARIA World" role="img"></canvas>
     </div>
     <div class="col-md items_vendidos">
-      <strong>Platillos más vendidos</strong>
+      <h4>Platillos más vendidos</h4>
       <canvas id="platillos_chart" aria-label="Hello ARIA World" role="img"></canvas>
     </div>
   </div>
