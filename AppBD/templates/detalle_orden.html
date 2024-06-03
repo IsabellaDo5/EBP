@@ -6,8 +6,8 @@ Orden
 
 {% block content %}
 
-<form action="/add_empleados/" method="post" class="div" style="margin-top: 2% !important;">
-
+<form action="/orden_detalle/{{id_orden}}" method="post" class="div" style="margin-top: 2% !important;">
+  {% csrf_token %}
 
 <div id="SeccionFactura">
 
@@ -139,7 +139,7 @@ Orden
 </a>
 
 <a>
-  <button id="botonFacturar" class="btn btn-success" type="button" >
+  <button id="botonFacturar" class="btn btn-success" type="submit" >
     Confirmar Facturacion
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard2-check" viewBox="0 0 16 16">
       <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5z"/>
@@ -189,8 +189,8 @@ Orden
 
     ventana.onload = function() {
       // Esto hace que se abra automáticamente la función de imprimir y luego de elegir una opción, cerrar la ventana automáticamente
-      //ventana.print();
-      //ventana.close();
+      ventana.print();
+      ventana.close();
     };
   }
 

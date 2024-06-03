@@ -605,39 +605,47 @@ def ver_ordenes(request):
         })
 
 def detalle_orden(request, id_orden):
-    with connection.cursor() as cursor:
-        # Obtener cantidades
-        sql_query = "EXEC total_por_producto %s"
-        filtro = (id_orden,)
-        cursor.execute(sql_query, filtro)
-        orden = cursor.fetchall()
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+           # Obtener cantidades
+          sql_query = "EXEC total_por_producto %s"
+          filtro = (id_orden,)
+          cursor.execute(sql_query, filtro)
+          orden = cursor.fetchall()
 
-        sql_query2 ="exec gran_total_orden %s"
-        filtro = (id_orden,)
-        cursor.execute(sql_query2, filtro)
-        total = cursor.fetchall()
-        
-        print(total)
-        sql_query3 ="SELECT descripcion FROM ordenes WHERE id_orden= %s;"
-        filtro = (id_orden,)
-        cursor.execute(sql_query3, filtro)
-        notas = cursor.fetchone()
-        #print(orden)
+          sql_query2 ="exec gran_total_orden %s"
+          filtro = (id_orden,)
+          cursor.execute(sql_query2, filtro)
+          total = cursor.fetchall()
 
-        sql_query4 ="exec verOrdenEspecifica %s"
-        filtro = (id_orden,)
-        cursor.execute(sql_query4, filtro)
-        detallesOrden = cursor.fetchall()
+          print(total)
+          sql_query3 ="SELECT descripcion FROM ordenes WHERE id_orden= %s;"
+          filtro = (id_orden,)
+          cursor.execute(sql_query3, filtro)
+          notas = cursor.fetchone()
+          #print(orden)
 
-        fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
-        print(fecha)
+          sql_query4 ="exec verOrdenEspecifica %s"
+          filtro = (id_orden,)
+          cursor.execute(sql_query4, filtro)
+          detallesOrden = cursor.fetchall()
 
-    return render(request, 'detalle_orden.html', context={
+          fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
+          print(fecha)
+        return render(request, 'detalle_orden.html', context={
             'fecha': fecha,
             'info': orden, 'num': int(id_orden),
             'detallesOrden': detallesOrden,
-            'grantotal': total[0][2], 'notas':notas[0]
+            'grantotal': total[0][2], 'notas':notas[0],
+            'id_orden': id_orden
         })
+    else:
+        print("pene" + str(id_orden))
+
+        return redirect('/mesas/')
+
+
+    
 
 
 def agregar_orden(request,id_mesa):
