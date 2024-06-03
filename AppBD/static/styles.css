@@ -7,9 +7,81 @@
     width: 70% !important;
     margin-right: 5%
 }
-@media only screen and (max-width: 600px){
+
+.icon-item{
+    width: 7rem; 
+    height:5rem;
+}
+.bi-person-fill{
+    font-size: 2rem ;
+}
+
+.tab-content>.active {
+    padding: 2rem !important;
+}
+@media only screen and (min-width: 400px) and (max-width: 600px){
     .carta-orden{
         width: 100%;
         margin-right: 5%
+    }
+    .carta-orden-2{
+        width: 40vw;
+    }
+    .carta-orden-icon{
+        width: 100% !important;
+        height: 20vh !important;
+    }
+    .card_2{
+        width: 100% !important; 
+    }
+    .thumbnail{
+        width: 70vw;
+    }
+    .items_vendidos{
+        width: 100% !important;
+    }
+    canvas {
+        width: 100% !important;
+    }
+
+}
+
+@media only screen and (max-width: 400px){
+
+    .carta-orden-icon{
+        width: 100% !important;
+        height: 20vh !important;
+        object-fit: cover !important;
+    }
+
+}
+@media only screen and (min-width: 800px){
+    .card_2{
+        width: 14rem !important; 
+    }
+    .card-img-top{
+        object-fit: cover;
+        width: 100%;
+        height: 230px;
+    }
+    .thumbnail{
+        width: 8rem; 
+        height:6rem;
+    }
+    .items_vendidos{
+        max-width: 45vw !important;
+    }
+    canvas {
+        width: 100% !important;   }
+}
+
+@media (min-width: 768px) {
+    .carousel-item {
+        display: flex;
+    }
+
+    .carousel-item > .col-md-4 {
+        flex: 1;
+        display: flex;
     }
 }

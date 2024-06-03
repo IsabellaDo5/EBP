@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Inventario
+Nueva Orden
 {% endblock %}
 
 {% block content %}
 <h3>Registrar una orden</h3>
-<form action="/generar_orden/{{id_mesa}}" method="post">
+<form action="/generar_orden/{{id_mesa}}" method="post" >
     {% csrf_token %}
 
 <div class="input-group mb-3">
@@ -32,7 +32,12 @@ Inventario
 <div class="row">
     {% for x in bebidas %}
     <div class="col-auto">
-      <div class="card" width="100% !important;">
+      <div class="card carta-orden-2" width="100% !important;">
+        {% if x.5 %}
+        <img src="{{MEDIA_URL}}{{x.5}}" class="card-img-top " style="object-fit: cover; height: 6rem;" alt="">
+        {% else %}
+        <img src="https://cdn3.iconfinder.com/data/icons/online-states/150/Photos-512.png" style="object-fit: cover; height: 6rem;" class="card-img-top " alt="">
+        {% endif %}
         <div class="card-body">
           <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
           <input type="hidden" name="id_producto" value="{{x.0}}" class="form-control">
@@ -86,8 +91,13 @@ Inventario
   <h3>Platillos</h3>
   <div class="row">
       {% for x in platillos %}
-      <div class="col-md-3">
-        <div class="card" width="100% !important;">
+      <div class="col-auto">
+        <div class="card carta-orden-2" width="100% !important;">
+          {% if x.3 %}
+                <img src="{{MEDIA_URL}}{{x.3}}" class="card-img-top " style="object-fit: cover; height: 6rem;" alt="">
+                {% else %}
+                <img src="https://cdn3.iconfinder.com/data/icons/online-states/150/Photos-512.png" class="card-img-top " style="object-fit: cover; height: 6rem;" alt="">
+          {% endif %}
           <div class="card-body">
             <!--INPUT OCULTO DONDE SU VALUE ES EL ID DEL ARTICULO-->
             <input type="hidden" name="id_platillo" value="platillo+{{x.0}}" class="form-control">

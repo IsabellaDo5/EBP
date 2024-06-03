@@ -1,5 +1,5 @@
 *.pyc
 AppBD/__pycache__
-AppBD/migrations/__pycache__
 ProyectoBD/__pycache__
 ProyectoBD/settings.py
+AppBD/migrations/__pycache__

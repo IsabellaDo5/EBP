@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from AppBD import views
 from AppBD import funciones
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -79,4 +80,9 @@ urlpatterns = [
     #Facturas orden
     path('editar_orden/<int:id_orden>/', views.editar_orden),
 
-]
+    path('eliminar-imagen/', views.eliminar_imagen_bd, name="eliminar-imagen"),
+
+
+    path('items-mas-vendidos/', views.items_mas_vendidos, name="items_mas_vendidos"),
+    path('platillos-mas-vendidos/', views.platillos_mas_vendidos, name="platillos_mas_vendidos"),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

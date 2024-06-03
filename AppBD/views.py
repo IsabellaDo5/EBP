@@ -3,13 +3,45 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import *
 from django.contrib.auth import login, logout
-from django.db import connection
+from django.db import OperationalError, connection
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+
+import os
+from django.conf import settings
+from django.utils.text import slugify
+
 import time
 import hashlib
 import datetime
+# FUNCIONES ASINCRONAS  
+def items_mas_vendidos(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT TOP 5 SUM(o.cantidad) AS CantidadVendida, inv.nombre FROM inventario inv INNER JOIN orden_detalle o ON inv.id_item = o.id_item GROUP BY inv.nombre ORDER BY CantidadVendida DESC")
+            # Obtiene los nombres de las columnas, 
+            columns = [col[0] for col in cursor.description]
+            # Obtener todos los resultados de la consulta como una lista de diccionarios [{"key":value, "key2": value2}]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    except OperationalError as e:
+        # Envia un error si la consulta falla
+        return JsonResponse({'error': str(e)}, status=500)
+    # Devuelve los datos como JSON
+    return JsonResponse(rows, safe=False)
+
+
+def platillos_mas_vendidos(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT TOP 5 SUM(o.cantidad) as CantidadVendida ,p.nombre from platillos p INNER JOIN orden_detalle o ON p.id_platillo = o.id_platillo GROUP BY p.nombre ORDER BY CantidadVendida DESC")
+            columns = [col[0] for col in cursor.description]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    except OperationalError as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse(rows, safe=False)
 
 
 
@@ -33,8 +65,6 @@ def login(request):
             filtro = (username,)
             cursor.execute(query, filtro)
             user = cursor.fetchall()
-
-
             
             # Obtiene los resultados
             
@@ -49,17 +79,19 @@ def login(request):
         
         if password_hash == user[0][2]:#--->esto es la contraseña
             with connection.cursor() as cursor:
-                query= "select id_empleado from empleados where id_cuenta = %s"
+                query= "select id_empleado, id_rol from empleados where id_cuenta = %s"
                 filtro = (user[0][0],)
                 cursor.execute(query, filtro)
-                id_empleado_actual= cursor.fetchall()
+                info_empleado_actual= cursor.fetchall()
                 
 
-                print("ID EMPLEADO LOGEADO"+str(id_empleado_actual[0][0]))
-                user_info={ 'empleado_id': id_empleado_actual[0][0]
-                }       
+                
+                user_info={ 'empleado_id': info_empleado_actual[0][0]
+                }
+                      
 
             request.session['empleado_id'] = user_info
+            request.session['id_rol'] =info_empleado_actual[0][1]
             return redirect('/')
         else:
             messages.error(request, "ERROR:Credenciales no válidas.")
@@ -81,6 +113,7 @@ def inicio(request):
             productos=cursor.execute("select * from inventario where cantidad<10").fetchall()
         return render(request, 'index.html', context={
             'productos': productos,
+            'MEDIA_URL': settings.MEDIA_URL,
         })
 
 # Muestra la lista de empleados
@@ -182,6 +215,7 @@ def inventario(request):
                 print(resultados)    
                 return render(request, 'inventario.html', context={
                     'trab': resultados,
+                    'MEDIA_URL': settings.MEDIA_URL,
                 })
 
 def agregar_inventario(request):
@@ -251,9 +285,11 @@ def edit_inventario(request, id_item):
             return render(request, 'editar_item.html', context={
                 'info': info,
                 'catalogo_tipoItem': catalogo_tipoItem,
-                'catalogo_medidas':catalogo_medidas
+                'catalogo_medidas':catalogo_medidas,
+                'MEDIA_URL': settings.MEDIA_URL,
             })
         else:
+            cambio = request.POST["cambio_img"]
             try:
                 unidad_medida= request.POST['unidad_medida']
             except:
@@ -261,11 +297,26 @@ def edit_inventario(request, id_item):
 
             with connection.cursor() as cursor:
 
+                img = cursor.execute("SELECT imagen from inventario WHERE id_item = %s", (id_item,)).fetchall()
                 print("UNIDAD DE MEDIDA: "+unidad_medida)
                 sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
                 nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
+                
             connection.commit()
+
+            # comprueba si ya existe una imagen en la db
+            if len(img[0][0]) != 0:
+                try:
+                    request.FILES['icon']
+                    eliminar_imagen(request,1,img[0][0])
+                    upload_image(request,id_item,1)
+                except:
+                    print("No se subió ninguna img")
+            # Si no existe ninguna imagen entonces se sube la imagen sin más
+            else:
+                upload_image(request,id_item,1)
+            upload_image(request, id_item, 1)
             
             return redirect('/inventario/')
 #-----------------------------platillos----------------------------------
@@ -285,6 +336,7 @@ def platillos(request):
             print("PLATILLOS:"+str(platillos))
             return render(request, 'platillos.html', context={
                 'platillos': platillos,
+                'MEDIA_URL': settings.MEDIA_URL,
             })
 
 
@@ -331,6 +383,7 @@ def editar_platillo(request, id_platillo):
 
             # Elimina todos los registros anteriores de platillo_detalle
             with connection.cursor() as cursor:
+                img = cursor.execute("SELECT imagen from platillos WHERE id_platillo = %s", (id_platillo,)).fetchall()
                 query="DELETE FROM platillo_detalle where id_platillo= %s"
                 filtro = (id_platillo,)
                 cursor.execute(query, filtro)
@@ -347,6 +400,19 @@ def editar_platillo(request, id_platillo):
                         filtro = (nombre_platillo, desc, precio, j,y)
                         cursor.execute(query, filtro)
                     connection.commit()
+            print("IMAGEN: "+ str(img[0][0]))
+            # comprueba si ya existe una imagen en la db
+            if img[0][0] != None:
+                try:
+                    request.FILES['icon']
+                    eliminar_imagen(request,2,img[0][0])
+                    upload_image(request,id_platillo,2)
+                except:
+                    print("No se subió ninguna img")
+            # Si no existe ninguna imagen entonces se sube la imagen sin más
+            else:
+                print("No existe img en la db, entra a segundo if")
+                upload_image(request,id_platillo,2)
             return redirect('/platillos/')
         else:
             with connection.cursor() as cursor:
@@ -693,7 +759,8 @@ def agregar_orden(request,id_mesa):
                        'platillos': platillos,
                        'hora': hora_actual,
                        'clientes_nombres': clientes_nombres,
-                       'id_mesa': id_mesa})
+                       'id_mesa': id_mesa,
+                       'MEDIA_URL': settings.MEDIA_URL,})
     else:
         #Inventario(Bebidas)
         print("debug")
@@ -794,7 +861,7 @@ def editar_orden(request,id_orden):
             orden=cursor.execute(queryorden, (id_orden,)).fetchone()
             
         hora_actual = str(datetime.datetime.now())   
-
+        print(platillos)
         return render(request, 'editar_orden.html', 
                       {'bebidas': bebidas,
                        'platillos': platillos,
@@ -916,3 +983,80 @@ def calcular_tiempo(inicio,fin):
     diferencia = hora_Fin2 - hora_Inicio2 
 
     return diferencia
+
+def upload_image(request, id_item, accion):
+
+    if request.method == 'POST':
+
+        if accion == 1:
+            title = "item_"+str(id_item)
+        elif accion == 2:
+            title = "platillo_"+str(id_item)
+
+        try:
+            image_file = request.FILES["icon"]
+
+            print("Imagen retorno"+str(image_file))
+            # Renombrar la imagen
+            original_filename = image_file.name
+            extension = original_filename.split('.')[-1]
+            new_filename = f"{slugify(title)}.{extension}"
+            
+            # Guarda el archivo en el sistema de archivos
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
+            os.makedirs(upload_dir, exist_ok=True)
+            file_path = os.path.join(upload_dir, new_filename)
+            with open(file_path, 'wb+') as destination:
+                for chunk in image_file.chunks():
+                    destination.write(chunk)
+
+            if accion == 1:
+                # Guarda la imagen en la tabla de inventario
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE inventario  SET imagen = %s WHERE id_item = %s;",
+                        [ 'uploads/' + new_filename, id_item]
+                    )
+            if accion == 2:
+                print("Entrando a guardar imagen del platillo con id: "+str(id_item))
+                # Guarda la imagen en la tabla de platillos
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE platillos SET imagen = %s WHERE id_platillo = %s;",
+                        [ 'uploads/' + new_filename, id_item]
+                    )
+        except:
+            print("No se subió ninguna imagen.")
+
+def eliminar_imagen(request, accion, ruta_item):
+
+    if accion == 1:
+        ruta_imagen = os.path.join(settings.MEDIA_ROOT, ruta_item)
+    elif accion == 2: 
+        ruta_imagen = os.path.join(settings.MEDIA_ROOT, ruta_item)
+
+    print(ruta_imagen)
+    # Verificar si el archivo existe y eliminarlo
+    if os.path.isfile(ruta_imagen):
+        os.remove(ruta_imagen)
+        return HttpResponse('Imagen eliminada correctamente')
+    else:
+        return HttpResponse('La imagen no existe', status=404)
+    
+def eliminar_imagen_bd(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        id_item = data.get('id')
+        nuevo_valor = data.get('nuevo_valor')
+
+        print("ID:"+str(id_item))
+        print("nUEVO VALOR :"+str(nuevo_valor))
+        with connection.cursor() as cursor:
+            img = cursor.execute("SELECT imagen from inventario WHERE id_item = %s", (id_item,)).fetchall()
+            cursor.execute(
+                "UPDATE inventario  SET imagen = %s WHERE id_item = %s;",
+                    [ nuevo_valor, id_item]
+                )
+            
+        eliminar_imagen(request, 1,str(img[0][0]))
+        return JsonResponse({'status': 'success'})
