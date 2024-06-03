@@ -15,7 +15,6 @@ from django.utils.text import slugify
 import time
 import hashlib
 import datetime
-from datetime import datetime
 # FUNCIONES ASINCRONAS  
 def items_mas_vendidos(request):
     try:
