@@ -5,6 +5,10 @@ Orden
 {% endblock %}
 
 {% block content %}
+
+<form action="/add_empleados/" method="post" class="div" style="margin-top: 2% !important;">
+
+
 <div id="SeccionFactura">
 
   <!--INPUT OCULTO DONDE SU VALUE ES EL gran total, PARA CCEDER A EL EN E LJS-->
@@ -144,6 +148,9 @@ Orden
     </svg>
   </button>
 </a>
+
+
+</form>
 
 <script>
   //ESTA VARIABLE GLOBAL ES LA QUE VOY A USAR PARA CAMBIAR EL TOTAL EN TODO MOMENTO Y HACER OPERACIONES CON EL TOTAL
