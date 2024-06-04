@@ -457,17 +457,26 @@ def alquiler(request):
     if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
+        
         with connection.cursor() as cursor:
             resultados=cursor.execute("exec ver_info_alquileres").fetchall()
             #horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
             alquileres = []
-
+            
+            
+            
             for r in resultados:
+                hora_Inicio = r[4].strftime("%H:%M")
+                hora_Fin= r[5].strftime("%H:%M")
+                diferencia = calcular_tiempo(hora_Inicio, hora_Fin)
                 alquileres.append({
                     "id": r[0],
                     "title": f"{r[6]} {r[7]}",
                     "start": f"{r[3]} {r[4]}",
-                    "end": f"{r[3]} {r[5]}"
+                    "end": f"{r[3]} {r[5]}",
+                    "tipo": r[8],
+                    "fecha": f"{r[3]}",
+                    "diferencia": f"{diferencia}",
                 })
 
         print(alquileres)
@@ -931,21 +940,52 @@ def mesa_orden(request, id_mesa):
 
 # Formatea la hora para almacenarlo en sql server
 def formatear_hora(hora):
-    hora_struct = datetime.strptime(hora, '%H:%M')
-    # Obtener el formato deseado para almacenar en SQL Server
-    hora_formateada = hora_struct.strftime('%H:%M:%S')
+    # Verificar que la hora tenga el formato correcto
+    if len(hora) != 5 or hora[2] != ':':
+        raise ValueError("Formato de hora incorrecto. Debe ser 'HH:MM'.")
+
+    # Separar la hora y los minutos
+    horas, minutos = hora.split(':')
+
+    # Verificar que las horas y minutos sean números válidos
+    if not (horas.isdigit() and minutos.isdigit()):
+        raise ValueError("Las horas y minutos deben ser números.")
+
+    # Asegurarse de que las horas y minutos estén dentro de los rangos válidos
+    horas = int(horas)
+    minutos = int(minutos)
+
+    if not (0 <= horas < 24) or not (0 <= minutos < 60):
+        raise ValueError("Horas o minutos fuera de rango.")
+
+    # Formatear la hora para incluir segundos ('00')
+    hora_formateada = f"{horas:02}:{minutos:02}:00"
 
     return hora_formateada
 
-def calcular_tiempo(inicio,fin):
-    # Convierte las cadenas a objetos datetime
-    hora_Inicio2 = datetime.strptime(inicio, "%H:%M")
-    hora_Fin2 = datetime.strptime(fin, "%H:%M")
+def calcular_tiempo(inicio, fin):
+    # Convierte las horas y minutos a enteros
+    inicio_horas, inicio_minutos = map(int, inicio.split(":"))
+    fin_horas, fin_minutos = map(int, fin.split(":"))
 
-    # Calcula la diferencia
-    diferencia = hora_Fin2 - hora_Inicio2 
+    # Calcula el total de minutos desde la medianoche
+    inicio_total_minutos = inicio_horas * 60 + inicio_minutos
+    fin_total_minutos = fin_horas * 60 + fin_minutos
 
-    return diferencia
+    # Calcula la diferencia en minutos
+    diferencia_minutos = fin_total_minutos - inicio_total_minutos
+
+    # Si la diferencia es negativa, significa que la hora final es al día siguiente
+    if diferencia_minutos < 0:
+        diferencia_minutos += 24 * 60
+
+    # Convierte la diferencia de minutos a horas y minutos
+    horas = diferencia_minutos // 60
+    minutos = diferencia_minutos % 60
+
+    print("HORAS:"+str(horas))
+    # Retorna la diferencia como una cadena en formato HH:MM
+    return f"{horas:02}:{minutos:02}"
 
 def upload_image(request, id_item, accion):
 

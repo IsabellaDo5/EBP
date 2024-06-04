@@ -71,6 +71,10 @@
     .items_vendidos{
         max-width: 45vw !important;
     }
+    #calendario{
+        height: 40vw;
+        width: 100%;
+    }
     canvas {
         width: 100% !important;   }
 }
