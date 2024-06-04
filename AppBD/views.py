@@ -7,7 +7,7 @@ from django.db import OperationalError, connection
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-
+import subprocess
 import os
 from django.conf import settings
 from django.utils.text import slugify
@@ -1087,27 +1087,51 @@ def respaldos(request):
         })
     else:
         with connection.cursor() as cursor:
-            NombreDB="EBP"
             carpeta=request.POST['carpeta']
+            print(carpeta)
             respaldo=request.POST['nombreRespaldo']
-
-            query="exec hacerRespaldo @DatabaseName=%s, @BackupPath=%s, @nombreRespaldo=%s"
-
-
-            quer2="exec hacerRespaldo @DatabaseName='EBP', @BackupPath='C:\\Nueva carpeta\\', @nombreRespaldo='asdasd'"
-            print(quer2)
-
-            valores=(NombreDB,carpeta,respaldo,)
-            cursor.execute(quer2)
-
-            
+            print(respaldo)
         connection.commit()
+        bat_script = f"""
+@echo off
 
+rem Configuración de variables
+set server=DESKTOP-FO9G4LP\SQLEXPRESS
+set user=sa
+set password=22480715
+set database=EBP
+set backup_file={carpeta}{respaldo}.bak rem Ruta completa con el nombre del archivo
+
+rem Ejecutar el comando sqlcmd para realizar la copia de seguridad
+sqlcmd -S DESKTOP-FO9G4LP\SQLEXPRESS -U sa -P 22480715 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
+
+rem Salir del script
+exit /b 0
+"""
+        
+        # Guardar el contenido en un archivo .bat
+        nombre_archivo = 'backup_script.bat'
+        with open(nombre_archivo, 'w') as archivo:
+            archivo.write(bat_script)
+
+        # Ejecutar el archivo .bat usando subprocess
+        try:
+            resultado = subprocess.run([nombre_archivo], shell=True, capture_output=True, text=True)
+            print(resultado.stdout)
+            print(resultado.stderr)
+        except subprocess.CalledProcessError as e:
+            print(f"Error al ejecutar el script: {e}")
+        finally:
+            # Eliminar el archivo .bat después de usarlo (opcional)
+            import os
+            os.remove(nombre_archivo)
         return redirect('/') 
+
 
 def respaldos_automaticos(request):
     if request.method == 'GET':
         return render(request, 'respaldos_automaticos.html', context={
         })
+    
 
 

@@ -18,50 +18,7 @@ Agregar un alquiler
 </style>
 <h3>Respaldos automaticos</h3>
 <form action="/respaldos_automaticos/" method="post" class="row g-3" style="margin-top: 2% !important;">
-    <p></p>
     {% csrf_token %}
-    <div class="row">
-        <!--HORA DE INICIO-->
-        <div class="col-md-4">
-            <div class="col">
-                <label for="horaInicio">Hora de respaldo 1:</label>
-
-            </div>
-            <div class="col">
-                <input type="time" id="horaRespaldo1" class="form-control" name="horaInicio" 
-                    required />
-            </div>
-        </div>
-
-        <!--HORA DE FIN-->
-        <div class="col-md-4">
-            <div class="col">
-                <label for="horaFin">Hora de respaldo 2:</label>
-            </div>
-            <div class="col">
-                <input type="time" id="horaRespaldo2" class="form-control" name="horaFin"  required />
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row">
-        <!--CEDULA-->
-        <div class="col-md-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Carpeta donde se guarda:</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
-                    value="Carpeta donde se guarda el respaldo:">
-            </div>
-            <div class="col-auto">
-                <label for="cedula" class="visually-hidden"></label>
-                <input type="text" maxlength="16" name="cedula" class="form-control" id="cedula" value=""
-                required autocomplete="off">
-            </div>
-        </div>
-
-    
-    </div>
     <button id="botonSubmit" class="btn btn-primary" type="submit">
         Actualizar respaldo
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
