@@ -1083,9 +1083,31 @@ def eliminar_imagen_bd(request):
 
 def respaldos(request):
     if request.method == 'GET':
-          
-
         return render(request, 'respaldos.html', context={
-   
         })
+    else:
+        with connection.cursor() as cursor:
+            NombreDB="EBP"
+            carpeta=request.POST['carpeta']
+            respaldo=request.POST['nombreRespaldo']
+
+            query="exec hacerRespaldo @DatabaseName=%s, @BackupPath=%s, @nombreRespaldo=%s"
+
+
+            quer2="exec hacerRespaldo @DatabaseName='EBP', @BackupPath='C:\\Nueva carpeta\\', @nombreRespaldo='asdasd'"
+            print(quer2)
+
+            valores=(NombreDB,carpeta,respaldo,)
+            cursor.execute(quer2)
+
+            
+        connection.commit()
+
+        return redirect('/') 
+
+def respaldos_automaticos(request):
+    if request.method == 'GET':
+        return render(request, 'respaldos_automaticos.html', context={
+        })
+
 

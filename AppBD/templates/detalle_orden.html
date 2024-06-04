@@ -14,6 +14,8 @@ Orden
   <!--INPUT OCULTO DONDE SU VALUE el estado de la orden para acceder a el en el js-->
   {% for x in detallesOrden %}
   <input type="hidden" name="estado" id="estado" value="{{x.2}}" class="form-control">
+  <!--INPUT OCULTO DONDE SU VALUE el id de la orden para acceder a el en el js-->
+  <input type="hidden" name="idOrden" id="idOrden" value="{{x.0}}" class="form-control">
   {% endfor %}
   <!--INPUT OCULTO DONDE SU VALUE ES EL gran total, PARA CCEDER A EL EN E LJS-->
   <input type="hidden" id="grantotal" value="{{grantotal}}" class="form-control">
@@ -116,8 +118,8 @@ Orden
 
       <!-- REACTIVAR FACTURA -->
       <a>
-        <button id="botonActivarOrden" class="btn btn-success" onclick="reactivarFactura()">
-          Reactivar Factura
+        <button id="botonActivarOrden" class="btn btn-success" type="button" href="/mesas/" onclick="reactivarOrden(event)" >
+          Reactivar Orden
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
@@ -189,6 +191,10 @@ Orden
   var totalActual 
   var totalInicial
   document.addEventListener('DOMContentLoaded', function() {
+    const idOrdenInput=document.getElementById("idOrden");
+    var id_orden=idOrdenInput.value
+    console.log(id_orden)
+
     //solo uso esto para actualizar el gran total al inicio
     //para trabajar el total utilizamos 2 varaibles:
     //elt otal actual o total predescuento (que es el que esta afectado por descuentos en tiempo real)
@@ -355,5 +361,56 @@ Orden
       contenedorDescuento.hidden=true;
     }
   }
+
+  function reactivarOrden(event) {
+    const idOrdenInput = document.getElementById("idOrden");
+    var id_orden = idOrdenInput.value.trim();  // Asegúrate de eliminar espacios en blanco adicionales
+
+    console.log("ID de la orden:", id_orden);
+
+    if (!id_orden) {
+        console.error("ID de orden no válido.");
+        return;
+    }
+
+    let url = `/reactivarOrden/${id_orden}/`;
+
+    axios.post(url, {}, {
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(function (response) {
+        console.log('Orden reactivada correctamente.');
+        window.location.href = "/mesas/";
+    })
+    .catch(function (error) {
+        console.error('Error al reactivar la orden:', error);
+        throw error;
+    });
+}
+
+
+
+
+//esto es para las cookies de reactivar orden
+//cookie para los posts 
+const csrftoken = getCookie('csrftoken');
+//sinceramente esto de las cookies lo hice con chatgpt, no entiendo completamente ocmo funciona
+function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
 </script>
 {% endblock %}

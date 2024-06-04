@@ -67,6 +67,7 @@ urlpatterns = [
     path('verCantidadBebidaEnOrden/<int:idOrden>/<int:idItem>/', funciones.verCantidadBebidaEnOrden),
     
     path('verDetallesDeOrden/<int:idOrden>/', funciones.verDetallesDeOrden),
+    path('reactivarOrden/<int:idOrden>/', funciones.reactivarOrden),
 
     #Facturas alquiler
     path('facturas_alquiler/', views.ver_facturas_alquiler),
@@ -78,9 +79,8 @@ urlpatterns = [
     path('mesa_orden/<int:id_mesa>/', views.mesa_orden),
     path('ordenes_inactivas/', views.ordenes_inactivas),
 
-    #Facturas orden
+  
     path('editar_orden/<int:id_orden>/', views.editar_orden),
-
     path('eliminar-imagen/', views.eliminar_imagen_bd, name="eliminar-imagen"),
 
 
@@ -90,4 +90,5 @@ urlpatterns = [
 
     #Respaldos
     path('respaldos/', views.respaldos),
+    path('respaldos_automaticos/', views.respaldos_automaticos),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

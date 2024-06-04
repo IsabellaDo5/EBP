@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Agregar un alquiler
+{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Opcional: estilizar el input para ocultar los minutos */
+    input[type="time"]::-webkit-datetime-edit-ampm-field,
+    input[type="time"]::-webkit-datetime-edit-minute {
+        display: none;
+    }
+    input[type="time"]::-webkit-datetime-edit {
+        padding-right: 5px;
+    }
+</style>
+<h3>Respaldos automaticos</h3>
+<form action="/respaldos_automaticos/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    <p></p>
+    {% csrf_token %}
+    <div class="row">
+        <!--HORA DE INICIO-->
+        <div class="col-md-4">
+            <div class="col">
+                <label for="horaInicio">Hora de respaldo 1:</label>
+
+            </div>
+            <div class="col">
+                <input type="time" id="horaRespaldo1" class="form-control" name="horaInicio" 
+                    required />
+            </div>
+        </div>
+
+        <!--HORA DE FIN-->
+        <div class="col-md-4">
+            <div class="col">
+                <label for="horaFin">Hora de respaldo 2:</label>
+            </div>
+            <div class="col">
+                <input type="time" id="horaRespaldo2" class="form-control" name="horaFin"  required />
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <!--CEDULA-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Carpeta donde se guarda:</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Carpeta donde se guarda el respaldo:">
+            </div>
+            <div class="col-auto">
+                <label for="cedula" class="visually-hidden"></label>
+                <input type="text" maxlength="16" name="cedula" class="form-control" id="cedula" value=""
+                required autocomplete="off">
+            </div>
+        </div>
+
+    
+    </div>
+    <button id="botonSubmit" class="btn btn-primary" type="submit">
+        Actualizar respaldo
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
+            <path d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z"/>
+            <path d="M13.5 9a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V12h-1.5a.5.5 0 0 1 0-1H13V9.5a.5.5 0 0 1 .5-.5"/>
+        </svg>
+    </button>
+</form>
+<script>
+</script>
+{% endblock %}
