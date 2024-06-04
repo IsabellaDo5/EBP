@@ -707,11 +707,14 @@ def detalle_orden(request, id_orden):
         })
     else:
        #necesito guardar en la bd ka factura, pero antes necesito obtener todo 
+       #IMPORTANTE=Necesitas ver si la orden esta activa o no para ver si actualizas la factura o creas una nueva
        #fecha-------
        fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
        print("facturafecha: " +fecha)
        
        with connection.cursor() as cursor:
+            #Estado-----
+            estadoOrden=int(request.POST['estado'])
             #descuento-------
             descuento=float(request.POST['descuentoFactura'])
             print("decsuento: " +str(descuento)+ str(type(descuento)))
@@ -734,7 +737,12 @@ def detalle_orden(request, id_orden):
             print("abono: " +str(abono)+ str(type(abono)))
 
 
-            cursor.execute("EXEC facturarOrden @fecha=%s, @descuento=%s, @alcoholica=%s, @idEmpleado=%s, @idCliente=%s, @idOrden=%s, @idAlquiler=%s, @abono=%s"
+
+            if(estadoOrden==1):
+                cursor.execute("EXEC facturarOrden @fecha=%s, @descuento=%s, @alcoholica=%s, @idEmpleado=%s, @idCliente=%s, @idOrden=%s, @idAlquiler=%s, @abono=%s"
+                                               ,(fecha,descuento,alcoholicaInt,idempleadoint,id_cliente,id_orden,id_alquiler,abono))
+            elif(estadoOrden==0):
+                cursor.execute("EXEC editarFactura @fecha=%s, @descuento=%s, @alcoholica=%s, @idEmpleado=%s, @idCliente=%s, @idOrden=%s, @idAlquiler=%s, @abono=%s"
                                                ,(fecha,descuento,alcoholicaInt,idempleadoint,id_cliente,id_orden,id_alquiler,abono))
        connection.commit()
        return redirect('/mesas/')
@@ -965,7 +973,17 @@ def mesa_orden(request, id_mesa):
             'ordenes': ordenes,
             'id_mesa': id_mesa,        
         })
+    
+def ordenes_inactivas(request):
+    with connection.cursor() as cursor:
+        sql_query = "exec VerOrdenesInactivas"
+        ordenes=cursor.execute(sql_query).fetchall() 
 
+
+    return render(request, 'ordenes_inactivas.html', context={
+            'ordenes': ordenes,
+        })
+    
 # Formatea la hora para almacenarlo en sql server
 def formatear_hora(hora):
     hora_struct = datetime.strptime(hora, '%H:%M')
@@ -1060,3 +1078,14 @@ def eliminar_imagen_bd(request):
             
         eliminar_imagen(request, 1,str(img[0][0]))
         return JsonResponse({'status': 'success'})
+    
+
+
+def respaldos(request):
+    if request.method == 'GET':
+          
+
+        return render(request, 'respaldos.html', context={
+   
+        })
+

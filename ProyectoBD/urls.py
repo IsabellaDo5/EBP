@@ -76,6 +76,7 @@ urlpatterns = [
     #orden hotep
     path('mesas/', views.mesas, name="mesas"),
     path('mesa_orden/<int:id_mesa>/', views.mesa_orden),
+    path('ordenes_inactivas/', views.ordenes_inactivas),
 
     #Facturas orden
     path('editar_orden/<int:id_orden>/', views.editar_orden),
@@ -83,6 +84,10 @@ urlpatterns = [
     path('eliminar-imagen/', views.eliminar_imagen_bd, name="eliminar-imagen"),
 
 
+    #Reportes
     path('items-mas-vendidos/', views.items_mas_vendidos, name="items_mas_vendidos"),
     path('platillos-mas-vendidos/', views.platillos_mas_vendidos, name="platillos_mas_vendidos"),
+
+    #Respaldos
+    path('respaldos/', views.respaldos),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

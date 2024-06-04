@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Respaldos del sistema
+{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Opcional: estilizar el input para ocultar los minutos */
+    input[type="time"]::-webkit-datetime-edit-ampm-field,
+    input[type="time"]::-webkit-datetime-edit-minute {
+        display: none;
+    }
+    input[type="time"]::-webkit-datetime-edit {
+        padding-right: 5px;
+    }
+</style>
+<style>
+    /* Ocultar el input de archivo */
+
+    /* Estilizar el label para que parezca un botón */
+    .custom-file-label {
+        display: inline-block;
+        cursor: pointer;
+    }
+</style>
+
+<h2>Realizar respaldo manual</h2>
+<h4>Escriba el nombre del archivo y la direccion de la carpeta donde lo quiera guardar</h4>
+    <p></p>
+    {% csrf_token %}
+
+    <div class="row">
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Carpeta: </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Carpeta:">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputNombre" value="" required autocomplete="off">
+            </div>
+        </div>
+
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre del respaldo: </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre del respaldo: ">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombre" class="form-control" id="inputNombre" value="" required autocomplete="off">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+         <!--TIPO ALQUILER-->
+
+        <div class="col-md-4" style="padding-top: 20px;">
+            <label for="folderInput" class="custom-file-label">
+                <button id="botonImprimir" class="btn btn-primary" type="button">
+                    Hacer respaldo
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
+                        <path d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z"/>
+                        <path d="M13.5 9a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V12h-1.5a.5.5 0 0 1 0-1H13V9.5a.5.5 0 0 1 .5-.5"/>
+                    </svg>
+                </button>
+            </label>
+            <p id="folderPath"></p>
+
+        </div>
+
+    </div>
+
+
+<script>
+    // Obtener la fecha actual en la zona horaria de Nicaragua (UTC-6)
+    const cedulaInput = document.getElementById('cedula')
+    const today = new Date();
+    const nicaraguaTimezoneOffset = -6 * 60; // UTC-6 en minutos
+    today.setMinutes(today.getMinutes() - nicaraguaTimezoneOffset);
+
+    // Formatear la fecha actual en formato ISO (YYYY-MM-DD)
+    const formattedDate = today.toISOString().split('T')[0];
+
+    // Asignar la fecha actual al atributo min del input de fecha
+    document.getElementById('fecha').min = formattedDate;
+
+    
+</script>
+{% endblock %}

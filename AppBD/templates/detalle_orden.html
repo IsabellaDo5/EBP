@@ -11,6 +11,10 @@ Orden
 
 <div id="SeccionFactura">
 
+  <!--INPUT OCULTO DONDE SU VALUE el estado de la orden para acceder a el en el js-->
+  {% for x in detallesOrden %}
+  <input type="hidden" name="estado" id="estado" value="{{x.2}}" class="form-control">
+  {% endfor %}
   <!--INPUT OCULTO DONDE SU VALUE ES EL gran total, PARA CCEDER A EL EN E LJS-->
   <input type="hidden" id="grantotal" value="{{grantotal}}" class="form-control">
 
@@ -100,6 +104,29 @@ Orden
     </div>
     
     <div class="col-md-4"> 
+      <!-- TODO ESTO ES DE EL ESTADO DE LA ORDEN -->
+      <div class="row">
+        <div class="col" style="padding-left: 20px">
+          <p><span class="fw-bold" >Estado de la orden:</span></p>
+        </div>
+        <div class="col" style="padding-right: 20px">
+          <p><span class="fw-bold" id="estadoTexto"></span> <span> </span></p>
+        </div>
+      </div>
+
+      <!-- REACTIVAR FACTURA -->
+      <a>
+        <button id="botonActivarOrden" class="btn btn-success" onclick="reactivarFactura()">
+          Reactivar Factura
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+          </svg>
+        </button>
+      </a>
+
+
+      <!-- COMENTARIO DE LA ORDEN -->
       <div class="card border-dark mb-3" style="max-width: 18rem;">
         <div class="card-header fw-bold">Descripción de la orden: </div>
         <div class="card-body ">
@@ -108,6 +135,8 @@ Orden
       </div>
 
 
+      
+      
       <!-- DEsCUENTO Y SU CHECK -->
       <div class="form-check">
         <input class="form-check-input" type="checkbox" id="checkboxDescuento" onclick="toggleDescuento()" style="transform: scale(1.5);">
@@ -126,9 +155,11 @@ Orden
         </div>
       </div>
       
+
+      
     </div>
   </div>
-</div> <!-- Hasta aquí imprime la factura -->
+</div> 
 
 <a>
   <button id="botonImprimir" class="btn btn-primary" type="button" onclick="facturar(event)">
@@ -151,7 +182,6 @@ Orden
   </button>
 </a>
 
-
 </form>
 
 <script>
@@ -170,6 +200,26 @@ Orden
     totalActual=granTotal
     
     granTotalDiv.textContent=totalActual
+
+
+    //en esta parte, reviso el estado de la orden con un div escondido y actualizo el texto acorde, tambienel boton de reactivacion
+    const botonReactivar= document.getElementById("botonActivarOrden");
+    const botonFacturar= document.getElementById("botonFacturar");
+    const estado= document.getElementById("estado").value;
+    const estadoTexto= document.getElementById("estadoTexto");
+    console.log(estado)
+    if(estado==1){
+      estadoTexto.style.color= 'green'
+      estadoTexto.textContent = "ACTIVA"
+      botonReactivar.hidden=true
+    }else if(estado==0){
+      estadoTexto.style.color= 'RED'
+      estadoTexto.textContent = "INACTIVA/CERRADA"
+      //cambiar el boton
+      
+      botonFacturar.textContent= "Actualizar Factura "
+      botonFacturar.className="btn btn-danger"
+    }
   });
         
 
@@ -259,6 +309,7 @@ Orden
     console.log(total)
   }
 
+  //actualiza el vuelto del cliente en el html
   function actualizarCambio(){
     const cambioDiv= document.getElementById("cambio");
     var granTotal= totalActual;
@@ -274,6 +325,7 @@ Orden
     }
   }
 
+  //cambia el html dependiendo si se va a poner o no descuento a la factura
   function toggleDescuento(){
     const inputDescuento= document.getElementById("inputDescuento")
     const checkbox=document.getElementById("checkboxDescuento");
