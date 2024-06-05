@@ -1132,6 +1132,58 @@ def respaldos_automaticos(request):
     if request.method == 'GET':
         return render(request, 'respaldos_automaticos.html', context={
         })
-    
+    else:
+        with connection.cursor() as cursor:
+            carpeta=request.POST['carpeta']
+            print(carpeta)
+            respaldo=request.POST['nombreRespaldo']
+            print(respaldo)
+            hora=request.POST['horaRespaldo']
+            print(hora)
+        connection.commit()
+        bat_script = f"""
+            @echo off
+
+            rem Configuración de variables
+            set server=DESKTOP-FO9G4LP\SQLEXPRESS
+            set user=sa
+            set password=22480715
+            set database=EBP
+            set backup_file={carpeta}{respaldo}.bak rem Ruta completa con el nombre del archivo
+
+            rem Ejecutar el comando sqlcmd para realizar la copia de seguridad
+            sqlcmd -S DESKTOP-FO9G4LP\SQLEXPRESS -U sa -P 22480715 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
+
+            rem Salir del script
+            exit /b 0
+        """
+        # Guardar el contenido en un archivo .bat
+        #Esta direccione es estatica y sinceramente me gustaria hacerlo en C:\ pero no le quiero 
+        #otorgar permisos al servidor para que escriba en el disco root
+        #Si estas leyendo esto: cambia esta direccion estatica a lo que te plazca
+        nombre_archivo = "H:\\tarea_respaldo_automatico.bat"
+
+        #estas son mis credenciales de windows, tambien vas a tener que cambiarlas
+        #TIENE QUE HABER UNA MEJOR MANERA DE HACER ESTO
+        #Si lo hay y es usando la bd, talvez mas adelante lo haga
+        usuario="titos"
+        contraseña="22480715"
+        #ruta_archivo="C:\\tarea_respaldo_automatico.bat"
+        with open(nombre_archivo, 'w') as archivo:
+            archivo.write(bat_script)
+
+        # Actualizar o crear la tarea utilizando schtasks
+        task_name = "crear_backup"
+        comandoActualizar = f'schtasks /change /tn "{task_name}" /tr "{nombre_archivo}" /st {hora} /ru {usuario} /rp {contraseña}'
+        comandoCrear = f'schtasks /create /tn "{task_name}" /tr "{nombre_archivo}" /sc daily /st {hora} /ru {usuario} /rp {contraseña}'
+
+        # Intenta actualizar la tarea existente
+        resultado = os.system(comandoActualizar)
+        if resultado != 0:
+            # Si la actualización falla (por ejemplo, si la tarea no existe), crea la tarea
+            os.system(comandoCrear)
+
+        return redirect('/') 
+
 
 
