@@ -9,12 +9,14 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 import subprocess
 import os
-from django.conf import settings
-from django.utils.text import slugify
 
+from django.utils.text import slugify
+import datetime as datetimeglobal  # Alias para el módulo global
+from datetime import datetime   # Alias para la clase específica
 import time
 import hashlib
-import datetime
+from django.conf import settings
+
 # FUNCIONES ASINCRONAS  
 def items_mas_vendidos(request):
     try:
@@ -653,7 +655,7 @@ def eliminar_cliente(request,id_clientes):
 def factura_orden(request):
     if request.method == 'GET':
     
-        hora_actual = str(datetime.datetime.now())
+        hora_actual = str(datetimeglobal.datetime.now())
         print(hora_actual)
         return render(request, 'factura_orden.html', context={
         'hora': hora_actual,
@@ -696,7 +698,7 @@ def detalle_orden(request, id_orden):
           cursor.execute(sql_query4, filtro)
           detallesOrden = cursor.fetchall()
 
-          fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
+          fecha = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
           print(fecha)
         return render(request, 'detalle_orden.html', context={
             'fecha': fecha,
@@ -709,7 +711,7 @@ def detalle_orden(request, id_orden):
        #necesito guardar en la bd ka factura, pero antes necesito obtener todo 
        #IMPORTANTE=Necesitas ver si la orden esta activa o no para ver si actualizas la factura o creas una nueva
        #fecha-------
-       fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
+       fecha = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
        print("facturafecha: " +fecha)
        
        with connection.cursor() as cursor:
@@ -760,7 +762,7 @@ def agregar_orden(request,id_mesa):
             platillos = cursor.execute("SELECT * FROM platillos").fetchall()
             
         clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]   
-        hora_actual = str(datetime.datetime.now().strftime('%Y-%m-%d'))
+        hora_actual = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
 
         return render(request, 'generar_orden2.html', 
                       {'bebidas': Bebidas,
@@ -868,7 +870,7 @@ def editar_orden(request,id_orden):
             queryorden="EXEC verOrdenEspecifica %s"
             orden=cursor.execute(queryorden, (id_orden,)).fetchone()
             
-        hora_actual = str(datetime.datetime.now())   
+        hora_actual = str(datetimeglobal.datetime.now())   
         print(platillos)
         return render(request, 'editar_orden.html', 
                       {'bebidas': bebidas,
@@ -1145,14 +1147,14 @@ def respaldos_automaticos(request):
             @echo off
 
             rem Configuración de variables
-            set server=DESKTOP-FO9G4LP\SQLEXPRESS
+            set server=DESKTOP-905LS6C\SQLEXPRESS
             set user=sa
-            set password=22480715
+            set password=123456789
             set database=EBP
             set backup_file={carpeta}{respaldo}.bak rem Ruta completa con el nombre del archivo
 
             rem Ejecutar el comando sqlcmd para realizar la copia de seguridad
-            sqlcmd -S DESKTOP-FO9G4LP\SQLEXPRESS -U sa -P 22480715 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
+            sqlcmd -S DESKTOP-905LS6C\SQLEXPRESS -U sa -P 123456789 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
 
             rem Salir del script
             exit /b 0
@@ -1161,7 +1163,7 @@ def respaldos_automaticos(request):
         #Esta direccione es estatica y sinceramente me gustaria hacerlo en C:\ pero no le quiero 
         #otorgar permisos al servidor para que escriba en el disco root
         #Si estas leyendo esto: cambia esta direccion estatica a lo que te plazca
-        nombre_archivo = "H:\\tarea_respaldo_automatico.bat"
+        nombre_archivo = "F:\\tarea_respaldo_automatico.bat"
 
         #estas son mis credenciales de windows, tambien vas a tener que cambiarlas
         #TIENE QUE HABER UNA MEJOR MANERA DE HACER ESTO
