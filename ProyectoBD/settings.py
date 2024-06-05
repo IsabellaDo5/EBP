@@ -84,8 +84,8 @@ DATABASES = {
         'ENGINE': 'mssql',
         'NAME': 'EBP', # Nombre de su Base de datos, donde tienen sus tablas 
         'USER': 'sa', # El usuario donde tienen permisos de lectura, escritura,etc
-        'PASSWORD': '123456789', # Su contraseña ps obvio
-        'HOST': 'DESKTOP-905LS6C\SQLEXPRESS', # El nombre de su servidor
+        'PASSWORD': '22480715', # Su contraseña ps obvio
+        'HOST': 'DESKTOP-FO9G4LP\SQLEXPRESS', # El nombre de su servidor
         'PORT': '',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',

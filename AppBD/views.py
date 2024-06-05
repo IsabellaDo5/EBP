@@ -1166,8 +1166,10 @@ def respaldos_automaticos(request):
         #estas son mis credenciales de windows, tambien vas a tener que cambiarlas
         #TIENE QUE HABER UNA MEJOR MANERA DE HACER ESTO
         #Si lo hay y es usando la bd, talvez mas adelante lo haga
-        usuario="titos"
-        contraseña="22480715"
+
+        #WINDOWS
+        usuario="admin123"
+        contraseña="123"
         #ruta_archivo="C:\\tarea_respaldo_automatico.bat"
         with open(nombre_archivo, 'w') as archivo:
             archivo.write(bat_script)
