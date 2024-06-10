@@ -124,7 +124,7 @@ def empleados(request):
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
-            resultados=cursor.execute("SELECT * FROM empleados").fetchall()
+            resultados=cursor.execute("SELECT * FROM empleados where activo=1" ).fetchall()
             
         print(resultados)    
         return render(request, 'empleados.html', context={
@@ -197,7 +197,32 @@ def agregar_empleado(request):
 
 def eliminar_empleado(request, id_emp):
     with connection.cursor() as cursor:
-        sql_query = "DELETE FROM empleados WHERE id_empleado = %s"
+        sql_query = "UPDATE empleados set activo = 0 WHERE id_empleado= %s"
+        valores = (id_emp,)
+        cursor.execute(sql_query, valores)
+
+    connection.commit()
+
+    return redirect('/empleados/')
+
+
+#esta parte de aca es lo de lo sempleados inactivos, para mostrarlos y reactivarlos
+# Muestra la lista de empleados
+def empleados_desactivados(request):
+    if 'empleado_id' not in request.session:
+        return redirect('/login')
+    else:
+        with connection.cursor() as cursor:
+            resultados=cursor.execute("SELECT * FROM empleados where activo=0" ).fetchall()
+            
+        print(resultados)    
+        return render(request, 'empleados_desactivados.html', context={
+            'trab': resultados,
+        })
+    
+def reactivar_empleado(request, id_emp):
+    with connection.cursor() as cursor:
+        sql_query = "UPDATE empleados set activo = 1 WHERE id_empleado= %s"
         valores = (id_emp,)
         cursor.execute(sql_query, valores)
 
@@ -255,7 +280,7 @@ def agregar_inventario(request):
     
 def eliminar_item(request,id_item):
     with connection.cursor() as cursor:
-        sql_query = "DELETE FROM inventario WHERE id_item = %s"
+        sql_query = "Update inventario set activo=0 WHERE id_item = %s "
         valores = (id_item,)
         cursor.execute(sql_query, valores)
 
@@ -321,6 +346,34 @@ def edit_inventario(request, id_item):
             upload_image(request, id_item, 1)
             
             return redirect('/inventario/')
+        
+
+#esto va a aser para cuando "elimines un itme", con esto lo restauras
+def reactivar_item(request,id_item):
+    with connection.cursor() as cursor:
+        sql_query = "Update inventario set activo=1 WHERE id_item = %s "
+        valores = (id_item,)
+        cursor.execute(sql_query, valores)
+
+    connection.commit()
+
+    return redirect('/inventario/')
+
+#aqui los items eliminados
+def inventario_eliminado(request):
+    if 'empleado_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method == 'GET':
+            with connection.cursor() as cursor:
+                resultados=cursor.execute("EXEC ver_inventario_eliminado").fetchall()
+            
+                print(resultados)    
+                return render(request, 'inventario_eliminado.html', context={
+                    'trab': resultados,
+                    'MEDIA_URL': settings.MEDIA_URL,
+                })
+
 #-----------------------------platillos----------------------------------
 
 
@@ -629,10 +682,10 @@ def edit_cliente(request, id_clientes):
     else:
         with connection.cursor() as cursor:
         # Define tu consulta SQL de actualización
-            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE id_cliente= %s"
+            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s , activo = %s WHERE id_cliente= %s"
         
         # Define los nuevos valores
-            nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'], id_clientes)
+            nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'],1, id_clientes)
 
         # Ejecuta la consulta SQL de actualización
             cursor.execute(sql_query, nuevos_valores)
@@ -644,7 +697,7 @@ def edit_cliente(request, id_clientes):
 
 def eliminar_cliente(request,id_clientes):
     with connection.cursor() as cursor:
-        sql_query = "DELETE FROM clientes WHERE id_clientes = %s"
+        sql_query = "Update clientes set activo = 0 WHERE id_cliente = %s"
         valores = (id_clientes,)
         cursor.execute(sql_query, valores)
 

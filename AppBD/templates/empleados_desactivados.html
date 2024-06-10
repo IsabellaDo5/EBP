@@ -5,7 +5,7 @@ Inicio
 {% endblock %}
 
 {% block content %}
-<h3>Empleados</h3>
+<h3>empleados inactivos/despedidos</h3>
 <div class="hstack gap-3">
   <div class="p-2">
       <!--
@@ -23,7 +23,6 @@ Inicio
   <div class="p-2 ms-auto"></div>
   <div class="p-2"><a href="/add_empleados/"><button class="btn btn-outline-dark" type="button"><i
           class="bi bi-plus-square"></i> Nuevo empleado</button></a></div>
-  <div class="p-2"><a href="/empleados_desactivados/"><button class="btn btn-outline-danger" type="button">Ver empleados eliminados</button></a></div>
 </div>
 
 
@@ -39,11 +38,8 @@ Inicio
           </div>
           <div class="col-sm">
             <div class="btn-group gap-3" role="group" aria-label="First group">
-              <a href="/empleado/{{x.id_empleado}}/"> <button type="button" class="btn btn-outline-dark"> <i
-                    class="bi bi-pencil-square"></i> Editar </button></a>
-              <a href="/eliminar_empleado/{{x.id_empleado}}/"> <button type="button" class="btn btn-outline-danger"><i
-                    class="bi bi-dash-square"></i> Eliminar
-                </button></a>
+              <a href="/reactivar_empleado/{{x.id_empleado}}/"> <button type="button" class="btn btn-primary"> <i
+                    class="bi bi-pencil-square"></i> Reactivar empleado </button></a>
             </div>
           </div>
         </div>

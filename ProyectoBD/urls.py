@@ -30,11 +30,18 @@ urlpatterns = [
     path('add_empleados/',views.agregar_empleado),
     path('empleado/<int:id_emp>/', views.edit_empleados),
     path('empleados/', views.empleados),
+
+    path('empleados_desactivados/', views.empleados_desactivados),
+    path('reactivar_empleado/<int:id_emp>/',views.reactivar_empleado),
     # Seccion de inventario
     path('inventario/', views.inventario, name='inventario'),
     path('add_inventario/',views.agregar_inventario),
     path('item/<int:id_item>/',views.edit_inventario),
     path('eliminar_inventario/<int:id_item>/',views.eliminar_item),
+
+
+    path('reactivar_item/<int:id_item>/',views.reactivar_item),
+    path('inventario_eliminado/', views.inventario_eliminado),
     #Seccion de platillos
     path('platillos/', views.platillos, name='platillos'),
     path('agregar_platillo/', views.add_platillo, name='agregar-platillo'),
