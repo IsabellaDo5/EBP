@@ -589,7 +589,7 @@ def add_alquiler_cliente(request):
         with connection.cursor() as cursor:
             clientes=cursor.execute("exec VerClientes").fetchall()
 
-            
+        print(clientes)    
         return render(request, 'add_alquiler_cliente.html', context={
             'clientes': clientes,
 }) 
@@ -621,7 +621,7 @@ def add_cliente(request):
 def edit_cliente(request, id_clientes):
     if request.method == 'GET':
         with connection.cursor() as cursor:
-            query="SELECT * FROM clientes WHERE nombre = %s"
+            query="SELECT * FROM clientes WHERE id_cliente = %s"
             filtro = (id_clientes,)
             cursor.execute(query, filtro)
 
