@@ -704,6 +704,27 @@ def eliminar_cliente(request,id_clientes):
     connection.commit()
 
     return redirect('/add_alquiler_cliente/') 
+
+
+def clientes_desactivados(request):
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            clientes=cursor.execute("SELECT * FROM clientes WHERE activo=0").fetchall()
+
+            
+        return render(request, 'clientes_desactivados.html', context={
+            'clientes': clientes,
+}) 
+    
+def reactivar_cliente(request,id_clientes):
+    with connection.cursor() as cursor:
+        sql_query = "Update clientes set activo = 1 WHERE id_cliente = %s"
+        valores = (id_clientes,)
+        cursor.execute(sql_query, valores)
+
+    connection.commit()
+
+    return redirect('/add_alquiler_cliente/') 
 #-------------------------------------------------------------------------
 def factura_orden(request):
     if request.method == 'GET':
