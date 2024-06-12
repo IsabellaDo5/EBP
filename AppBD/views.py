@@ -636,7 +636,7 @@ def edit_cliente(request, id_clientes):
     else:
         with connection.cursor() as cursor:
         # Define tu consulta SQL de actualización
-            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE nombre= %s"
+            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE id_cliente = %s"
         
         # Define los nuevos valores
             nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'], id_clientes)
