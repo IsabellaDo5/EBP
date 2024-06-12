@@ -1,10 +1,11 @@
-function obtenerCliente(nombre_cliente, id_modal) {
+function obtenerCliente(nombre_cliente, id_modal,tipo_busq) {
     const nombre = document.getElementById(nombre_cliente).value;
     const modal = document.getElementById(id_modal);
 
     axios.get(obtenerClienteUrl, {
         params: {
-            nombre: nombre
+            nombre: nombre,
+            tipo: tipo_busq
         }
     })
         .then(function (response) {

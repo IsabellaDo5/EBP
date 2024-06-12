@@ -7,12 +7,12 @@ Clientes
 
 {% block content %}<h3>Nuestros clientes </h3>
 <div class="hstack gap-3">
-  <div class="p-2">
-    
+  <div class="p-2 d-flex">
+
     {% csrf_token %}
       <input class="form-control me-2" type="search" list="clientes" placeholder="Buscar clientes" aria-label="Search" id="cliente_nombre">
 
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="obtenerCliente('cliente_nombre', 'modal_cliente')">
+      <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="obtenerCliente('cliente_nombre', 'modal_cliente', 'cliente')">
         Buscar
       </button>
 

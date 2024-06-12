@@ -1068,10 +1068,15 @@ def eliminar_imagen_bd(request):
 def obtener_cliente(request):
     try:
         nombre = request.GET.get('nombre')
+        tipo = request.GET.get('tipo')
         nombre_query= f'%{nombre}%'
         print(nombre)
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM clientes WHERE nombre COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI OR apellido COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI", (nombre_query,nombre_query))
+
+            if tipo == "cliente":
+                cursor.execute("SELECT * FROM clientes WHERE nombre COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI OR apellido COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI", (nombre_query,nombre_query))
+            elif tipo == "empleado":
+                cursor.execute("SELECT * FROM empleados WHERE nombre COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI OR apellido COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI", (nombre_query,nombre_query))
             # Obtiene los nombres de las columnas, 
             columns = [col[0] for col in cursor.description]
             # Obtener todos los resultados de la consulta como una lista de diccionarios [{"key":value, "key2": value2}]
