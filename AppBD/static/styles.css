@@ -92,7 +92,7 @@
 }
 @media only screen and (min-width: 800px){
     .card_2{
-        width: 14rem !important; 
+        width: 16rem !important; 
     }
     .card-img-top{
         object-fit: cover;
