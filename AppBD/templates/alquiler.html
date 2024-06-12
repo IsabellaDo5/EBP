@@ -7,7 +7,7 @@
 {% block content %}
 <h3>Alquileres</h3>
 
-  <div id="calendario">
+  <div id="calendario" >
     
   </div>
 
@@ -22,12 +22,38 @@
             </button>
           </div>
           <div class="modal-body">
-            <p><strong>Cliente:</strong> <span id="modalCliente"></span></p>
-            <p><strong>Inicio:</strong> <span id="modalInicio"></span></p>
-            <p><strong>Fin:</strong> <span id="modalFin"></span></p>
+
+            <div class="row">
+              <h3>Cliente:</h3> <span id="modalCliente"></span>
+              <p><strong>
+                Fecha:
+              </strong><span id="fecha_alquiler"></span></p>
+              <div class="col-md">
+                <p><strong>Hora de inicio:</strong> <span id="modalInicio"></span></p>
+              </div>
+              <div class="col">
+                <p><strong>Hora de fin:</strong> <span id="modalFin"></span></p>
+              </div>
+              
+            </div>
+            <div class="row">
+              <div class="col-md">
+                <p><strong>Tipo de Alquiler:</strong> <span id="tipoAlquiler"></span></p>
+              </div>
+              <div class="col-md">
+                <p><strong>Cantidad de horas alquiladas:</strong> <span id="cantidad_horas"></span></p>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md">
+                <p><strong>Total a pagar:</strong> <span id="total_pagar"></span></p>
+              </div>
+            </div>
+            
           </div>
           <div class="modal-footer">
-            <a class="btn btn-primary" href="#" role="button" id="alquiler_detalle">Ver detalles</a>
+            <a class="btn btn-primary" href="#" role="button" id="alquiler_detalle">Modificar</a>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
         </div>
@@ -63,24 +89,62 @@
           },
 
           eventClick: function(info) {
-            console.log(info.event.title);
+            console.log(info.event);
                     // Llenar el modal con la información del evento
                     var modalCliente = document.getElementById('modalCliente');
                     var modalInicio = document.getElementById('modalInicio');
                     var modalFin = document.getElementById('modalFin');
+                    var tipoAlquiler = document.getElementById('tipoAlquiler');
+                    var fecha = document.getElementById("fecha_alquiler");
+                    var diferencia = document.getElementById("cantidad_horas");
+                    var costo_total = document.getElementById("total_pagar");
                     var detalles = document.getElementById('alquiler_detalle');
 
-                    modalCliente.innerText = info.event.title;
+                    modalCliente.innerHTML ="<h4>"+ info.event.title+"</h4>";
                     modalInicio.innerText = info.event.start;
                     modalFin.innerText = info.event.end;
+                    tipoAlquiler.innerHTML = info.event.extendedProps.tipo;
+                    fecha.innerText = info.event.extendedProps.fecha;
+                    diferencia.innerText = info.event.extendedProps.diferencia;
+                    costo_total.innerText = calcularCostoReservacion(info.event.extendedProps.diferencia, info.event.extendedProps.tipo);
                     detalles.href = '/alquiler/'+info.event.id+'/';
                     // Mostrar el modal
                     var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
                     eventModal.show();
                 },
+                
       });
+      
 
       calendar.render();
   });
+
+  function calcularCostoReservacion(tiempo, tipo_Alquiler) {
+    // Convertir el tiempo en formato "HH:MM" a horas
+    const [horas, minutos] = tiempo.split(':').map(Number);
+    const totalHoras = horas + minutos / 60;
+    const tarifaAdicionalPorHora = 50;
+    const horasBase = 4;
+
+    console.log(tipo_Alquiler, totalHoras);
+    // Calcular el costo según la tarifa
+    if (tipo_Alquiler == "Primera planta" || tipo_Alquiler == "Segunda planta"){
+          var tarifaBase = 250;
+          console.log("entra aqui");
+    }
+    else{
+          var tarifaBase = 400;
+    }
+
+
+    if (totalHoras <= horasBase) {
+      console.log("Primer if retorna tarifa base")
+        return tarifaBase;
+    } else {
+        const horasAdicionales = totalHoras - horasBase;
+        const costoAdicional = Math.ceil(horasAdicionales) * tarifaAdicionalPorHora;
+        return tarifaBase + costoAdicional;
+    }
+}
 </script>
 {% endblock %}

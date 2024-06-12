@@ -19,6 +19,27 @@
 .tab-content>.active {
     padding: 2rem !important;
 }
+
+.login{
+    width: 40vw;
+    padding:3rem;
+    margin: auto;
+    
+    text-align: center;
+
+}
+
+.login > .d-grid{
+    margin-top: 2rem !important;
+}
+
+.input-login{
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+.logo_EBP{
+    width: 40%;
+}
 @media only screen and (min-width: 400px) and (max-width: 600px){
     .carta-orden{
         width: 100%;
@@ -43,6 +64,13 @@
     canvas {
         width: 100% !important;
     }
+    .login{
+        width: 100%;
+        
+    }
+    .logo_EBP{
+        width: 60%;
+    }
 
 }
 
@@ -53,11 +81,18 @@
         height: 20vh !important;
         object-fit: cover !important;
     }
+    .login{
+        width: 100%;
+        
+    }
+    .logo_EBP{
+        width: 60%;
+    }
 
 }
 @media only screen and (min-width: 800px){
     .card_2{
-        width: 14rem !important; 
+        width: 16rem !important; 
     }
     .card-img-top{
         object-fit: cover;
@@ -70,6 +105,10 @@
     }
     .items_vendidos{
         max-width: 45vw !important;
+    }
+    #calendario{
+        height: 40vw;
+        width: 100%;
     }
     canvas {
         width: 100% !important;   }

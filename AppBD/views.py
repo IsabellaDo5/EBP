@@ -512,17 +512,26 @@ def alquiler(request):
     if 'empleado_id' not in request.session:
         return redirect('/login')
     else:
+        
         with connection.cursor() as cursor:
             resultados=cursor.execute("exec ver_info_alquileres").fetchall()
             #horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
             alquileres = []
-
+            
+            
+            
             for r in resultados:
+                hora_Inicio = r[4].strftime("%H:%M")
+                hora_Fin= r[5].strftime("%H:%M")
+                diferencia = calcular_tiempo(hora_Inicio, hora_Fin)
                 alquileres.append({
                     "id": r[0],
                     "title": f"{r[6]} {r[7]}",
                     "start": f"{r[3]} {r[4]}",
-                    "end": f"{r[3]} {r[5]}"
+                    "end": f"{r[3]} {r[5]}",
+                    "tipo": r[8],
+                    "fecha": f"{r[3]}",
+                    "diferencia": f"{diferencia}",
                 })
 
         print(alquileres)
@@ -635,7 +644,7 @@ def add_alquiler_cliente(request):
         with connection.cursor() as cursor:
             clientes=cursor.execute("exec VerClientes").fetchall()
 
-            
+        print(clientes)    
         return render(request, 'add_alquiler_cliente.html', context={
             'clientes': clientes,
 }) 
@@ -871,12 +880,12 @@ def agregar_orden(request,id_mesa):
         print(nombreCliente)
         
         with connection.cursor() as cursor:
-            #id_cliente = cursor.execute("exec buscarClientePorNombre %s ", argumentosbuscar).fetchone()
+            #nombre = cursor.execute("exec buscarClientePorNombre %s ", argumentosbuscar).fetchone()
             
             query="exec buscarClientePorNombre @nombre= %s"
             valores1=(nombreCliente,)
             id =cursor.execute(query, valores1).fetchone()
-            id_cliente = id[0]
+            nombre = id[0]
             print(id)
             
 
@@ -890,11 +899,11 @@ def agregar_orden(request,id_mesa):
                 # Aquí inserto descripcion y activo en la tabla ORDEN
                 queryAddOrden="exec addOrden %s, %s, %s, %s"
                 print (str(type(id_mesa)) + str(id_mesa))  
-                print (str(type(id_cliente)) +str(id_cliente))  
+                print (str(type(nombre)) +str(nombre))  
                 print (str(type(idempleadoint))+ str(idempleadoint))  
                 print (str(type(desc))+ str(desc))  
                 print(queryAddOrden)
-                valoresOrden=(id_mesa,id_cliente, idempleadoint,desc)
+                valoresOrden=(id_mesa,nombre, idempleadoint,desc)
     
                 cursor.execute(queryAddOrden, valoresOrden)
 
@@ -1062,21 +1071,52 @@ def ordenes_inactivas(request):
     
 # Formatea la hora para almacenarlo en sql server
 def formatear_hora(hora):
-    hora_struct = datetime.strptime(hora, '%H:%M')
-    # Obtener el formato deseado para almacenar en SQL Server
-    hora_formateada = hora_struct.strftime('%H:%M:%S')
+    # Verificar que la hora tenga el formato correcto
+    if len(hora) != 5 or hora[2] != ':':
+        raise ValueError("Formato de hora incorrecto. Debe ser 'HH:MM'.")
+
+    # Separar la hora y los minutos
+    horas, minutos = hora.split(':')
+
+    # Verificar que las horas y minutos sean números válidos
+    if not (horas.isdigit() and minutos.isdigit()):
+        raise ValueError("Las horas y minutos deben ser números.")
+
+    # Asegurarse de que las horas y minutos estén dentro de los rangos válidos
+    horas = int(horas)
+    minutos = int(minutos)
+
+    if not (0 <= horas < 24) or not (0 <= minutos < 60):
+        raise ValueError("Horas o minutos fuera de rango.")
+
+    # Formatear la hora para incluir segundos ('00')
+    hora_formateada = f"{horas:02}:{minutos:02}:00"
 
     return hora_formateada
 
-def calcular_tiempo(inicio,fin):
-    # Convierte las cadenas a objetos datetime
-    hora_Inicio2 = datetime.strptime(inicio, "%H:%M")
-    hora_Fin2 = datetime.strptime(fin, "%H:%M")
+def calcular_tiempo(inicio, fin):
+    # Convierte las horas y minutos a enteros
+    inicio_horas, inicio_minutos = map(int, inicio.split(":"))
+    fin_horas, fin_minutos = map(int, fin.split(":"))
 
-    # Calcula la diferencia
-    diferencia = hora_Fin2 - hora_Inicio2 
+    # Calcula el total de minutos desde la medianoche
+    inicio_total_minutos = inicio_horas * 60 + inicio_minutos
+    fin_total_minutos = fin_horas * 60 + fin_minutos
 
-    return diferencia
+    # Calcula la diferencia en minutos
+    diferencia_minutos = fin_total_minutos - inicio_total_minutos
+
+    # Si la diferencia es negativa, significa que la hora final es al día siguiente
+    if diferencia_minutos < 0:
+        diferencia_minutos += 24 * 60
+
+    # Convierte la diferencia de minutos a horas y minutos
+    horas = diferencia_minutos // 60
+    minutos = diferencia_minutos % 60
+
+    print("HORAS:"+str(horas))
+    # Retorna la diferencia como una cadena en formato HH:MM
+    return f"{horas:02}:{minutos:02}"
 
 def upload_image(request, id_item, accion):
 
@@ -1156,6 +1196,29 @@ def eliminar_imagen_bd(request):
         return JsonResponse({'status': 'success'})
     
 
+def obtener_cliente(request):
+    try:
+        nombre = request.GET.get('nombre')
+        tipo = request.GET.get('tipo')
+        nombre_query= f'%{nombre}%'
+        print(nombre)
+        with connection.cursor() as cursor:
+
+            if tipo == "cliente":
+                cursor.execute("SELECT * FROM clientes WHERE nombre COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI OR apellido COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI", (nombre_query,nombre_query))
+            elif tipo == "empleado":
+                cursor.execute("SELECT * FROM empleados WHERE nombre COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI OR apellido COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI", (nombre_query,nombre_query))
+            # Obtiene los nombres de las columnas, 
+            columns = [col[0] for col in cursor.description]
+            # Obtener todos los resultados de la consulta como una lista de diccionarios [{"key":value, "key2": value2}]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            print(columns)
+            print(rows)
+    except OperationalError as e:
+        # Envia un error si la consulta falla
+        return JsonResponse({'error': str(e)}, status=500)
+    # Devuelve los datos como JSON
+    return JsonResponse(rows, safe=False)
 
 def respaldos(request):
     if request.method == 'GET':

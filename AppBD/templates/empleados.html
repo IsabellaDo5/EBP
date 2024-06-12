@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block title %}
 Inicio
@@ -7,24 +8,48 @@ Inicio
 {% block content %}
 <h3>Empleados</h3>
 <div class="hstack gap-3">
-  <div class="p-2">
-      <!--
-      <input class="form-control me-2" type="search" list="clientes" placeholder="Buscar empleado" aria-label="Search">
-      <datalist id="clientes">
-        <option value="Internet Explorer">
-        <option value="Firefox">
-        <option value="Chrome">
-        <option value="Opera">
-        <option value="Safari">
-      </datalist>
-      <button class="btn btn-outline-success" type="submit">Buscar</button>
--->
+  <div class="p-2 d-flex">
+
+    {% csrf_token %}
+    <input class="form-control me-2" type="search" list="clientes" placeholder="Buscar clientes" aria-label="Search"
+      id="cliente_nombre">
+
+    <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+      onclick="obtenerCliente('cliente_nombre', 'modal_empleado', 'empleado')">
+      Buscar
+    </button>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Coincidencias</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row" id="modal_empleado">
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
-  <div class="p-2 ms-auto"></div>
+  <div class="p-2 ms-auto">
+
+  </div>
   <div class="p-2"><a href="/add_empleados/"><button class="btn btn-outline-dark" type="button"><i
-          class="bi bi-plus-square"></i> Nuevo empleado</button></a></div>
+          class="bi bi-plus-square"></i> Nuevo empleado</button></a>
+  </div>
   <div class="p-2"><a href="/empleados_desactivados/"><button class="btn btn-outline-danger" type="button">Ver empleados eliminados</button></a></div>
 </div>
+
+
 
 
 <div class="row justify-content-center text-center">
@@ -52,4 +77,12 @@ Inicio
   </div>
   {% endfor %}
 </div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+  var obtenerClienteUrl = "{% url 'obtener_cliente' %}";
+</script>
+<script src="{% static 'general.js' %}"></script>
 {% endblock %}
