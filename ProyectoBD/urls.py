@@ -60,6 +60,9 @@ urlpatterns = [
     path('cliente/<int:id_clientes>/',views.edit_cliente),
     path('eliminar_cliente/<int:id_clientes>/',views.eliminar_cliente),
 
+    path('clientes_desactivados/', views.clientes_desactivados),  
+    path('reactivar_cliente/<int:id_clientes>/',views.reactivar_cliente),
+
     #Orden isa
     path('generar_orden/<int:id_mesa>', views.agregar_orden, name="gen_orden"),
     path('orden_detalle/<int:id_orden>', views.detalle_orden),
