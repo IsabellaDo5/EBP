@@ -1,7 +1,10 @@
 function obtenerCliente(nombre_cliente, id_modal,tipo_busq) {
     const nombre = document.getElementById(nombre_cliente).value;
     const modal = document.getElementById(id_modal);
-
+    let id =0;
+    let url_editar = "";
+    let url_eliminar = "";
+    
     axios.get(obtenerClienteUrl, {
         params: {
             nombre: nombre,
@@ -15,6 +18,17 @@ function obtenerCliente(nombre_cliente, id_modal,tipo_busq) {
             modal.innerHTML = "";
             // Iterar sobre cada objeto en el array recibido
             catalogo_clientes.forEach(function (info) {
+                if (tipo_busq == "cliente"){
+                    id = info.id_cliente;
+                    url_editar= "/cliente/"+id+"/";
+                    url_eliminar= "/eliminar_cliente/"+id+"/";
+                }
+                else{
+                    id = info.id_empleado;
+                    url_editar= "/empleado/"+id+"/";
+                    url_eliminar= "/eliminar_empleado/"+id+"/";
+                }
+
                 console.log(info);
                 modal.innerHTML += `<div class="col-md">
 
@@ -27,8 +41,8 @@ function obtenerCliente(nombre_cliente, id_modal,tipo_busq) {
                         </div>
                         <div class="col-sm">
                         <div class="btn-group me-2 gap-2" role="group" aria-label="First group">
-                            <a href="/cliente/`+info.id_cliente+`/"> <button type="button" class="btn btn-outline-dark"> <i class="bi bi-pencil-square"></i> Editar </button></a>
-                            <a href="/eliminar_cliente/`+info.id_cliente+`/"> <button type="button" class="btn btn-outline-danger"><i class="bi bi-dash-square"></i> Eliminar
+                            <a href="`+url_editar+`"> <button type="button" class="btn btn-outline-dark"> <i class="bi bi-pencil-square"></i> Editar </button></a>
+                            <a href="`+url_eliminar+`"> <button type="button" class="btn btn-outline-danger"><i class="bi bi-dash-square"></i> Eliminar
                             </button></a>
                         </div>
                         </div>
