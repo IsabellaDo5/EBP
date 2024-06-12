@@ -30,11 +30,18 @@ urlpatterns = [
     path('add_empleados/',views.agregar_empleado),
     path('empleado/<int:id_emp>/', views.edit_empleados),
     path('empleados/', views.empleados),
+
+    path('empleados_desactivados/', views.empleados_desactivados),
+    path('reactivar_empleado/<int:id_emp>/',views.reactivar_empleado),
     # Seccion de inventario
     path('inventario/', views.inventario, name='inventario'),
     path('add_inventario/',views.agregar_inventario),
     path('item/<int:id_item>/',views.edit_inventario),
     path('eliminar_inventario/<int:id_item>/',views.eliminar_item),
+
+
+    path('reactivar_item/<int:id_item>/',views.reactivar_item),
+    path('inventario_eliminado/', views.inventario_eliminado),
     #Seccion de platillos
     path('platillos/', views.platillos, name='platillos'),
     path('agregar_platillo/', views.add_platillo, name='agregar-platillo'),
@@ -53,6 +60,9 @@ urlpatterns = [
     path('cliente/<int:id_clientes>/',views.edit_cliente),
     path('eliminar_cliente/<int:id_clientes>/',views.eliminar_cliente),
 
+    path('clientes_desactivados/', views.clientes_desactivados),  
+    path('reactivar_cliente/<int:id_clientes>/',views.reactivar_cliente),
+
     #Orden isa
     path('generar_orden/<int:id_mesa>', views.agregar_orden, name="gen_orden"),
     path('orden_detalle/<int:id_orden>', views.detalle_orden),
@@ -67,6 +77,7 @@ urlpatterns = [
     path('verCantidadBebidaEnOrden/<int:idOrden>/<int:idItem>/', funciones.verCantidadBebidaEnOrden),
     
     path('verDetallesDeOrden/<int:idOrden>/', funciones.verDetallesDeOrden),
+    path('reactivarOrden/<int:idOrden>/', funciones.reactivarOrden),
 
     #Facturas alquiler
     path('facturas_alquiler/', views.ver_facturas_alquiler),
@@ -76,15 +87,19 @@ urlpatterns = [
     #orden hotep
     path('mesas/', views.mesas, name="mesas"),
     path('mesa_orden/<int:id_mesa>/', views.mesa_orden),
+    path('ordenes_inactivas/', views.ordenes_inactivas),
 
-    #Facturas orden
+  
     path('editar_orden/<int:id_orden>/', views.editar_orden),
-
     path('eliminar-imagen/', views.eliminar_imagen_bd, name="eliminar-imagen"),
 
 
+    #Reportes
     path('items-mas-vendidos/', views.items_mas_vendidos, name="items_mas_vendidos"),
     path('platillos-mas-vendidos/', views.platillos_mas_vendidos, name="platillos_mas_vendidos"),
 
     path('ajax/obtener_cliente/', views.obtener_cliente, name='obtener_cliente'),
+    #Respaldos
+    path('respaldos/', views.respaldos),
+    path('respaldos_automaticos/', views.respaldos_automaticos),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

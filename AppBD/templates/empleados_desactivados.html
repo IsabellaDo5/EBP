@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Inicio
+{% endblock %}
+
+{% block content %}
+<h3>empleados inactivos/despedidos</h3>
+<div class="hstack gap-3">
+  <div class="p-2">
+      <!--
+      <input class="form-control me-2" type="search" list="clientes" placeholder="Buscar empleado" aria-label="Search">
+      <datalist id="clientes">
+        <option value="Internet Explorer">
+        <option value="Firefox">
+        <option value="Chrome">
+        <option value="Opera">
+        <option value="Safari">
+      </datalist>
+      <button class="btn btn-outline-success" type="submit">Buscar</button>
+-->
+  </div>
+  <div class="p-2 ms-auto"></div>
+  <div class="p-2"><a href="/add_empleados/"><button class="btn btn-outline-dark" type="button"><i
+          class="bi bi-plus-square"></i> Nuevo empleado</button></a></div>
+</div>
+
+
+<div class="row justify-content-center text-center">
+  {% for x in trab %}
+  <div class="col">
+    <div class="card" style="margin: 1% !important; height: 90% !important;">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-sm">
+            <i class="bi bi-person-fill"></i>
+            <h4> {{x.nombre}} {{x.apellido}}</h4>
+          </div>
+          <div class="col-sm">
+            <div class="btn-group gap-3" role="group" aria-label="First group">
+              <a href="/reactivar_empleado/{{x.id_empleado}}/"> <button type="button" class="btn btn-primary"> <i
+                    class="bi bi-pencil-square"></i> Reactivar empleado </button></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

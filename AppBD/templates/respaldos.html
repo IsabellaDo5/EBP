@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Respaldos del sistema
+{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Opcional: estilizar el input para ocultar los minutos */
+    input[type="time"]::-webkit-datetime-edit-ampm-field,
+    input[type="time"]::-webkit-datetime-edit-minute {
+        display: none;
+    }
+    input[type="time"]::-webkit-datetime-edit {
+        padding-right: 5px;
+    }
+</style>
+<style>
+    /* Ocultar el input de archivo */
+
+    /* Estilizar el label para que parezca un botón */
+    .custom-file-label {
+        display: inline-block;
+        cursor: pointer;
+    }
+</style>
+
+<h2>Realizar respaldo manual</h2>
+<h4>Escriba el nombre del archivo y la direccion de la carpeta donde lo quiera guardar</h4>
+<form action="/respaldos/" method="post" class="row g-3" style="margin-top: 2% !important;">
+    {% csrf_token %}
+
+    <div class="row">
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Carpeta: </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Carpeta:">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="carpeta" class="form-control" id="inputCarpeta" value="" required autocomplete="off" title="Copie y pegue la dirección de su carpeta" pattern="[a-zA-Z]:\\(?:[^\\\/:*?\\|]+\\)*"
+                oninput="revisarExpresionRegularCarpeta(event)">
+            </div>
+            <input type="text" readonly class="form-control-plaintext" id="avisoCarpeta" value="">
+        </div>
+
+        <!--NOMBRE-->
+        <div class="col-sm-4">
+            <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Nombre del respaldo: </label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Nombre del respaldo: ">
+            </div>
+            <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden"></label>
+                <input type="text" name="nombreRespaldo" class="form-control" id="inputNombre" value="" required autocomplete="off" required>
+            </div>
+            <input type="text" readonly class="form-control-plaintext" id="avisoNombre">
+        </div>
+        
+
+    </div>
+
+    <div class="row">
+         <!--TIPO ALQUILER-->
+
+        <div class="col-md-4" style="padding-top: 20px;">
+                <button id="botonSubmit" class="btn btn-primary" type="submit">
+                    Hacer respaldo
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
+                        <path d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z"/>
+                        <path d="M13.5 9a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V12h-1.5a.5.5 0 0 1 0-1H13V9.5a.5.5 0 0 1 .5-.5"/>
+                    </svg>
+                </button>
+        </div>
+
+    </div>
+
+    <script>
+        //elementos del doc para usarlos con JS
+        const botonSubmit=document.getElementById("botonSubmit")
+        const inputCarpeta=document.getElementById("inputCarpeta")
+        const inputNombre=document.getElementById("inputCarpeta")
+        const avisoCarpeta=document.getElementById("avisoCarpeta")
+        const avisoNombre=document.getElementById("avisoNombre")
+
+        function revisarExpresionRegularCarpeta(event){
+            var regex = /^[a-zA-Z]:\\(?:[^\\\/:*?\\|]+\\)*$/;
+
+            const botonSubmit=document.getElementById("botonSubmit")
+            const inputCarpeta=document.getElementById("inputCarpeta")
+            const avisoCarpeta=document.getElementById("avisoCarpeta")
+
+            if (regex.test(inputCarpeta.value)) {
+                avisoCarpeta.value="La direccion de carpeta es valida"
+                avisoCarpeta.style.color="green"
+                botonSubmit.disabled=false
+
+                console.log("asdsadsad")
+            }else{
+                avisoCarpeta.value="La direccion de carpeta no es valida"
+                avisoCarpeta.style.color="red"
+                botonSubmit.disabled=true
+                console.log("nbo e sbvlaidas")
+            }
+
+        }
+    </script>
+</form>
+
+
+{% endblock %}

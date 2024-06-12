@@ -7,14 +7,16 @@ from django.db import OperationalError, connection
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-
+import subprocess
 import os
-from django.conf import settings
-from django.utils.text import slugify
 
+from django.utils.text import slugify
+import datetime as datetimeglobal  # Alias para el módulo global
+from datetime import datetime   # Alias para la clase específica
 import time
 import hashlib
-import datetime
+from django.conf import settings
+
 # FUNCIONES ASINCRONAS  
 def items_mas_vendidos(request):
     try:
@@ -122,7 +124,7 @@ def empleados(request):
         return redirect('/login')
     else:
         with connection.cursor() as cursor:
-            resultados=cursor.execute("SELECT * FROM empleados").fetchall()
+            resultados=cursor.execute("SELECT * FROM empleados where activo=1" ).fetchall()
             
         print(resultados)    
         return render(request, 'empleados.html', context={
@@ -195,7 +197,32 @@ def agregar_empleado(request):
 
 def eliminar_empleado(request, id_emp):
     with connection.cursor() as cursor:
-        sql_query = "DELETE FROM empleados WHERE id_empleado = %s"
+        sql_query = "UPDATE empleados set activo = 0 WHERE id_empleado= %s"
+        valores = (id_emp,)
+        cursor.execute(sql_query, valores)
+
+    connection.commit()
+
+    return redirect('/empleados/')
+
+
+#esta parte de aca es lo de lo sempleados inactivos, para mostrarlos y reactivarlos
+# Muestra la lista de empleados
+def empleados_desactivados(request):
+    if 'empleado_id' not in request.session:
+        return redirect('/login')
+    else:
+        with connection.cursor() as cursor:
+            resultados=cursor.execute("SELECT * FROM empleados where activo=0" ).fetchall()
+            
+        print(resultados)    
+        return render(request, 'empleados_desactivados.html', context={
+            'trab': resultados,
+        })
+    
+def reactivar_empleado(request, id_emp):
+    with connection.cursor() as cursor:
+        sql_query = "UPDATE empleados set activo = 1 WHERE id_empleado= %s"
         valores = (id_emp,)
         cursor.execute(sql_query, valores)
 
@@ -253,7 +280,7 @@ def agregar_inventario(request):
     
 def eliminar_item(request,id_item):
     with connection.cursor() as cursor:
-        sql_query = "DELETE FROM inventario WHERE id_item = %s"
+        sql_query = "Update inventario set activo=0 WHERE id_item = %s "
         valores = (id_item,)
         cursor.execute(sql_query, valores)
 
@@ -319,6 +346,34 @@ def edit_inventario(request, id_item):
             upload_image(request, id_item, 1)
             
             return redirect('/inventario/')
+        
+
+#esto va a aser para cuando "elimines un itme", con esto lo restauras
+def reactivar_item(request,id_item):
+    with connection.cursor() as cursor:
+        sql_query = "Update inventario set activo=1 WHERE id_item = %s "
+        valores = (id_item,)
+        cursor.execute(sql_query, valores)
+
+    connection.commit()
+
+    return redirect('/inventario/')
+
+#aqui los items eliminados
+def inventario_eliminado(request):
+    if 'empleado_id' not in request.session:
+        return redirect('/login')
+    else:
+        if request.method == 'GET':
+            with connection.cursor() as cursor:
+                resultados=cursor.execute("EXEC ver_inventario_eliminado").fetchall()
+            
+                print(resultados)    
+                return render(request, 'inventario_eliminado.html', context={
+                    'trab': resultados,
+                    'MEDIA_URL': settings.MEDIA_URL,
+                })
+
 #-----------------------------platillos----------------------------------
 
 
@@ -636,10 +691,10 @@ def edit_cliente(request, id_clientes):
     else:
         with connection.cursor() as cursor:
         # Define tu consulta SQL de actualización
-            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE id_cliente = %s"
+            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s , activo = %s WHERE id_cliente= %s"
         
         # Define los nuevos valores
-            nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'], id_clientes)
+            nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'],1, id_clientes)
 
         # Ejecuta la consulta SQL de actualización
             cursor.execute(sql_query, nuevos_valores)
@@ -651,7 +706,28 @@ def edit_cliente(request, id_clientes):
 
 def eliminar_cliente(request,id_clientes):
     with connection.cursor() as cursor:
-        sql_query = "DELETE FROM clientes WHERE id_clientes = %s"
+        sql_query = "Update clientes set activo = 0 WHERE id_cliente = %s"
+        valores = (id_clientes,)
+        cursor.execute(sql_query, valores)
+
+    connection.commit()
+
+    return redirect('/add_alquiler_cliente/') 
+
+
+def clientes_desactivados(request):
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            clientes=cursor.execute("SELECT * FROM clientes WHERE activo=0").fetchall()
+
+            
+        return render(request, 'clientes_desactivados.html', context={
+            'clientes': clientes,
+}) 
+    
+def reactivar_cliente(request,id_clientes):
+    with connection.cursor() as cursor:
+        sql_query = "Update clientes set activo = 1 WHERE id_cliente = %s"
         valores = (id_clientes,)
         cursor.execute(sql_query, valores)
 
@@ -662,7 +738,7 @@ def eliminar_cliente(request,id_clientes):
 def factura_orden(request):
     if request.method == 'GET':
     
-        hora_actual = str(datetime.datetime.now())
+        hora_actual = str(datetimeglobal.datetime.now())
         print(hora_actual)
         return render(request, 'factura_orden.html', context={
         'hora': hora_actual,
@@ -680,39 +756,84 @@ def ver_ordenes(request):
         })
 
 def detalle_orden(request, id_orden):
-    with connection.cursor() as cursor:
-        # Obtener cantidades
-        sql_query = "EXEC total_por_producto %s"
-        filtro = (id_orden,)
-        cursor.execute(sql_query, filtro)
-        orden = cursor.fetchall()
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+           # Obtener cantidades
+          sql_query = "EXEC total_por_producto %s"
+          filtro = (id_orden,)
+          cursor.execute(sql_query, filtro)
+          orden = cursor.fetchall()
 
-        sql_query2 ="exec gran_total_orden %s"
-        filtro = (id_orden,)
-        cursor.execute(sql_query2, filtro)
-        total = cursor.fetchall()
-        
-        print(total)
-        sql_query3 ="SELECT descripcion FROM ordenes WHERE id_orden= %s;"
-        filtro = (id_orden,)
-        cursor.execute(sql_query3, filtro)
-        notas = cursor.fetchone()
-        #print(orden)
+          sql_query2 ="exec gran_total_orden %s"
+          filtro = (id_orden,)
+          cursor.execute(sql_query2, filtro)
+          total = cursor.fetchall()
 
-        sql_query4 ="exec verOrdenEspecifica %s"
-        filtro = (id_orden,)
-        cursor.execute(sql_query4, filtro)
-        detallesOrden = cursor.fetchall()
+          print(total)
+          sql_query3 ="SELECT descripcion FROM ordenes WHERE id_orden= %s;"
+          filtro = (id_orden,)
+          cursor.execute(sql_query3, filtro)
+          notas = cursor.fetchone()
+          #print(orden)
 
-        fecha = str(datetime.datetime.now().strftime('%Y-%m-%d'))
-        print(fecha)
+          sql_query4 ="exec verOrdenEspecifica %s"
+          filtro = (id_orden,)
+          cursor.execute(sql_query4, filtro)
+          detallesOrden = cursor.fetchall()
 
-    return render(request, 'detalle_orden.html', context={
+          fecha = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
+          print(fecha)
+        return render(request, 'detalle_orden.html', context={
             'fecha': fecha,
             'info': orden, 'num': int(id_orden),
             'detallesOrden': detallesOrden,
-            'grantotal': total[0][2], 'notas':notas[0]
+            'grantotal': total[0][2], 'notas':notas[0],
+            'id_orden': id_orden
         })
+    else:
+       #necesito guardar en la bd ka factura, pero antes necesito obtener todo 
+       #IMPORTANTE=Necesitas ver si la orden esta activa o no para ver si actualizas la factura o creas una nueva
+       #fecha-------
+       fecha = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
+       print("facturafecha: " +fecha)
+       
+       with connection.cursor() as cursor:
+            #Estado-----
+            estadoOrden=int(request.POST['estado'])
+            #descuento-------
+            descuento=float(request.POST['descuentoFactura'])
+            print("decsuento: " +str(descuento)+ str(type(descuento)))
+            #alcoholica-------
+            acloholica= cursor.execute("exec revisarOrdenAlcoholica %s",(id_orden,)).fetchone()
+            alcoholicaInt=acloholica[0]
+            #id_empleado-------
+            idempleado=request.session['empleado_id']
+            idempleadoint=idempleado.get('empleado_id')
+            #id_cliente-------
+            nombreCliente=str(request.POST['nombreCliente'])
+            print("nombre del cliente: " +str(nombreCliente)+ str(type(nombreCliente)))
+            cliente=cursor.execute("exec verClienteEspecificoNombre %s",(nombreCliente,)).fetchone()
+            id_cliente=cliente[0]
+            print("id del cliente: " +str(id_cliente)+ str(type(id_cliente)))
+            #id_alquiler(en este caso va a ser null)-------
+            id_alquiler=None
+            #abono-------
+            abono=float(request.POST['abono'])
+            print("abono: " +str(abono)+ str(type(abono)))
+
+
+
+            if(estadoOrden==1):
+                cursor.execute("EXEC facturarOrden @fecha=%s, @descuento=%s, @alcoholica=%s, @idEmpleado=%s, @idCliente=%s, @idOrden=%s, @idAlquiler=%s, @abono=%s"
+                                               ,(fecha,descuento,alcoholicaInt,idempleadoint,id_cliente,id_orden,id_alquiler,abono))
+            elif(estadoOrden==0):
+                cursor.execute("EXEC editarFactura @fecha=%s, @descuento=%s, @alcoholica=%s, @idEmpleado=%s, @idCliente=%s, @idOrden=%s, @idAlquiler=%s, @abono=%s"
+                                               ,(fecha,descuento,alcoholicaInt,idempleadoint,id_cliente,id_orden,id_alquiler,abono))
+       connection.commit()
+       return redirect('/mesas/')
+
+
+    
 
 
 def agregar_orden(request,id_mesa):
@@ -724,7 +845,7 @@ def agregar_orden(request,id_mesa):
             platillos = cursor.execute("SELECT * FROM platillos").fetchall()
             
         clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]   
-        hora_actual = str(datetime.datetime.now().strftime('%Y-%m-%d'))
+        hora_actual = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
 
         return render(request, 'generar_orden2.html', 
                       {'bebidas': Bebidas,
@@ -832,7 +953,7 @@ def editar_orden(request,id_orden):
             queryorden="EXEC verOrdenEspecifica %s"
             orden=cursor.execute(queryorden, (id_orden,)).fetchone()
             
-        hora_actual = str(datetime.datetime.now())   
+        hora_actual = str(datetimeglobal.datetime.now())   
         print(platillos)
         return render(request, 'editar_orden.html', 
                       {'bebidas': bebidas,
@@ -937,7 +1058,17 @@ def mesa_orden(request, id_mesa):
             'ordenes': ordenes,
             'id_mesa': id_mesa,        
         })
+    
+def ordenes_inactivas(request):
+    with connection.cursor() as cursor:
+        sql_query = "exec VerOrdenesInactivas"
+        ordenes=cursor.execute(sql_query).fetchall() 
 
+
+    return render(request, 'ordenes_inactivas.html', context={
+            'ordenes': ordenes,
+        })
+    
 # Formatea la hora para almacenarlo en sql server
 def formatear_hora(hora):
     # Verificar que la hora tenga el formato correcto
@@ -1088,3 +1219,112 @@ def obtener_cliente(request):
         return JsonResponse({'error': str(e)}, status=500)
     # Devuelve los datos como JSON
     return JsonResponse(rows, safe=False)
+
+def respaldos(request):
+    if request.method == 'GET':
+        return render(request, 'respaldos.html', context={
+        })
+    else:
+        with connection.cursor() as cursor:
+            carpeta=request.POST['carpeta']
+            print(carpeta)
+            respaldo=request.POST['nombreRespaldo']
+            print(respaldo)
+        connection.commit()
+        bat_script = f"""
+@echo off
+
+rem Configuración de variables
+set server=DESKTOP-905LS6C\SQLEXPRESS
+set user=sa
+set password=123456789
+set database=EBP
+set backup_file={carpeta}{respaldo}.bak rem Ruta completa con el nombre del archivo
+
+rem Ejecutar el comando sqlcmd para realizar la copia de seguridad
+sqlcmd -S DESKTOP-905LS6C\SQLEXPRESS -U sa -P 123456789 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
+
+rem Salir del script
+exit /b 0
+"""
+        
+        # Guardar el contenido en un archivo .bat
+        nombre_archivo = 'backup_script.bat'
+        with open(nombre_archivo, 'w') as archivo:
+            archivo.write(bat_script)
+
+        # Ejecutar el archivo .bat usando subprocess
+        try:
+            resultado = subprocess.run([nombre_archivo], shell=True, capture_output=True, text=True)
+            print(resultado.stdout)
+            print(resultado.stderr)
+        except subprocess.CalledProcessError as e:
+            print(f"Error al ejecutar el script: {e}")
+        finally:
+            # Eliminar el archivo .bat después de usarlo (opcional)
+            import os
+            os.remove(nombre_archivo)
+        return redirect('/') 
+
+
+def respaldos_automaticos(request):
+    if request.method == 'GET':
+        return render(request, 'respaldos_automaticos.html', context={
+        })
+    else:
+        with connection.cursor() as cursor:
+            carpeta=request.POST['carpeta']
+            print(carpeta)
+            respaldo=request.POST['nombreRespaldo']
+            print(respaldo)
+            hora=request.POST['horaRespaldo']
+            print(hora)
+        connection.commit()
+        bat_script = f"""
+            @echo off
+
+            rem Configuración de variables
+            set server=DESKTOP-905LS6C\SQLEXPRESS
+            set user=sa
+            set password=123456789
+            set database=EBP
+            set backup_file={carpeta}{respaldo}.bak rem Ruta completa con el nombre del archivo
+
+            rem Ejecutar el comando sqlcmd para realizar la copia de seguridad
+            sqlcmd -S DESKTOP-905LS6C\SQLEXPRESS -U sa -P 123456789 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
+
+            rem Salir del script
+            exit /b 0
+        """
+        # Guardar el contenido en un archivo .bat
+        #Esta direccione es estatica y sinceramente me gustaria hacerlo en C:\ pero no le quiero 
+        #otorgar permisos al servidor para que escriba en el disco root
+        #Si estas leyendo esto: cambia esta direccion estatica a lo que te plazca
+        nombre_archivo = "F:\\tarea_respaldo_automatico.bat"
+
+        #estas son mis credenciales de windows, tambien vas a tener que cambiarlas
+        #TIENE QUE HABER UNA MEJOR MANERA DE HACER ESTO
+        #Si lo hay y es usando la bd, talvez mas adelante lo haga
+
+        #WINDOWS
+        usuario="admin123"
+        contraseña="123"
+        #ruta_archivo="C:\\tarea_respaldo_automatico.bat"
+        with open(nombre_archivo, 'w') as archivo:
+            archivo.write(bat_script)
+
+        # Actualizar o crear la tarea utilizando schtasks
+        task_name = "crear_backup"
+        comandoActualizar = f'schtasks /change /tn "{task_name}" /tr "{nombre_archivo}" /st {hora} /ru {usuario} /rp {contraseña}'
+        comandoCrear = f'schtasks /create /tn "{task_name}" /tr "{nombre_archivo}" /sc daily /st {hora} /ru {usuario} /rp {contraseña}'
+
+        # Intenta actualizar la tarea existente
+        resultado = os.system(comandoActualizar)
+        if resultado != 0:
+            # Si la actualización falla (por ejemplo, si la tarea no existe), crea la tarea
+            os.system(comandoCrear)
+
+        return redirect('/') 
+
+
+

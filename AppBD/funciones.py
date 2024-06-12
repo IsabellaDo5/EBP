@@ -99,3 +99,31 @@ def verDetallesDeOrden(request, idOrden):
         resultados = [dict(zip(columnas, fila)) for fila in cursor.fetchall()]  # Convertir filas a diccionarios
 
     return JsonResponse(resultados, safe=False)
+
+#REACTIVACION DE ORDEN INACTIVA
+def reactivarOrden(request, idOrden):
+    try:
+        with connection.cursor() as cursor:
+            query = "exec reactivarOrden %s"
+            cursor.execute(query, (idOrden,))
+        connection.commit()
+        return JsonResponse({'status': 'success', 'message': 'Se reactivó la orden'}, status=200)
+    except Exception as e:
+        print(f"Error inesperado al reactivar la orden: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+#COSA DE LOS RESPALDOS
+def crearRespaldo(request,carpeta,nombrerespaldo):
+    try:
+        with connection.cursor() as cursor:
+            query = "exec AñadirItemAOrden @DatabaseName = %s, @BackupPath = %s, @nombreRespaldo = %s"
+            valores = ("EBP", carpeta,)
+            cursor.execute(query, valores,nombrerespaldo)
+        connection.commit()
+        return JsonResponse({'status': 'success', 'message': 'Item añadido a la orden'}, status=200)
+    except Exception as e:
+        print(f"Error al añadir item a la orden: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+
+
