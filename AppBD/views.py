@@ -621,7 +621,7 @@ def add_cliente(request):
 def edit_cliente(request, id_clientes):
     if request.method == 'GET':
         with connection.cursor() as cursor:
-            query="SELECT * FROM clientes WHERE id_cliente = %s"
+            query="SELECT * FROM clientes WHERE nombre = %s"
             filtro = (id_clientes,)
             cursor.execute(query, filtro)
 
@@ -636,7 +636,7 @@ def edit_cliente(request, id_clientes):
     else:
         with connection.cursor() as cursor:
         # Define tu consulta SQL de actualización
-            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE id_cliente= %s"
+            sql_query = "UPDATE clientes SET nombre = %s, apellido = %s, direccion=%s, cedula=%s, telefono=%s WHERE nombre= %s"
         
         # Define los nuevos valores
             nuevos_valores = (request.POST['nombre'], request.POST['apellido'], request.POST['direccion'], request.POST['cedula'],request.POST['telefono'], id_clientes)
@@ -759,12 +759,12 @@ def agregar_orden(request,id_mesa):
         print(nombreCliente)
         
         with connection.cursor() as cursor:
-            #id_cliente = cursor.execute("exec buscarClientePorNombre %s ", argumentosbuscar).fetchone()
+            #nombre = cursor.execute("exec buscarClientePorNombre %s ", argumentosbuscar).fetchone()
             
             query="exec buscarClientePorNombre @nombre= %s"
             valores1=(nombreCliente,)
             id =cursor.execute(query, valores1).fetchone()
-            id_cliente = id[0]
+            nombre = id[0]
             print(id)
             
 
@@ -778,11 +778,11 @@ def agregar_orden(request,id_mesa):
                 # Aquí inserto descripcion y activo en la tabla ORDEN
                 queryAddOrden="exec addOrden %s, %s, %s, %s"
                 print (str(type(id_mesa)) + str(id_mesa))  
-                print (str(type(id_cliente)) +str(id_cliente))  
+                print (str(type(nombre)) +str(nombre))  
                 print (str(type(idempleadoint))+ str(idempleadoint))  
                 print (str(type(desc))+ str(desc))  
                 print(queryAddOrden)
-                valoresOrden=(id_mesa,id_cliente, idempleadoint,desc)
+                valoresOrden=(id_mesa,nombre, idempleadoint,desc)
     
                 cursor.execute(queryAddOrden, valoresOrden)
 
@@ -1063,3 +1063,23 @@ def eliminar_imagen_bd(request):
             
         eliminar_imagen(request, 1,str(img[0][0]))
         return JsonResponse({'status': 'success'})
+    
+
+def obtener_cliente(request):
+    try:
+        nombre = request.GET.get('nombre')
+        nombre_query= f'%{nombre}%'
+        print(nombre)
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM clientes WHERE nombre COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI OR apellido COLLATE Latin1_General_CI_AI LIKE %s COLLATE Latin1_General_CI_AI", (nombre_query,nombre_query))
+            # Obtiene los nombres de las columnas, 
+            columns = [col[0] for col in cursor.description]
+            # Obtener todos los resultados de la consulta como una lista de diccionarios [{"key":value, "key2": value2}]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            print(columns)
+            print(rows)
+    except OperationalError as e:
+        # Envia un error si la consulta falla
+        return JsonResponse({'error': str(e)}, status=500)
+    # Devuelve los datos como JSON
+    return JsonResponse(rows, safe=False)

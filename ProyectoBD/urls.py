@@ -85,4 +85,6 @@ urlpatterns = [
 
     path('items-mas-vendidos/', views.items_mas_vendidos, name="items_mas_vendidos"),
     path('platillos-mas-vendidos/', views.platillos_mas_vendidos, name="platillos_mas_vendidos"),
+
+    path('ajax/obtener_cliente/', views.obtener_cliente, name='obtener_cliente'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
