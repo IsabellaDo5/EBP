@@ -5,18 +5,17 @@
 {% endblock %}
 
 {% block content %}
-<h3>Seleccione una de las mesas para ver las ordenes o agregar una nueva</h3>
+<h3 class="fs-5">Seleccione una de las mesas para ver las ordenes o agregar una nueva</h3>
 
 <div class="container">
   <div class="row">
     <div class="col">
-      <div class="card">
-        <div class="card-body">
+
           
           <div class="row">
             <div class="col-md-6" style="width: 65%;margin-right: 5%;">
               <div style="height:65vh;width:100%;border:1px;overflow:auto;">                     
-                <h2>Todas las ordenes de la mesa {{id_mesa}}:</h2>
+                <h2>Ordenes de la mesa no. {{id_mesa}}:</h2>
                 <!-- Contenido de la primera columna -->
                 
                 {% for x in ordenes %}
@@ -25,7 +24,7 @@
                       <div class="row">
                         <div class="col-sm-9" style="width: 65%;">
                           <div class="row" style="margin-bottom: 0pwx;">
-                            <p><span class="fw-bold">ID Orden:</span> <span> {{ x.0 }}</span></p>
+                            <p><span class="fw-bold">Orden no.</span> <span> {{ x.0 }}</span></p>
                           </div>
                           <div class="row" style="margin-bottom: 0px;">
                             <p><span class="fw-bold">Atendido por:</span> <span> {{ x.2 }}</span></p>
@@ -70,12 +69,12 @@
 
               <!-- Contenido de la segunda columna -->
                <div class="row" style="margin-top: 20%;">
-                 <a href="/generar_orden/{{id_mesa}}"><button  class="btn btn-primary" type="button">
-                  Añadir orden
+                 <a class="btn btn-primary d-block" href="/generar_orden/{{id_mesa}}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-plus-fill" viewBox="0 0 16 16">
                     <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M8.5 7v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 1 0"/>
                   </svg>
-                </button></a>
+                  Nueva orden
+                </a>
               </div>
                 
               
@@ -83,8 +82,8 @@
 
             </div>
           </div>
-        </div>
-      </div>
+
+ 
     </div>
   </div>
 </div>

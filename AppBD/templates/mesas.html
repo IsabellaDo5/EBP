@@ -1,82 +1,88 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Mesas
+Mesas
 {% endblock %}
 
 {% block content %}
-<h3>Seleccione una de las mesas para ver las ordenes o agregar una nueva</h3>
+<h3 class="fs-5 opacity-75">Seleccione una de las mesas para ver las ordenes o agregar una nueva</h3>
 
 <div class="container">
   <div class="row">
 
-
-          
-            <div class="col-md-4" >
-
-              <div class="card">
-                <div class="card-body">
-                  <h2>Todas las mesas</h2>
-                  {% for mesa_id in mesas %}
-                        <a href="/mesa_orden/{{ mesa_id }}/"> <button type="button" class="btn btn-outline-secondary">Mesa {{ mesa_id }}</button></a>
-                  {% endfor %}
-        
-                </div>
-              </div>
-                
+    <div class="col-md-4">
+      <h2>Todas las mesas</h2>
+          <div class="row text-center justify-content-center">
+            {% for mesa_id in mesas %}
+            <div class="col-auto">
+              <a href="/mesa_orden/{{ mesa_id }}/" class="btn btn-outline-secondary"><img
+                  src="{{MEDIA_URL}}icons/mesa_icon.png" class="icon_mesa d-block" alt="" srcset=""> Mesa {{ mesa_id}}</a>
             </div>
-            <div class="col-md-8" class="carta-orden">
-              <div style="height:65vh;width:100%;border:1px;overflow:auto;">                     
-                <h2>Todas las ordenes:</h2>
-                <!-- Contenido de la primera columna -->
-                
-                {% for x in ordenes %}
-                <div class="card" style="margin: 1% !important;">
-                  <div class="card-body">
-                      <div class="row">
-                          <div class="col-sm-9" style="width: 65%;">
-                              <div class="row" style="margin-bottom: 0pwx;">
-                                <p><span class="fw-bold">ID Orden:</span> <span> {{ x.id_orden }}</span></p>
-                              </div>
-                              <div class="row" style="margin-bottom: 0px;">
-                                <p><span class="fw-bold">Atendido por:</span> <span> {{ x.nombreEmpleado }}</span></p>
-                            </div>
-                              <div class="row" style="margin-bottom: 0px;">
-                                <p><span class="fw-bold">Cliente:</span> <span> {{ x.nombreCliente }}</span></p>
-                              </div>
-                              <div class="row" style="margin-bottom: 0px;">
-                                <span class="fw-bold">Nota:</span> <span>  {{x.descripcion}} </span></p>
-                              </div>
-                          </div>
 
+            {% endfor %}
+          </div>
+    </div>
+  <hr class="d-lg-none">
+    <div class="col-md-8" class="carta-orden borde_mesas">
+ 
+      <div style="height:75vh;width:100%;border:1px;overflow:auto;">
+        
+        <h2>Todas las ordenes:</h2>
+        <!-- Contenido de la primera columna -->
 
-                          <div class="col-sm-3">
-                              <div class="btn-group me-2" role="group" aria-label="First group">
-                                <a href="/editar_orden/{{x.id_orden}}"><button  class="btn btn-primary" type="button" style="margin-right:10px;" >
-                                  Editar 
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                                    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
-                                  </svg>
-                                </button></a>
+        {% for x in ordenes %}
+        <div class="card" style="margin: 1% !important;">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-sm-10 col-md-9 lista-ordenes">
 
-                                <a href="/orden_detalle/{{x.id_orden}}"><button  class="btn btn-danger" type="button" style="margin-right: 10px" >
-                                    Facturar
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
-                                    <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/>
-                                    <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5"/>
-                                  </svg>
-                                </button></a>
-                              </div>
-                              
-                          </div>
-                      </div>
-                  </div>
+                <div class="hstack gap-3">
+                  <div class="p-2 fs-5 fw-bold opacity-75">Orden no. {{ x.id_orden }}</div>
+                  <div class="p-2 ms-auto"></div>
+                  <div class="p-2 fs-5 fw-bold opacity-75">Atendido por:</span> <span> {{ x.nombreEmpleado }}</span></div>
+                </div>
+        
+                  <p><span class="fs-4 fw-bold">Cliente: {{ x.nombreCliente }}</p>
+            
+                  <hr>
+                  <span class="fs-5 fw-bold">Nota:</span> <span> {{x.descripcion}} </span></p>
               </div>
-              
-              {% endfor %}
-              
+
+
+              <div class="col-sm-3">
+                <div class="btn-group me-2" role="group" aria-label="First group">
+                  <a href="/editar_orden/{{x.id_orden}}"><button class="btn btn-primary" type="button"
+                      style="margin-right:10px;">
+                      Editar
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z" />
+                      </svg>
+                    </button></a>
+
+                  <a href="/orden_detalle/{{x.id_orden}}"><button class="btn btn-danger" type="button"
+                      style="margin-right: 10px">
+                      Facturar
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-receipt" viewBox="0 0 16 16">
+                        <path
+                          d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z" />
+                        <path
+                          d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5" />
+                      </svg>
+                    </button></a>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
+
+        {% endfor %}
+
+      </div>
+    </div>
   </div>
-  {% endblock %}
+</div>
+{% endblock %}
