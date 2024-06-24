@@ -6,7 +6,7 @@ Mesas
 
 {% block content %}
 <h2>Ordenes Inactivas</h2>
-<h3>Estas ordenes ya fueron facturadas. Seleccione una para editar</h3>
+<h3 class="fs-5 opacity-75">Estas ordenes ya fueron facturadas. Seleccione una para editar</h3>
 
 <div class="container">
   <div class="row">
@@ -20,19 +20,17 @@ Mesas
           <div class="card" style="margin: 1% !important;">
             <div class="card-body">
               <div class="row align-items-center">
-                <div class="col-sm-9" style="width: 65%;">
-                  <div class="row" style="margin-bottom: 0pwx;">
-                    <p><span class="fw-bold">ID Orden:</span> <span> {{ x.0 }}</span></p>
+                <div class="col-sm-10 col-md-9 lista-ordenes">
+                  <div class="hstack gap-3">
+                    <div class="p-2 fs-5 fw-bold opacity-75">Orden no. {{ x.id_orden }}</div>
+                    <div class="p-2 ms-auto"></div>
+                    <div class="p-2 fs-5 fw-bold opacity-75">Atendido por:</span> <span> {{ x.nombreEmpleado }}</span></div>
                   </div>
-                  <div class="row" style="margin-bottom: 0px;">
-                    <p><span class="fw-bold">Atendido por:</span> <span> {{ x.2 }}</span></p>
-                  </div>
-                  <div class="row" style="margin-bottom: 0px;">
-                    <p><span class="fw-bold">Cliente:</span> <span> {{ x.3 }}</span></p>
-                  </div>
-                  <div class="row" style="margin-bottom: 0px;">
-                    <span class="fw-bold">Nota:</span> <span> {{x.1}} </span></p>
-                  </div>
+                  <p><span class="fs-5 fw-bold">Cliente: {{ x.nombreCliente }} </span> </p>
+            
+                  <hr>
+                  <span class="fs-5 fw-bold">Nota:</span> <span> {{x.descripcion}} </span></p>
+              
                 </div>
 
 

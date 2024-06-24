@@ -1326,5 +1326,22 @@ def respaldos_automaticos(request):
 
         return redirect('/') 
 
-
+def buscar_cliente_cedula(request):
+    if request.method == 'GET':
+        try:
+            cedula = request.GET.get('cedula')
+            print(cedula)
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM clientes WHERE cedula = %s", (cedula,))
+                # Obtiene los nombres de las columnas, 
+                columns = [col[0] for col in cursor.description]
+                # Obtener todos los resultados de la consulta como una lista de diccionarios [{"key":value, "key2": value2}]
+                rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                print(columns)
+                print(rows)
+        except OperationalError as e:
+            # Envia un error si la consulta falla
+            return JsonResponse({'error': str(e)}, status=500)
+        # Devuelve los datos como JSON
+        return JsonResponse(rows, safe=False)
 

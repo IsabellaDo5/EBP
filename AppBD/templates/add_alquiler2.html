@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-
+{% load static %}
 {% block title %}
 Agregar un alquiler
 {% endblock %}
@@ -77,15 +77,31 @@ Agregar un alquiler
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Cédula</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
-                    value="Cédula">
+                    value="Cédula"  >
             </div>
             <div class="col-auto">
                 <label for="cedula" class="visually-hidden"></label>
                 <input type="text" maxlength="16" name="cedula" class="form-control" id="cedula" value=""
-                required autocomplete="off"  required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY">
+                required autocomplete="off"  required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY" id="cedula"
+                onchange="buscar_clientes_cedula(event)">
             </div>
         </div>
+        <div class="col">
+            <div class="col-auto">
+                <label for="coincidencia" class="visually-hidden">Coincidencia</label>
+                <input type="text" readonly class="form-control-plaintext" id="coincidencia"
+                    value="Coincidencia"  >
+            </div>
+            <div class="col-auto">
+                <label for="cedula" class="visually-hidden"></label>
+                <input type="text" readonly maxlength="16" name="cedula" class="form-control-plaintext" value=""
+                required autocomplete="off"  id="cliente">
+            </div>
+        </div>
+        
+    </div>
 
+    <div class="row">
         <div class="col">
             <p>¿Desea agregar servicios de comida y bebida? Por un costo extra de $50</p>
             <div class="form-check form-check-inline">
@@ -100,6 +116,7 @@ Agregar un alquiler
     </div>
     <button type="submit" class="btn btn-secondary">Guardar alquiler</button>
 </form>
+
 <script>
     document.getElementById('horaInicio').addEventListener('input', function(e) {
         var timeValue = e.target.value;
@@ -149,4 +166,12 @@ Agregar un alquiler
 
 
 </script>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var obtenerCedula = "{% url 'alquiler-cliente-bd' %}";
+</script>
+<script src="{% static 'alquiler.js' %}"></script>
 {% endblock %}

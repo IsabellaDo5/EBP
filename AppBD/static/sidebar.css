@@ -40,7 +40,7 @@ h4 {
 #sidebar {
     max-width: 264px;
     min-width: 264px;
-    background: var(--bs-dark);
+    background: #ffb555;
     transition: all 0.35s ease-in-out;
 }
 
@@ -75,17 +75,19 @@ h4 {
 }
 
 .sidebar-header {
-    color: #e9ecef;
+    color: #613713;
     font-size: .75rem;
     padding: 1.5rem 1.5rem .375rem;
 }
 
 a.sidebar-link {
     padding: .625rem 1.625rem;
-    color: #e9ecef;
+    color: #613713;
     position: relative;
     display: block;
     font-size: 0.875rem;
+    font-family: 'Roboto', sans-serif;;
+    font-weight: 450;
 }
 
 .sidebar-link[data-bs-toggle="collapse"]::after {

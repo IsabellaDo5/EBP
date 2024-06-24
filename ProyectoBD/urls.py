@@ -54,6 +54,7 @@ urlpatterns = [
     path('add_alquiler2/', views.add_alquiler2),
     path('alquiler/<int:id_alquiler>/',views.edit_alquiler),
     path('eliminar_alquiler/<int:id_alquiler>/',views.eliminar_alquiler),
+    path('alquiler/obtener_cliente/', views.buscar_cliente_cedula, name='alquiler-cliente-bd'),
     #clientes
     path('add_cliente/', views.add_cliente),
     path('add_alquiler_cliente/', views.add_alquiler_cliente),
