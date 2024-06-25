@@ -526,12 +526,13 @@ def alquiler(request):
                 diferencia = calcular_tiempo(hora_Inicio, hora_Fin)
                 alquileres.append({
                     "id": r[0],
-                    "title": f"{r[6]} {r[7]}",
+                    "title": f"{r[7]} {r[8]}",
                     "start": f"{r[3]} {r[4]}",
                     "end": f"{r[3]} {r[5]}",
-                    "tipo": r[8],
+                    "tipo": r[9],
                     "fecha": f"{r[3]}",
                     "diferencia": f"{diferencia}",
+                    "extras": f"{r[6]}"
                 })
 
         print(alquileres)
@@ -573,26 +574,18 @@ def edit_alquiler(request, id_alquiler):
                 'fecha': fecha_formateada,
             })
         else:
-            cliente= request.POST['nombreCliente']
+            cedula= request.POST['cedula']
             fecha = request.POST['fecha']
             horaInicio = formatear_hora(request.POST['horaInicio'])
             horaFin = formatear_hora(request.POST['horaFin'])
             tipoAlquiler = request.POST['id_tipoAlquiler']
+            extras = request.POST['agregar_servicios']
 
-            nombreapellido = cliente.split()
 
-            if len(nombreapellido)==3:
-                nombreCliente = " ".join(nombreapellido[:1])
-                apellidoCliente = " ".join(nombreapellido[-2:])
-            else:
-                # Tomar los dos primeros elementos de la lista de palabras
-                nombreCliente = " ".join(nombreapellido[:2])
-                apellidoCliente = " ".join(nombreapellido[-2:])
-
-            print("info: "+ cliente+""+fecha+""+horaInicio+""+horaFin+""+tipoAlquiler)
+            print("info: "+ cedula+""+fecha+""+horaInicio+""+horaFin+""+tipoAlquiler)
             with connection.cursor() as cursor:
-                sql_query = "exec modificar_alquiler %s, %s, %s, %s, %s, %s, %s"
-                nuevos_valores = (id_alquiler,fecha, horaInicio, horaFin, nombreCliente, apellidoCliente, tipoAlquiler)
+                sql_query = "exec modificar_alquiler %s, %s, %s, %s, %s, %s,%s"
+                nuevos_valores = (id_alquiler,fecha, horaInicio, horaFin,cedula, tipoAlquiler, extras)
                 cursor.execute(sql_query, nuevos_valores)
             
             connection.commit()
@@ -616,12 +609,13 @@ def add_alquiler2(request):
         horaInicio = formatear_hora(request.POST['horaInicio'])
         horaFin = formatear_hora(request.POST['horaFin'])
         tipoAlquiler = request.POST['tipoAlquiler']
+        extras = request.POST['agregar_servicios']
 
 
 
         with connection.cursor() as cursor:
-            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s"
-            valores = (fecha, horaInicio, horaFin, cedula, tipoAlquiler)
+            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s, %s"
+            valores = (fecha, horaInicio, horaFin, cedula, tipoAlquiler,extras)
             cursor.execute(sql_query, valores)
 
         connection.commit()

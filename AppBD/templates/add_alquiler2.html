@@ -83,7 +83,7 @@ Agregar un alquiler
                 <label for="cedula" class="visually-hidden"></label>
                 <input type="text" maxlength="16" name="cedula" class="form-control" id="cedula" value=""
                 required autocomplete="off"  required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY" id="cedula"
-                onchange="buscar_clientes_cedula(event)">
+                oninput="buscar_clientes_cedula(event)">
             </div>
         </div>
         <div class="col">
@@ -94,7 +94,7 @@ Agregar un alquiler
             </div>
             <div class="col-auto">
                 <label for="cedula" class="visually-hidden"></label>
-                <input type="text" readonly maxlength="16" name="cedula" class="form-control-plaintext" value=""
+                <input type="text" readonly maxlength="16" class="form-control-plaintext" value=""
                 required autocomplete="off"  id="cliente">
             </div>
         </div>
@@ -105,11 +105,11 @@ Agregar un alquiler
         <div class="col">
             <p>¿Desea agregar servicios de comida y bebida? Por un costo extra de $50</p>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="agregar_servicios" id="inlineRadio1" value="1">
+                <input class="form-check-input" type="radio" name="agregar_servicios" id="inlineRadio1" value="si">
                 <label class="form-check-label" for="inlineRadio1">Sí</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="agregar_servicios" id="inlineRadio2" value="0">
+                <input class="form-check-input" type="radio" name="agregar_servicios" id="inlineRadio2" value="no">
                 <label class="form-check-label" for="inlineRadio2">No</label>
               </div>
         </div>

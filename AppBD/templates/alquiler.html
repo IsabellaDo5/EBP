@@ -49,6 +49,9 @@
               <div class="col-md">
                 <p><strong>Total a pagar:</strong> <span id="total_pagar"></span></p>
               </div>
+              <div class="col-md">
+                <p><strong>Servicio de comidas y bebidas: </strong> <span id="servicios_extras"></span></p>
+              </div>
             </div>
             
           </div>
@@ -99,7 +102,9 @@
                     var diferencia = document.getElementById("cantidad_horas");
                     var costo_total = document.getElementById("total_pagar");
                     var detalles = document.getElementById('alquiler_detalle');
+                    var extras_ = document.getElementById('servicios_extras');
 
+                    
                     modalCliente.innerHTML ="<h4>"+ info.event.title+"</h4>";
                     modalInicio.innerText = info.event.start;
                     modalFin.innerText = info.event.end;
@@ -107,7 +112,14 @@
                     fecha.innerText = info.event.extendedProps.fecha;
                     diferencia.innerText = info.event.extendedProps.diferencia;
                     costo_total.innerText = calcularCostoReservacion(info.event.extendedProps.diferencia, info.event.extendedProps.tipo);
+                    if(info.event.extendedProps.extras == "no"){
+                      extras_.innerText = "No incluidos";
+                    }
+                    else{
+                      extras_.innerText = "Incluidos";
+                    }
                     detalles.href = '/alquiler/'+info.event.id+'/';
+
                     // Mostrar el modal
                     var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
                     eventModal.show();
@@ -122,6 +134,7 @@
   function calcularCostoReservacion(tiempo, tipo_Alquiler) {
     // Convertir el tiempo en formato "HH:MM" a horas
     const [horas, minutos] = tiempo.split(':').map(Number);
+    const extras_ = document.getElementById('servicios_extras');
     const totalHoras = horas + minutos / 60;
     const tarifaAdicionalPorHora = 50;
     const horasBase = 4;
@@ -143,7 +156,14 @@
     } else {
         const horasAdicionales = totalHoras - horasBase;
         const costoAdicional = Math.ceil(horasAdicionales) * tarifaAdicionalPorHora;
-        return tarifaBase + costoAdicional;
+
+        if (extras_.innerText == "Incluidos"){
+          return tarifaBase + costoAdicional + 50;
+        }
+        else{
+          return tarifaBase + costoAdicional;
+        }
+        
     }
 }
 </script>
