@@ -166,7 +166,30 @@ Agregar un alquiler
 
 
 </script>
+<script>
+    const horaInicio = document.getElementById('horaInicio');
+    const horaFin = document.getElementById('horaFin');
 
+    horaInicio.addEventListener('change', () => {
+        const [hora, minutos] = horaInicio.value.split(':');
+        let finHora = parseInt(hora) + 4;
+
+        // Manejar el desbordamiento de 24 horas
+        if (finHora >= 24) {
+            finHora -= 24;
+        }
+
+        // Formatear la hora y minutos
+        const finHoraStr = finHora.toString().padStart(2, '0') + ':' + minutos;
+
+        horaFin.min = finHoraStr;
+        horaFin.disabled = false; // Habilitar el campo de hora de fin si estaba deshabilitado
+        horaFin.value = ''; // Limpiar el valor anterior para forzar la selección de un nuevo valor válido
+    });
+
+    // Inicialmente desactivar el campo de hora de fin
+    horaFin.disabled = true;
+</script>
 {% endblock %}
 
 {% block scripts %}
