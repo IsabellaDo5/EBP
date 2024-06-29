@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Editar registro
+Agregar un item al inventario
 {% endblock %}
 
 {% block content %}
@@ -31,21 +31,33 @@ Editar registro
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="nombre" class="form-control" id="inputPassword2" value="" required autocomplete="off" >
+                <input type="text" name="nombre" class="form-control" id="inputPassword2" value="" required
+                    autocomplete="off">
+            </div>
+        </div>
+        <!--PRECIO DE COMPRA-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Precio de compra (C$) por unidad de medida">
+            </div>
+            <div class="col-auto">
+                <input type="number" name="precio_compra" class="form-control" id="inputPassword2" value="" min="0" step="0.01" required
+                    autocomplete="off">
+            </div>
+        </div>
+        <!--PRECIO DE VENTA-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Precio de venta (C$)">
+            </div>
+            <div class="col-auto">
+                <input type="number" name="precio" class="form-control" id="inputPassword2" value="" min="0" step="0.01" required
+                    autocomplete="off">
             </div>
         </div>
 
-        <!--PRECIO-->
-        <div class="col-md-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Precio</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Precio">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="number" name="precio" class="form-control" id="inputPassword2" value="" required autocomplete="off" >
-            </div>
-        </div>
 
         <!--CANTIDAD-->
         <div class="col-md-4">
@@ -55,7 +67,8 @@ Editar registro
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="number" name="cantidad" class="form-control" id="inputPassword2" value="" required autocomplete="off" >
+                <input type="number" name="cantidad" class="form-control" id="inputPassword2" value="" required
+                    autocomplete="off">
             </div>
         </div>
 
@@ -67,13 +80,13 @@ Editar registro
             </div>
             <div class="col-auto">
                 <!--Agregué esta etiqueta-->
-            <select class="form-select" aria-label="Default select example" name="unidad_medida" id="unidad_medida" > 
-                <option selected disabled value=" " >Seleccionar</option>
-                {% for x in unidadesdeMedida %}
-                <option value="{{x.nombre}}">{{x.nombre}}</option>
-                {% endfor %}
-            </select>
-            <!--Hasta aquí-->
+                <select class="form-select" aria-label="Default select example" name="unidad_medida" id="unidad_medida">
+                    <option selected disabled value=" ">Seleccionar</option>
+                    {% for x in unidadesdeMedida %}
+                    <option value="{{x.nombre}}">{{x.nombre}}</option>
+                    {% endfor %}
+                </select>
+                <!--Hasta aquí-->
             </div>
         </div>
     </div>

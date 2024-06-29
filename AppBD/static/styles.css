@@ -11,6 +11,10 @@ h1,h2,h3,h4{
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
 }
+.list-group-item:hover{
+    background-color: #ffb555;
+    cursor:pointer;
+}
 .icon-item{
     width: 7rem; 
     height:5rem;

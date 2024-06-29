@@ -7,15 +7,16 @@ Editar item
 {% block content %}
 <h3>Editar información</h3>
 {% for x in info %}
-<form action="/item/{{x.5}}/" method="post" class="row g-3" style="margin-top: 2% !important;"
+<form action="/item/{{x.6}}/" method="post" class="row g-3" style="margin-top: 2% !important;"
     enctype="multipart/form-data">
     {% csrf_token %}
     <!--PRIMERA FILA-->
 
     <div class="row">
         <div class="col-sm">
-            <img src="{{ MEDIA_URL }}{{x.8}}" class="thumbnail " alt="" id="icon_original" >
-            <button type="button" class="btn btn-danger" style="" id="btn_eliminar_icon" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar imagen</button>
+            <img src="{{ MEDIA_URL }}{{x.9}}" class="thumbnail " alt="" id="icon_original">
+            <button type="button" class="btn btn-danger" style="" id="btn_eliminar_icon" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">Eliminar imagen</button>
             <!-- Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
@@ -26,12 +27,13 @@ Editar item
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            ¿Estás seguro de querer eliminar esta imagen? Esta acción no se puede deshacer. 
+                            ¿Estás seguro de querer eliminar esta imagen? Esta acción no se puede deshacer.
                             Haga click en el botón "Eliminar" para confirmar esta acción.
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" onclick="usuario_elimina_imagen(event)" data-bs-dismiss="modal">Eliminar</button>
+                            <button type="button" class="btn btn-primary" onclick="usuario_elimina_imagen(event)"
+                                data-bs-dismiss="modal">Eliminar</button>
                         </div>
                     </div>
                 </div>
@@ -52,26 +54,36 @@ Editar item
                     value="{{x.0}}">
             </div>
         </div>
-
-        <!--Precio-->
-        <div class="col-sm-4">
+        <!--PRECIO DE COMPRA-->
+        <div class="col-md-4">
             <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Precio</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Precio">
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Precio de compra (C$) por unidad de medida">
             </div>
             <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="number" name="precio" class="form-control" id="inputPassword2" maxlength="25" required
-                    value="{{x.1}}">
+                <input type="number" name="precio_compra" class="form-control" id="inputPassword2" value="{{x.1}}" min="0"
+                    step="0.01" required autocomplete="off">
             </div>
         </div>
+        <!--PRECIO DE VENTA-->
+        <div class="col-md-4">
+            <div class="col-auto">
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
+                    value="Precio de venta (C$)">
+            </div>
+            <div class="col-auto">
+                <input type="number" name="precio" class="form-control" id="inputPassword2" maxlength="25" required
+                    value="{{x.2}}">
+            </div>
+        </div>
+
 
         <!--tipoItem-->
         <div class="col-md-4">
             <label for="inputState" class="form-label">Tipo de item:</label>
             <select id="inputState" class="form-select" name="id_tipoItem">
                 {% for y in catalogo_tipoItem %}
-                {% if x.7 == y.nombre %}
+                {% if x.8 == y.nombre %}
                 <option selected value="{{y.nombre}}">{{y.nombre}}</option>
                 {%else%}
                 <option value="{{y.nombre}}">{{y.nombre}}</option>
@@ -88,7 +100,8 @@ Editar item
             </div>
             <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="number" name="cantidad" step="0.01" class="form-control" id="inputPassword2" maxlength="25" required value="{{x.2}}">
+                <input type="number" name="cantidad" step="0.01" class="form-control" id="inputPassword2" maxlength="25"
+                    required value="{{x.3}}">
 
             </div>
         </div>
@@ -115,9 +128,8 @@ Editar item
         <div class="col-md-4">
 
             <label for="imagen" class="form-label">Subir una imagen del producto</label>
-            <input type="file" class="form-control" name="icon" id="imagen"
-                accept=".png, .jpeg, .jpg, .webp">
-            <input type="text" class="invisible" name="cambio_img" value="{{x.5}}" id="id_item">
+            <input type="file" class="form-control" name="icon" id="imagen" accept=".png, .jpeg, .jpg, .webp">
+            <input type="text" class="invisible" name="cambio_img" value="{{x.6}}" id="id_item">
 
         </div>
 
@@ -136,6 +148,6 @@ Editar item
     document.addEventListener("DOMContentLoaded", (event) => {
         mostrar_imagen();
     });
-   
-  </script>
+
+</script>
 {% endblock %}

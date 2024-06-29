@@ -60,3 +60,28 @@ function obtenerCliente(nombre_cliente, id_modal,tipo_busq) {
             console.log('Error:', error);
         });
 }
+
+async function obtenerReporteVentas(periodo_tiempo) {
+    try {
+        const response = await axios.get(ventas_url, {
+            params: {
+                periodo: periodo_tiempo
+            }
+        });
+
+        const cliente = response.data;
+
+        if (cliente.length > 0) {
+            let resp = "";
+            cliente.forEach(function (info) {
+                resp += " " + info.nombre + " " + info.apellido;
+            });
+            return resp.trim();
+        } else {
+            return "No se encontraron coincidencias.";
+        }
+    } catch (error) {
+        console.error('Error en la solicitud HTTP:', error);
+        throw error; // Propagar el error para que pueda ser manejado por el llamador
+    }
+}

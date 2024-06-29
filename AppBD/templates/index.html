@@ -15,18 +15,22 @@ Inicio
 
 <div class="container ">
   <div class="row">
-      <h3>Productos próximos a terminarse (Quedan menos de 10 unidades)</h3>
+      <h4>Productos próximos a terminarse (Quedan menos de 10 unidades)</h4>
       {% for x in productos %}
       <div class="col-auto" >
         <div class="card" >
+          {% if x.5 %}
           <img src="{{ MEDIA_URL }}{{x.5}}" class="card-img-top" style="object-fit: cover; height: 5rem;" alt="">
+          {% else %}
+          <img src="https://cdn3.iconfinder.com/data/icons/online-states/150/Photos-512.png" class="card-img-top " style="object-fit: cover; height: 5rem;" alt="">
+          {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{x.1}}</h5>
-            <p class="card-text">Precio: C${{x.2}} <br> <strong>Cantidad disponible: {{x.3}} </strong> 
+            <p class="card-text">Precio de compra: C${{x.8}} <br> <strong>Cantidad disponible: {{x.3}} </strong> 
             </p>
         
             <div>
-              <a href="/item/{{x.id_item}}" class="btn btn-success">  <i class="bi bi-plus-square"></i> Agregar</a>
+              <a href="/item/{{x.0}}" class="btn btn-success">  <i class="bi bi-plus-square"></i> Agregar</a>
         
             </div>
         
@@ -36,17 +40,36 @@ Inicio
       {% endfor %}
 
   </div>
-
+<hr>
   <div class="row">
-    <div class="col-md items_vendidos">
-      <h4>Bebidas más vendidas</h4>
-      <canvas id="items_chart" aria-label="Hello ARIA World" role="img"></canvas>
+    <div class="col-md-4">
+      <strong>REPORTES DE VENTAS</strong>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" onclick="obtenerReporteVentas(30)" >Reporte de ventas de los últimos 30 días</li>
+        <li class="list-group-item" onclick="obtenerReporteVentas(7)">Reporte de venta de los ultimos 7 días</li>
+        <li class="list-group-item">A third item</li>
+
+      </ul>
     </div>
-    <div class="col-md items_vendidos">
-      <h4>Platillos más vendidos</h4>
-      <canvas id="platillos_chart" aria-label="Hello ARIA World" role="img"></canvas>
+    <div class="col-md-8">
+      <h3>Productos más vendidos</h3>
+      <div class="row overflow-auto" style="height: 70vh !important;">
+          <div class="items_vendidos">
+
+          
+            <strong>Bebidas más vendidas</strong>
+            <canvas id="items_chart" aria-label="Hello ARIA World" role="img"></canvas>
+        </div>
+        <hr>
+        <div class="items_vendidos">
+            <strong>Platillos más vendidos</strong>
+            <canvas id="platillos_chart" aria-label="Hello ARIA World" role="img"></canvas>
+        </div>
+          
+      </div>
+      </div>
     </div>
-  </div>
+
 </div>
 
 {% endblock %}
@@ -57,6 +80,8 @@ Inicio
 
   const items_url = "{% url 'items_mas_vendidos' %}";
   const platillos_url = "{% url 'platillos_mas_vendidos' %}";
+  const ventas_url = "{% url 'reportes-ventas-ordenes' %}";
+
   document.addEventListener("DOMContentLoaded", (event) => {
   ItemsMasVendidos();
   PlatillosMasVendidos()
@@ -64,5 +89,5 @@ Inicio
 
   
 </script>
-
+<script src="{% static 'general.js' %}"></script>
 {% endblock %}

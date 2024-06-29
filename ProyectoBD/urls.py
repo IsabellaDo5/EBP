@@ -98,7 +98,7 @@ urlpatterns = [
     #Reportes
     path('items-mas-vendidos/', views.items_mas_vendidos, name="items_mas_vendidos"),
     path('platillos-mas-vendidos/', views.platillos_mas_vendidos, name="platillos_mas_vendidos"),
-
+    path('reportes/ventas/ordenes/', views.ventas_periodo, name='reportes-ventas-ordenes' ),
     path('ajax/obtener_cliente/', views.obtener_cliente, name='obtener_cliente'),
     #Respaldos
     path('respaldos/', views.respaldos),

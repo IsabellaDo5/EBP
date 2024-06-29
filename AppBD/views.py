@@ -1,3 +1,4 @@
+import io
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -9,7 +10,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 import subprocess
 import os
-
+import xlsxwriter
 from django.utils.text import slugify
 import datetime as datetimeglobal  # Alias para el módulo global
 from datetime import datetime   # Alias para la clase específica
@@ -270,8 +271,8 @@ def agregar_inventario(request):
                 UnidadMedida=" "
 
             with connection.cursor() as cursor:
-                sql_query = "EXEC agregar_inventario %s, %s, %s, %s, %s"
-                valores = (request.POST['nombre'], request.POST['precio'], request.POST['id_tipoItem'], request.POST['cantidad'],UnidadMedida)
+                sql_query = "EXEC agregar_inventario %s, %s,%s, %s, %s, %s"
+                valores = (request.POST['nombre'],request.POST['precio_compra'], request.POST['precio'], request.POST['id_tipoItem'], request.POST['cantidad'],UnidadMedida)
                 cursor.execute(sql_query, valores)
 
             connection.commit()
@@ -326,14 +327,14 @@ def edit_inventario(request, id_item):
 
                 img = cursor.execute("SELECT imagen from inventario WHERE id_item = %s", (id_item,)).fetchall()
                 print("UNIDAD DE MEDIDA: "+unidad_medida)
-                sql_query = "EXEC editar_info_item %s, %s, %s, %s, %s, %s"
-                nuevos_valores = (request.POST['nombre'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
+                sql_query = "EXEC editar_info_item %s, %s,%s, %s, %s, %s, %s"
+                nuevos_valores = (request.POST['nombre'],request.POST['precio_compra'], request.POST['precio'],request.POST['cantidad'],unidad_medida, request.POST['id_tipoItem'],  id_item)
                 cursor.execute(sql_query, nuevos_valores)
                 
             connection.commit()
 
             # comprueba si ya existe una imagen en la db
-            if len(img[0][0]) != 0:
+            if img[0][0]:
                 try:
                     request.FILES['icon']
                     eliminar_imagen(request,1,img[0][0])
@@ -1338,4 +1339,74 @@ def buscar_cliente_cedula(request):
             return JsonResponse({'error': str(e)}, status=500)
         # Devuelve los datos como JSON
         return JsonResponse(rows, safe=False)
+#REPORTES 
+    #VENTAS DE COMIDA Y BEBIDAS 
+def ventas_periodo(request):
+    try:
+ 
+        fila = 10
+        columna = 2
+        reporte = io.BytesIO()
+        periodo = int(request.GET.get('periodo'))
 
+        with connection.cursor() as cursor:
+            info_t1 = cursor.execute("EXEC ventas_periodo %s", (periodo,)).fetchall()
+            info_t2 = cursor.execute("EXEC ventas_platillos_periodo %s", (periodo,)).fetchall()
+            fecha = cursor.execute("SELECT CONVERT (date, SYSDATETIME())").fetchone()
+
+        excel = xlsxwriter.Workbook("Reporte Ventas últimos "+str(periodo)+" días "+str(fecha[0])+".xlsx")
+        hoja_trabajo = excel.add_worksheet()
+        estilo_titulo = excel.add_format({'bold': True, 'font_size': 12})
+        estilo_titulo.set_align("center")
+        estilo_tabla = excel.add_format()
+        estilo_tabla.set_border(1)
+        estilo_tabla.set_text_wrap()
+
+        if periodo == 30:
+            hoja_trabajo.merge_range("C2:E2", "REPORTE DE VENTAS DE LOS ÚLTIMOS 30 DIAS DEL LOCAL EL BUEN PUNTO", estilo_titulo)
+        elif periodo == 7:
+            hoja_trabajo.write("C2:E2", "REPORTE DE VENTAS DE LOS ÚLTIMOS 7 DIAS DEL LOCAL EL BUEN PUNTO", estilo_titulo)
+        hoja_trabajo.write("C3", "FECHA DE CREACIÓN: "+str(fecha[0]), estilo_titulo)
+
+        estilo_titulo.set_text_wrap()
+        hoja_trabajo.write(7,2, "BEBIDAS", estilo_titulo)
+        hoja_trabajo.write(9,2, "PRODUCTO", estilo_titulo)
+        hoja_trabajo.write(9,3, "PRECIO DE COMPRA", estilo_titulo)
+        hoja_trabajo.write(9,4, "PRECIO DE VENTA", estilo_titulo)
+        hoja_trabajo.write(9,5, "GANANCIA POR UNIDAD", estilo_titulo)
+        hoja_trabajo.write(9,6, "CANTIDAD VENDIDA", estilo_titulo)
+        hoja_trabajo.write(9,7, "VENTA", estilo_titulo)
+        for tupla in info_t1:
+            for item in tupla:
+                hoja_trabajo.write(fila,columna, item, estilo_tabla)
+                columna+=1
+            fila+=1
+            columna= 2
+        
+        hoja_trabajo.write(fila+4,2, "PLATILLOS", estilo_titulo)
+        hoja_trabajo.write(fila+6,2, "NOMBRE", estilo_titulo)
+        hoja_trabajo.write(fila+6,3, "COSTO INGREDIENTES", estilo_titulo)
+        hoja_trabajo.write(fila+6,4, "PRECIO DE VENTA", estilo_titulo)
+        hoja_trabajo.write(fila+6,5, "GANANCIA POR UNIDAD", estilo_titulo)
+        hoja_trabajo.write(fila+6,6, "CANTIDAD VENDIDA", estilo_titulo)
+        hoja_trabajo.write(fila+6,7, "VENTA TOTAL", estilo_titulo)
+        hoja_trabajo.write(fila+6,8, "GANANCIA TOTAL", estilo_titulo)
+        
+        fila +=7
+        for tupla in info_t2:
+            for item in tupla:
+                hoja_trabajo.write(fila,columna, item, estilo_tabla)
+                columna+=1
+            fila+=1
+            columna= 2
+
+        hoja_trabajo.autofit()
+        excel.close()
+        reporte.seek(0)
+
+
+    except OperationalError as e:
+            # Envia un error si la consulta falla
+            return JsonResponse({'error': str(e)}, status=500)
+        # Devuelve los datos como JSON
+    return JsonResponse(rows, safe=False)
