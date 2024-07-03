@@ -55,6 +55,7 @@ urlpatterns = [
     path('alquiler/<int:id_alquiler>/',views.edit_alquiler),
     path('eliminar_alquiler/<int:id_alquiler>/',views.eliminar_alquiler),
     path('alquiler/obtener_cliente/', views.buscar_cliente_cedula, name='alquiler-cliente-bd'),
+    path('alquiler/obtener_horasReservadas/', views.obtener_horas_ocupadas, name="obtener_horas_ocupadas"),
     #clientes
     path('add_cliente/', views.add_cliente),
     path('add_alquiler_cliente/', views.add_alquiler_cliente),
@@ -81,8 +82,7 @@ urlpatterns = [
     path('reactivarOrden/<int:idOrden>/', funciones.reactivarOrden),
 
     #Facturas alquiler
-    path('facturas_alquiler/', views.ver_facturas_alquiler),
-    path('add_factura_alquiler/', views.add_factura_alquiler),
+    path('facturar/alquiler/<int:id_alquiler>/', views.facturar_alquiler),
 
     
     #orden hotep

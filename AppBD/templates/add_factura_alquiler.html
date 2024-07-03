@@ -1,77 +1,159 @@
 {% extends "layout.html" %}
-
+{% load static %}
 {% block title %}
-  Editar registro
+Facturar un alquiler
 {% endblock %}
 
 {% block content %}
-<h3>Facturar un alquiler</h3>
-<form action="/add_factura_alquiler/" method="post" class="row g-3" style="margin-top: 2% !important;">
-    <p></p>
+<form action="/facturar/alquiler/{{id_alquiler}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
     {% csrf_token %}
     <!--PRIMERA FILA-->
     <div class="row">
-        <!--Fecha-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Fecha de la factura</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Fecha de la factura">
+        {%for item in info_alquiler%}
+        <div class="col-md-6 card" style="padding: 1.5rem !important;">
+            <strong>EL BUEN PUNTO</strong>
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <p>Empleado </p>
+                </div>
+                <div class="col">
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{empleado}}">
+                </div>
             </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="fecha" class="form-control" id="inputPassword2" value="">
+            <div class="row">
+                
+                <div class="col">
+                    <p>Fecha </p>
+                </div>
+                <div class="col">
+                    <input type="date" readonly class="form-control-plaintext" value="obtener_fechaFactura()" id="staticEmail">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <p>Cliente </p>
+                </div>
+                <div class="col">
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{item.0}}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Fecha del evento </p>
+                </div>
+                <div class="col">
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{item.1}}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Hora de inicio del evento </p>
+                </div>
+                <div class="col">
+                    <input type="time" readonly class="form-control-plaintext" id="staticEmail" value="{{item.2|time:'H:i'}}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Hora de fin del evento </p>
+                </div>
+                <div class="col">
+                    <input type="time" readonly class="form-control-plaintext" id="horaFin" value="{{item.3|time:'H:i'}}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Tipo de alquiler</p>
+                </div>
+                <div class="col">
+                    <input type="text" readonly class="form-control-plaintext" id="tipoAlquiler" value="{{item.4}}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Servicios extras </p>
+                </div>
+                <div class="col">
+                    <input type="text" readonly class="form-control-plaintext" id="servicios_extras" value="{{item.5}}">
+                </div>
             </div>
         </div>
-        
-        <!--NUMERO DE FACTURA-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Numero de factura</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Numero de factura">
+        {% endfor %}
+        <div class="col-md-5">
+            <div class="row">
+                <div class="col">
+                    <strong>Total a pagar: </strong>
+                </div>
+                <div class="col">
+                    <input type="text" readonly class="form-control-plaintext" id="total_pagar" value="">
+                </div>
+
+                
             </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="num_factura" class="form-control" id="inputPassword2" value="">
+            <div class="row">
+                <div class="col">
+                    <strong>Descuento: </strong>
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" id="staticEmail" value="0" min="0" max="100">
+                </div>
             </div>
-        </div>
-         
-        <!--id_empleado-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">ID Empleado </label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID Empleado">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_empleado" class="form-control" id="inputPassword2" value="">
+            <hr>
+            <div class="row">
+                <div class="col d-inline">
+                    <strong class="d-inline p-2 ">PAGA CON: </strong>
+                    <input type="number" class="form-control d-inline" name="abono" id="abono" value="" min="" >
+                    <select class="form-select d-inline" aria-label="Default select example" id="tipo_cambio">
+                        <option selected value="1">Dólares</option>
+                        <option value="2">Córdobas</option>
+                      </select>
+                </div>
+                <div class="col">
+                    <strong id="tipoCambio_ver">Cambio</strong>
+                    <input class="form-control" type="number" value="" name="" id="cambio">
+                </div>
+                <div class="col-auto-4 alert alert-danger" role="alert" id="error_abono"  style="margin-top: 3% !important;display:none !important;">
+
+                </div>
             </div>
         </div>
 
-        <!--id_cliente-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">ID Cliente </label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID Cliente">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_clientes" class="form-control" id="inputPassword2" value="">
-            </div>
-        </div>
 
-        <!--id_alquiler-->
-        <div class="col-sm-4">
-            <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">ID alquiler</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="ID Alquiler">
-            </div>
-            <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden"></label>
-                <input type="text" name="id_alquiler" class="form-control" id="inputPassword2" value="">
-            </div>
-        </div>
-    </div>             
-    <button type="submit" class="btn btn-secondary">Guardar factura</button>
+    </div>
+
+    <button type="submit" class="btn btn-secondary">Continuar</button>
 </form>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'alquiler.js' %}"></script>
+<script>
+    const total_pagar = document.getElementById("total_pagar");
+    const abono_min = document.getElementById("abono");
+
+    {% for x in info_alquiler %}
+    let diferencia =  calcularDiferencia("{{x.2|time:'H:i'}}", "{{x.3|time:'H:i'}}");
+    {% endfor %}
+
+    let costo_total = calcularCostoReservacion(diferencia, document.getElementById("tipoAlquiler").value);
+    total_pagar.value += costo_total;
+    abono_min.min += costo_total;
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+    const abonoInput = document.getElementById("abono");
+    
+    const tipoCambioSelect = document.getElementById("tipo_cambio");
+    const totalPagar = document.getElementById("total_pagar").value;
+    const tipoAlquiler = document.getElementById("tipoAlquiler").value;
+
+    // Actualiza el evento de entrada para el campo "abono"
+    abonoInput.addEventListener("input", (e) => calcular_cambio(e, totalPagar, tipoAlquiler));
+});
+
+</script>
 
 {% endblock %}

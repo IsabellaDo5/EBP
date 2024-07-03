@@ -56,6 +56,7 @@
             
           </div>
           <div class="modal-footer">
+            <a class="btn btn-info" href="#" role="button" id="alquiler_facturar">Facturar</a>
             <a class="btn btn-primary" href="#" role="button" id="alquiler_detalle">Modificar</a>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
@@ -118,6 +119,7 @@
                     else{
                       extras_.innerText = "Incluidos";
                     }
+                    document.getElementById('alquiler_facturar').href = '/facturar/alquiler/'+info.event.id+'/';
                     detalles.href = '/alquiler/'+info.event.id+'/';
 
                     // Mostrar el modal
@@ -158,7 +160,14 @@
         const costoAdicional = Math.ceil(horasAdicionales) * tarifaAdicionalPorHora;
 
         if (extras_.innerText == "Incluidos"){
-          return tarifaBase + costoAdicional + 50;
+
+          if (tipo_Alquiler == "Primera planta" || tipo_Alquiler == "Segunda planta"){
+            return tarifaBase + costoAdicional + 50;
+          }
+          else{
+            return tarifaBase + costoAdicional;
+          }
+          
         }
         else{
           return tarifaBase + costoAdicional;

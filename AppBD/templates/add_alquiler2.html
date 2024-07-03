@@ -12,6 +12,7 @@ Agregar un alquiler
     input[type="time"]::-webkit-datetime-edit-minute {
         display: none;
     }
+
     input[type="time"]::-webkit-datetime-edit {
         padding-right: 5px;
     }
@@ -20,6 +21,15 @@ Agregar un alquiler
 <form action="/add_alquiler2/" method="post" class="row g-3" style="margin-top: 2% !important;">
     <p></p>
     {% csrf_token %}
+
+    <div class="row">
+        <div class="alert alert-info" role="alert" id="horariosReservados">
+            Reservaciones para esta fecha en este piso:
+        </div>
+        <div class="alert alert-danger" role="alert" id="horarioOcupado" style="display:none !important;">
+
+        </div>
+    </div>
     <!--PRIMERA FILA-->
 
     <div class="row">
@@ -27,10 +37,21 @@ Agregar un alquiler
         <div class="col-md-5">
             <div class="col">
                 <label for="fecha">Selecciona una fecha:</label>
+                <input type="date" class="form-control" id="fecha" name="fecha" min=""
+                    onchange="desactivar_horasReservadas(event)" required>
             </div>
-            <div class="col">
-                <input type="date" class="form-control" id="fecha" name="fecha" min="" required>
-            </div>
+        </div>
+
+        <!--TIPO ALQUILER-->
+
+        <div class="col-md-4">
+            <label for="tipoAlquiler" class="form-label">Tipo de alquiler:</label>
+            <select class="form-select" name="tipoAlquiler" aria-label="Default select example" id="tipoAlquiler"
+                onchange="desactivar_horasReservadas(event);serv_extras(event);">
+                {% for tipo in tipoAlquiler %}
+                <option value="{{tipo.0}}">{{tipo.1}} | Tarifa/ 4 horas: $ {{tipo.2}}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
 
@@ -43,7 +64,7 @@ Agregar un alquiler
             </div>
             <div class="col">
                 <input type="time" id="horaInicio" class="form-control" name="horaInicio" min="14:00" max="02:00"
-                    required />
+                    disabled required />
             </div>
         </div>
 
@@ -53,91 +74,59 @@ Agregar un alquiler
                 <label for="horaFin">Hora de fin:</label>
             </div>
             <div class="col">
-                <input type="time" id="horaFin" class="form-control" name="horaFin" step="3600" min="14:00" max="02:00" required />
+                <input type="time" id="horaFin" class="form-control" name="horaFin" step="3600" min="14:00" max="02:00"
+                    disabled required />
             </div>
         </div>
 
     </div>
 
     <div class="row">
-         <!--TIPO ALQUILER-->
 
-         <div class="col-md-4">
-            <label for="tipoAlquiler" class="form-label">Tipo de alquiler:</label>
-            <select class="form-select" name="tipoAlquiler" aria-label="Default select example" id="tipoAlquiler" >
-                {% for tipo in tipoAlquiler %}
-                <option value="{{tipo.0}}">{{tipo.1}} | Tarifa/ 4 horas: $ {{tipo.2}}</option>
-                {% endfor %}
-            </select>
-        </div>
 
 
         <!--CEDULA-->
         <div class="col-md-4">
             <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Cédula</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2"
-                    value="Cédula"  >
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Cédula">
             </div>
             <div class="col-auto">
                 <label for="cedula" class="visually-hidden"></label>
-                <input type="text" maxlength="16" name="cedula" class="form-control" id="cedula" value=""
-                required autocomplete="off"  required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY" id="cedula"
-                oninput="buscar_clientes_cedula(event)">
+                <input type="text" maxlength="16" name="cedula" class="form-control" id="cedula" value="" required
+                    autocomplete="off" required pattern="^\d{3}-\d{6}-\d{4}[A-Za-z]$" title="XXX-XXXXXX-XXXXY"
+                    id="cedula" oninput="buscar_clientes_cedula(event)">
             </div>
         </div>
         <div class="col">
             <div class="col-auto">
                 <label for="coincidencia" class="visually-hidden">Coincidencia</label>
-                <input type="text" readonly class="form-control-plaintext" id="coincidencia"
-                    value="Coincidencia"  >
+                <input type="text" readonly class="form-control-plaintext" id="coincidencia" value="Coincidencia">
             </div>
             <div class="col-auto">
                 <label for="cedula" class="visually-hidden"></label>
-                <input type="text" readonly maxlength="16" class="form-control-plaintext" value=""
-                required autocomplete="off"  id="cliente">
+                <input type="text" readonly maxlength="16" class="form-control-plaintext" value="" required
+                    autocomplete="off" id="cliente">
             </div>
         </div>
-        
+
     </div>
 
     <div class="row">
-        <div class="col">
+        <div class="col" id="div_extras">
             <p>¿Desea agregar servicios de comida y bebida? Por un costo extra de $50</p>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="agregar_servicios" id="inlineRadio1" value="si">
                 <label class="form-check-label" for="inlineRadio1">Sí</label>
-              </div>
-              <div class="form-check form-check-inline">
+            </div>
+            <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="agregar_servicios" id="inlineRadio2" value="no">
                 <label class="form-check-label" for="inlineRadio2">No</label>
-              </div>
+            </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-secondary">Guardar alquiler</button>
+    <button type="submit" class="btn btn-secondary" id="guardarAlquiler" disabled>Guardar alquiler</button>
 </form>
-
-<script>
-    document.getElementById('horaInicio').addEventListener('input', function(e) {
-        var timeValue = e.target.value;
-        if (timeValue) {
-            var [hours, minutes] = timeValue.split(':');
-            if (minutes !== '00') {
-                e.target.value = `${hours}:00`;
-            }
-        }
-    });
-
-    document.getElementById('horaFin').addEventListener('input', function(e) {
-        var timeValue = e.target.value;
-        if (timeValue) {
-            var [hours, minutes] = timeValue.split(':');
-            if (minutes !== '00') {
-                e.target.value = `${hours}:00`;
-            }
-        }
-    });
-</script>
 
 <script>
     // Obtener la fecha actual en la zona horaria de Nicaragua (UTC-6)
@@ -152,19 +141,24 @@ Agregar un alquiler
     // Asignar la fecha actual al atributo min del input de fecha
     document.getElementById('fecha').min = formattedDate;
 
-
-
-
-    //on input de la cedula
-    cedulaInput.addEventListener("input", confirmarCliente);
-
-    function confirmarCliente(){
-        let cedulaTexto = cedulaInput.value
-
-        console.log(cedulaTexto + "tipo: " +typeof cedulaTexto)
-    }
-
-
+    document.getElementById('horaInicio').addEventListener('input', function (e) {
+        var timeValue = e.target.value;
+        if (timeValue) {
+            var [hours, minutes] = timeValue.split(':');
+            if (minutes !== '00') {
+                e.target.value = `${hours}:00`;
+            }
+        }
+    });
+    document.getElementById('horaFin').addEventListener('input', function (e) {
+        var timeValue = e.target.value;
+        if (timeValue) {
+            var [hours, minutes] = timeValue.split(':');
+            if (minutes !== '00') {
+                e.target.value = `${hours}:00`;
+            }
+        }
+    });
 </script>
 <script>
     const horaInicio = document.getElementById('horaInicio');
@@ -183,7 +177,6 @@ Agregar un alquiler
         const finHoraStr = finHora.toString().padStart(2, '0') + ':' + minutos;
 
         horaFin.min = finHoraStr;
-        horaFin.disabled = false; // Habilitar el campo de hora de fin si estaba deshabilitado
         horaFin.value = ''; // Limpiar el valor anterior para forzar la selección de un nuevo valor válido
     });
 
@@ -195,6 +188,9 @@ Agregar un alquiler
 {% block scripts %}
 <script>
     var obtenerCedula = "{% url 'alquiler-cliente-bd' %}";
+    const horasOcupadasURL = '{% url "obtener_horas_ocupadas" %}';
+
 </script>
 <script src="{% static 'alquiler.js' %}"></script>
+
 {% endblock %}

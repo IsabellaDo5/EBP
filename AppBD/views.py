@@ -985,38 +985,35 @@ def ver_facturas_alquiler(request):
             'facturas': facturas,
         })
 
-def add_factura_alquiler(request):
+def facturar_alquiler(request, id_alquiler):
     if request.method == 'GET':
-        return render(request, 'add_factura_alquiler.html')
-    else:
+        id_empleado = request.session['empleado_id']
+        print()
         with connection.cursor() as cursor:
+            empleado = cursor.execute("SELECT CONCAT(nombre, ' ' , apellido) FROM empleados WHERE id_empleado = %s", (id_empleado.get('empleado_id'),)).fetchall()
+            info_alquiler= cursor.execute('''SELECT CONCAT (C.nombre,' ', C.apellido) AS nombre_completo, A.fecha, A.horaInicio, A.horaFin,
+                                T.nombre, A.extras
+                                FROM clientes C INNER JOIN alquileres A ON C.id_cliente = A.id_cliente
+                                INNER JOIN tipoAlquiler T ON T.id_tipoAlquiler = A.id_tipoAlquiler
+                                WHERE id_alquiler = %s''', (id_alquiler,)).fetchall()
+        
+        return render(request, 'add_factura_alquiler.html', context={
+            'id_alquiler': id_alquiler,
+            'empleado': empleado[0][0],
+            'info_alquiler': info_alquiler,
+        })
+    else:
+        descuento= request.POST['descuento']
+        idempleado= request.session['empleado_id']
+        abono = request.POST['abono']
 
-            #Hay que actualizar 3 tablas al facturar: factura, factura_empleado y detalle_alquiler
-            #1) actualizando factura
-            sql_query = "INSERT INTO factura (fecha, num_factura, id_empleado, id_clientes, alcoholica) VALUES (%s, %s, %s,%s, %s)"
-            valores = (request.POST['fecha'], request.POST['num_factura'], request.POST['id_empleado'], request.POST['id_clientes'],0)
+
+        with connection.cursor() as cursor:
+            id_cliente = cursor.execute("SELECT id_cliente FROM clientes WHERE cedula = %s", (request.POST['cedula'],)).fetchall()
+            sql_query = "INSERT INTO facturas (fecha, descuento, alcoholica, id_empleado, id_cliente, id_alquiler,abono) VALUES (%s, %s, %s,%s, %s, %s,%s,%s)"
+            valores = (request.POST['fecha'], descuento ,0, idempleado , id_cliente,id_alquiler, abono)
             cursor.execute(sql_query, valores)
 
-            #2) actualizando factura_empleado
-             # Selecciono el ultimo registro en la tablf
-            id_factura_ultima = cursor.execute("SELECT TOP 1 * FROM factura ORDER BY id_factura DESC;").fetchone()
-             #añadiendo el registro
-            sql_query2="INSERT INTO factura_empleado (id_factura, id_empleado) VALUES (%s, %s)"
-            valores2 = (id_factura_ultima[0], request.POST['id_empleado'])
-            cursor.execute(sql_query2, valores2)
-
-            #3) actualizando detalle_alquiler
-             #obteniendo el tiempo total(horas) de la tabla alquiler
-            id_alquiler=request.POST['id_alquiler']
-            sql_queryhoras=cursor.execute("SELECT horas FROM alquiler where id_alquiler=%s;" %id_alquiler).fetchone()
-            
-             #obteniendo el total a pagar
-            id_total = cursor.execute("SELECT a.horas * t.tarifa AS total FROM alquiler a JOIN tipoAlquiler t ON a.id_tipoAlquiler = t.id_tipoAlquiler WHERE id_alquiler=%s;" %id_alquiler).fetchone()
-             #ahora si metiendo en detalle alquiler
-            print(id_total[0])
-            sql_query3="INSERT INTO detalle_alquiler (cantidad_tiempo, total, id_factura, id_alquiler) VALUES (%s, %s,%s,%s)"
-            valores3 = (sql_queryhoras[0], id_total[0],id_factura_ultima[0],id_alquiler)
-            cursor.execute(sql_query3, valores3)
         connection.commit()
 
         return redirect('/facturas_alquiler/') 
@@ -1320,6 +1317,24 @@ def respaldos_automaticos(request):
             os.system(comandoCrear)
 
         return redirect('/') 
+    
+def obtener_horas_ocupadas(request):
+    fecha = request.GET.get('fecha')
+    piso = request.GET.get('piso')
+    if fecha:
+        with connection.cursor() as cursor:
+            alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND id_tipoAlquiler = %s", (fecha,piso,)).fetchall()
+        print("HORAS OCUPADAS: "+str(alquileres))    
+        horas_ocupadas = []
+        for x in range(len(alquileres)):
+            horas_ocupadas.append({
+                'horaInicio': alquileres[x][0].strftime('%H:%M'),
+                'horaFin': alquileres[x][1].strftime('%H:%M'),
+                'id_tipoAlquiler': alquileres[x][2]
+            })
+        print("HORAS OCUPADAS: "+str(horas_ocupadas))     
+        return JsonResponse({'horas_ocupadas': horas_ocupadas})
+    return JsonResponse({'error': 'Fecha no proporcionada'}, status=400)
 
 def buscar_cliente_cedula(request):
     if request.method == 'GET':
@@ -1340,13 +1355,11 @@ def buscar_cliente_cedula(request):
         # Devuelve los datos como JSON
         return JsonResponse(rows, safe=False)
 #REPORTES 
-    #VENTAS DE COMIDA Y BEBIDAS 
+    #VENTAS DE COMIDA Y BEBIDAS
 def ventas_periodo(request):
     try:
- 
         fila = 10
         columna = 2
-        reporte = io.BytesIO()
         periodo = int(request.GET.get('periodo'))
 
         with connection.cursor() as cursor:
@@ -1354,7 +1367,8 @@ def ventas_periodo(request):
             info_t2 = cursor.execute("EXEC ventas_platillos_periodo %s", (periodo,)).fetchall()
             fecha = cursor.execute("SELECT CONVERT (date, SYSDATETIME())").fetchone()
 
-        excel = xlsxwriter.Workbook("Reporte Ventas últimos "+str(periodo)+" días "+str(fecha[0])+".xlsx")
+        reporte = io.BytesIO()
+        excel = xlsxwriter.Workbook(reporte)
         hoja_trabajo = excel.add_worksheet()
         estilo_titulo = excel.add_format({'bold': True, 'font_size': 12})
         estilo_titulo.set_align("center")
@@ -1366,47 +1380,48 @@ def ventas_periodo(request):
             hoja_trabajo.merge_range("C2:E2", "REPORTE DE VENTAS DE LOS ÚLTIMOS 30 DIAS DEL LOCAL EL BUEN PUNTO", estilo_titulo)
         elif periodo == 7:
             hoja_trabajo.write("C2:E2", "REPORTE DE VENTAS DE LOS ÚLTIMOS 7 DIAS DEL LOCAL EL BUEN PUNTO", estilo_titulo)
-        hoja_trabajo.write("C3", "FECHA DE CREACIÓN: "+str(fecha[0]), estilo_titulo)
+        hoja_trabajo.write("C3", "GENERADO EL: " + str(fecha[0]), estilo_titulo)
 
         estilo_titulo.set_text_wrap()
-        hoja_trabajo.write(7,2, "BEBIDAS", estilo_titulo)
-        hoja_trabajo.write(9,2, "PRODUCTO", estilo_titulo)
-        hoja_trabajo.write(9,3, "PRECIO DE COMPRA", estilo_titulo)
-        hoja_trabajo.write(9,4, "PRECIO DE VENTA", estilo_titulo)
-        hoja_trabajo.write(9,5, "GANANCIA POR UNIDAD", estilo_titulo)
-        hoja_trabajo.write(9,6, "CANTIDAD VENDIDA", estilo_titulo)
-        hoja_trabajo.write(9,7, "VENTA", estilo_titulo)
+        hoja_trabajo.write(7, 2, "BEBIDAS", estilo_titulo)
+        hoja_trabajo.write(9, 2, "PRODUCTO", estilo_titulo)
+        hoja_trabajo.write(9, 3, "PRECIO DE COMPRA", estilo_titulo)
+        hoja_trabajo.write(9, 4, "PRECIO DE VENTA", estilo_titulo)
+        hoja_trabajo.write(9, 5, "GANANCIA POR UNIDAD", estilo_titulo)
+        hoja_trabajo.write(9, 6, "CANTIDAD VENDIDA", estilo_titulo)
+        hoja_trabajo.write(9, 7, "VENTA", estilo_titulo)
         for tupla in info_t1:
             for item in tupla:
-                hoja_trabajo.write(fila,columna, item, estilo_tabla)
-                columna+=1
-            fila+=1
-            columna= 2
-        
-        hoja_trabajo.write(fila+4,2, "PLATILLOS", estilo_titulo)
-        hoja_trabajo.write(fila+6,2, "NOMBRE", estilo_titulo)
-        hoja_trabajo.write(fila+6,3, "COSTO INGREDIENTES", estilo_titulo)
-        hoja_trabajo.write(fila+6,4, "PRECIO DE VENTA", estilo_titulo)
-        hoja_trabajo.write(fila+6,5, "GANANCIA POR UNIDAD", estilo_titulo)
-        hoja_trabajo.write(fila+6,6, "CANTIDAD VENDIDA", estilo_titulo)
-        hoja_trabajo.write(fila+6,7, "VENTA TOTAL", estilo_titulo)
-        hoja_trabajo.write(fila+6,8, "GANANCIA TOTAL", estilo_titulo)
-        
-        fila +=7
+                hoja_trabajo.write(fila, columna, item, estilo_tabla)
+                columna += 1
+            fila += 1
+            columna = 2
+
+        hoja_trabajo.write(fila + 4, 2, "PLATILLOS", estilo_titulo)
+        hoja_trabajo.write(fila + 6, 2, "NOMBRE", estilo_titulo)
+        hoja_trabajo.write(fila + 6, 3, "COSTO INGREDIENTES", estilo_titulo)
+        hoja_trabajo.write(fila + 6, 4, "PRECIO DE VENTA", estilo_titulo)
+        hoja_trabajo.write(fila + 6, 5, "GANANCIA POR UNIDAD", estilo_titulo)
+        hoja_trabajo.write(fila + 6, 6, "CANTIDAD VENDIDA", estilo_titulo)
+        hoja_trabajo.write(fila + 6, 7, "VENTA TOTAL", estilo_titulo)
+        hoja_trabajo.write(fila + 6, 8, "GANANCIA TOTAL", estilo_titulo)
+
+        fila += 7
         for tupla in info_t2:
             for item in tupla:
-                hoja_trabajo.write(fila,columna, item, estilo_tabla)
-                columna+=1
-            fila+=1
-            columna= 2
+                hoja_trabajo.write(fila, columna, item, estilo_tabla)
+                columna += 1
+            fila += 1
+            columna = 2
 
         hoja_trabajo.autofit()
         excel.close()
         reporte.seek(0)
 
+        response = HttpResponse(reporte.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="Reporte_Ventas_{periodo}_dias_{fecha[0]}.xlsx"'
+        return response
 
     except OperationalError as e:
-            # Envia un error si la consulta falla
-            return JsonResponse({'error': str(e)}, status=500)
-        # Devuelve los datos como JSON
-    return JsonResponse(rows, safe=False)
+        # Envia un error si la consulta falla
+        return JsonResponse({'error': str(e)}, status=500)
