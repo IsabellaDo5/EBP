@@ -17,6 +17,8 @@ from datetime import datetime   # Alias para la clase específica
 import time
 import hashlib
 from django.conf import settings
+import requests
+import asyncio
 
 # FUNCIONES ASINCRONAS  
 def items_mas_vendidos(request):
@@ -516,6 +518,7 @@ def alquiler(request):
         
         with connection.cursor() as cursor:
             resultados=cursor.execute("exec ver_info_alquileres").fetchall()
+
             #horas= cursor.execute("SELECT DATEPART(hour, CAST(horaFin AS DATETIME) - CAST(horaInicio AS DATETIME)) AS diferencia_hora FROM alquileres;").fetchall()
             alquileres = []
             
@@ -533,7 +536,8 @@ def alquiler(request):
                     "tipo": r[9],
                     "fecha": f"{r[3]}",
                     "diferencia": f"{diferencia}",
-                    "extras": f"{r[6]}"
+                    "extras": f"{r[6]}",
+                    "no_factura": f"{r[10]}"
                 })
 
         print(alquileres)
@@ -602,7 +606,6 @@ def add_alquiler2(request):
 
         return render(request, 'add_alquiler2.html', context={
             'tipoAlquiler': tipoAlquiler,
-
         })
     else:
         cedula=request.POST['cedula']
@@ -615,9 +618,23 @@ def add_alquiler2(request):
 
 
         with connection.cursor() as cursor:
-            sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s, %s"
-            valores = (fecha, horaInicio, horaFin, cedula, tipoAlquiler,extras)
-            cursor.execute(sql_query, valores)
+            alquileres_fecha = cursor.execute("SELECT COUNT(id_alquiler) FROM alquileres WHERE fecha = %s AND id_tipoAlquiler = 3", (fecha,)).fetchall()
+            horario_ocupado = cursor.execute("SELECT COUNT(id_alquiler) FROM alquileres WHERE fecha = %s AND (horaInicio BETWEEN %s AND %s OR horaFin BETWEEN %s AND %s) AND id_tipoAlquiler =%s ", (fecha, horaInicio, horaFin, horaInicio,horaFin, tipoAlquiler)).fetchall()
+            
+            if alquileres_fecha[0][0] > 0:
+                print("Entra a primer if ")
+                return render(request, "error.html", context={
+                    'mensaje': "Ocurrio un error al guardar su reservación: Ya existe una reservación de ambos pisos del local en la fecha que usted eligió, escoja otra fecha por favor."
+                })
+            elif horario_ocupado[0][0] > 0:
+                print("Entra a segundo if")
+                return render(request, "error.html", context={
+                    'mensaje': "Ocurrio un error al guardar su reservación: Ya existe una reservación en el mismo piso y horario que usted eligió, escoja otro horario o piso por favor. "
+                })
+            else:
+                sql_query = "exec registrar_alquiler %s, %s, %s, %s, %s, %s"
+                valores = (fecha, horaInicio, horaFin, cedula, tipoAlquiler,extras)
+                cursor.execute(sql_query, valores)
 
         connection.commit()
 
@@ -992,7 +1009,7 @@ def facturar_alquiler(request, id_alquiler):
         with connection.cursor() as cursor:
             empleado = cursor.execute("SELECT CONCAT(nombre, ' ' , apellido) FROM empleados WHERE id_empleado = %s", (id_empleado.get('empleado_id'),)).fetchall()
             info_alquiler= cursor.execute('''SELECT CONCAT (C.nombre,' ', C.apellido) AS nombre_completo, A.fecha, A.horaInicio, A.horaFin,
-                                T.nombre, A.extras
+                                T.nombre, A.extras, C.cedula
                                 FROM clientes C INNER JOIN alquileres A ON C.id_cliente = A.id_cliente
                                 INNER JOIN tipoAlquiler T ON T.id_tipoAlquiler = A.id_tipoAlquiler
                                 WHERE id_alquiler = %s''', (id_alquiler,)).fetchall()
@@ -1003,20 +1020,34 @@ def facturar_alquiler(request, id_alquiler):
             'info_alquiler': info_alquiler,
         })
     else:
-        descuento= request.POST['descuento']
+        total_pagar = float(request.POST['total_pagar2'])
+        descuento= float(request.POST['descuento'])
         idempleado= request.session['empleado_id']
-        abono = request.POST['abono']
+        abono = float(request.POST['abono'])
+        tipo_cambio = request.POST['tipo_cambio']
+        abono_dolares = 0
 
+        desc = 1-(descuento)/100
 
-        with connection.cursor() as cursor:
-            id_cliente = cursor.execute("SELECT id_cliente FROM clientes WHERE cedula = %s", (request.POST['cedula'],)).fetchall()
-            sql_query = "INSERT INTO facturas (fecha, descuento, alcoholica, id_empleado, id_cliente, id_alquiler,abono) VALUES (%s, %s, %s,%s, %s, %s,%s,%s)"
-            valores = (request.POST['fecha'], descuento ,0, idempleado , id_cliente,id_alquiler, abono)
-            cursor.execute(sql_query, valores)
+        if tipo_cambio == 2:
+            abono_dolares = convertir_dolares(abono)
+        else:
+            abono_dolares = abono
 
-        connection.commit()
+        if abono_dolares  < float(total_pagar*desc):
+            return render(request, "error.html", context={
+                'mensaje': 'Ocurrio un error al facturar su alquiler, ha abonado un valor menor al costo de su alquiler.'
+            })
+        else:
+            with connection.cursor() as cursor:
+                id_cliente = cursor.execute("SELECT id_cliente FROM clientes WHERE cedula = %s", (request.POST['cedula'],)).fetchall()
+                sql_query = "INSERT INTO facturas (fecha, descuento, alcoholica, id_empleado, id_cliente, id_alquiler,abono) VALUES (%s, %s, %s,%s, %s, %s,%s)"
+                valores = (request.POST['fecha_factura'], descuento ,0, idempleado.get('empleado_id') , id_cliente[0][0],id_alquiler, abono_dolares,)
+                cursor.execute(sql_query, valores)
 
-        return redirect('/facturas_alquiler/') 
+            connection.commit()
+
+        return redirect('/alquiler/') 
 
 
 #---------------------mesas-----------------------------------------
@@ -1323,7 +1354,10 @@ def obtener_horas_ocupadas(request):
     piso = request.GET.get('piso')
     if fecha:
         with connection.cursor() as cursor:
-            alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND id_tipoAlquiler = %s", (fecha,piso,)).fetchall()
+            if piso != 3:
+                alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND (id_tipoAlquiler = %s OR id_tipoAlquiler = 3)", (fecha,piso,)).fetchall()
+            else:
+                alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND id_tipoAlquiler = %s", (fecha,piso,)).fetchall()    
         print("HORAS OCUPADAS: "+str(alquileres))    
         horas_ocupadas = []
         for x in range(len(alquileres)):
@@ -1354,6 +1388,21 @@ def buscar_cliente_cedula(request):
             return JsonResponse({'error': str(e)}, status=500)
         # Devuelve los datos como JSON
         return JsonResponse(rows, safe=False)
+    
+async def convertir_dolares(abono):
+    url = "https://v6.exchangerate-api.com/v6/18e360030a5606d63bc549d6/pair/NIO/USD"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+        tipo_cambio = data.get('conversion_rate')
+        if tipo_cambio is None:
+            raise ValueError("No se pudo obtener el tipo de cambio")
+        cantidad_dolares = abono * float(tipo_cambio)
+        return float(cantidad_dolares)
+    except requests.RequestException as error:
+        print('Error al obtener el tipo de cambio:', error)
+
 #REPORTES 
     #VENTAS DE COMIDA Y BEBIDAS
 def ventas_periodo(request):

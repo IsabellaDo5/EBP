@@ -90,15 +90,21 @@ function desactivar_horasReservadas(event) {
                             const id_tipoAlq = hora.id_tipoAlquiler;
                             msg_horarios.innerHTML += "<b>Hora inicio: </b>" + horaInicio + " <b>Hora de fin: </b>" + horaFin + "<br>";
 
-                            for (let i = 0; i < 24; i++) {
-                                for (let j = 0; j < 60; j += 1) { // Incrementos de 1 minuto
-                                    const hourString = i.toString().padStart(2, '0');
+                            if (id_tipoAlq == 3) {
+                                msg_horarios.innerHTML = "Esta fecha ya está ocupada para una reservación de ambos pisos, por favor escoge otra fecha";
+                                btn_save.disabled = true;
+                            }
+                            else if (id_tipoAlq != 3) {
+                                for (let i = 0; i < 24; i++) {
+                                    for (let j = 0; j < 60; j += 1) { // Incrementos de 1 minuto
+                                        const hourString = i.toString().padStart(2, '0');
 
-                                    if (hourString >= horaInicio && hourString < horaFin) {
+                                        if (hourString >= horaInicio && hourString < horaFin) {
 
-                                        console.log(`HORAS DESHABILITADAS: ` + `${hourString}`);
-                                        ajustarHora(hourString, horaFin, horaInicio, id_tipoAlq);
+                                            console.log(`HORAS DESHABILITADAS: ` + `${hourString}`);
+                                            ajustarHora(hourString, horaFin, horaInicio, id_tipoAlq);
 
+                                        }
                                     }
                                 }
                             }
@@ -204,10 +210,30 @@ function ajustarHora(horaOcupada, horaFin, horaInicio, id_tipoAlquiler) {
 }
 
 function obtener_fechaFactura() {
-    let date = new Date().toLocaleDateString();
-    return date.format('DD-MM-yyyy');
+    document.addEventListener('DOMContentLoaded', function() {
+        var inputFecha = document.getElementById('fecha_factura');
+        
+        // Obtener la fecha actual en UTC-6 (Nicaragua)
+        var hoy = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Managua' }));
+        
+        // Formatear la fecha en formato ISO (YYYY-MM-DD)
+        var fechaFormateada = hoy.toISOString().split('T')[0];
+        
+        // Asignar la fecha formateada al input
+        inputFecha.value = fechaFormateada;
+      });
 }
 
+function obtener_descuento(){
+    const descuento_porcentaje = document.getElementById("descuento_factura");
+    const total_pagar = document.getElementById("total_pagar");
+    const costo_final = document.getElementById("total_pagar_descuento");
+    let descuento = 1-((descuento_porcentaje.value)/100)
+    let temp = parseFloat(total_pagar.value)*parseFloat(descuento);
+    costo_final.value = temp;
+    return descuento;
+}
+    
 async function convertir_dolares(abono) {
     const url = `https://v6.exchangerate-api.com/v6/18e360030a5606d63bc549d6/pair/NIO/USD`;
 
@@ -245,18 +271,19 @@ async function calcular_cambio(e, totalPagar, tipoAlquiler) {
     errorAbono.innerText = "";
     let cambio = 0;
     let abonoDolares = 0;
+    let descuento = obtener_descuento();
 
     if (tipoCambio == 2) {
         abonoDolares = await convertir_dolares(abono);
-        cambio = abonoDolares - totalPagar;
+        cambio = await convertir_aCordobas(abonoDolares - (totalPagar*descuento));
         console.log(abonoDolares)
     } else {
         abonoDolares = abono;
-        cambio = convertir_aCordobas(abonoDolares - totalPagar);
+        cambio = abonoDolares - (totalPagar*descuento);
     }
 
-    
-    if (abonoDolares >= totalPagar) {
+
+    if (abonoDolares >= (totalPagar*descuento)) {
         mostrarCambio.value = cambio;
         errorAbono.style.display = "none";
     } else {

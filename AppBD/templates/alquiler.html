@@ -119,9 +119,18 @@
                     else{
                       extras_.innerText = "Incluidos";
                     }
-                    document.getElementById('alquiler_facturar').href = '/facturar/alquiler/'+info.event.id+'/';
-                    detalles.href = '/alquiler/'+info.event.id+'/';
-
+                    if(info.event.extendedProps.no_factura == "None")
+                    {
+                      document.getElementById('alquiler_facturar').style.display = "block";
+                      detalles.style.display = "block";
+                      document.getElementById('alquiler_facturar').href = '/facturar/alquiler/'+info.event.id+'/';
+                      detalles.href = '/alquiler/'+info.event.id+'/';
+                    }
+                    else{
+                      document.getElementById('alquiler_facturar').style.display = "none";
+                      detalles.style.display = "none";
+                    }
+                    
                     // Mostrar el modal
                     var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
                     eventModal.show();
