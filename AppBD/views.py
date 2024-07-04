@@ -18,6 +18,7 @@ import time
 import hashlib
 from django.conf import settings
 import requests
+from fpdf import FPDF
 import asyncio
 
 # FUNCIONES ASINCRONAS  
@@ -562,22 +563,27 @@ def edit_alquiler(request, id_alquiler):
 
             with connection.cursor() as cursor:    
                 tipoAlquiler= cursor.execute("SELECT * from tipoAlquiler").fetchall()
+            print("Info factura "+str(info[0][11]))
+
+            if(info[0][11] != None and info[0][11] != ""):
+                return render(request, 'error.html', context={
+                    'mensaje': "No puedes modificar la información de este alquiler porque ya fue facturado"
+                })
+            else:
+                hora_Inicio = info[0][4].strftime("%H:%M")
+                hora_Fin= info[0][5].strftime("%H:%M")
+                fecha_formateada = info[0][3].strftime("%Y-%m-%d")
                 
+                diferencia = calcular_tiempo(hora_Inicio, hora_Fin)
 
-            hora_Inicio = info[0][4].strftime("%H:%M")
-            hora_Fin= info[0][5].strftime("%H:%M")
-            fecha_formateada = info[0][3].strftime("%Y-%m-%d")
-            
-            diferencia = calcular_tiempo(hora_Inicio, hora_Fin)
-
-            return render(request, 'editar_alquiler.html', context={
-                'info': info,
-                'hora':diferencia,
-                'tipoAlquiler':tipoAlquiler,
-                'horaInicio': hora_Inicio,
-                'horaFin': hora_Fin,
-                'fecha': fecha_formateada,
-            })
+                return render(request, 'editar_alquiler.html', context={
+                    'info': info,
+                    'hora':diferencia,
+                    'tipoAlquiler':tipoAlquiler,
+                    'horaInicio': hora_Inicio,
+                    'horaFin': hora_Fin,
+                    'fecha': fecha_formateada,
+                })
         else:
             cedula= request.POST['cedula']
             fecha = request.POST['fecha']

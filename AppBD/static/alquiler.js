@@ -328,3 +328,43 @@ function calcularDiferencia(horaInicio, horaFin) {
     const minutos = diferenciaMinutos % 60;
     return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
 }
+function facturar(event) {
+    // Seleccionar el div que queremos imprimir
+    const facturaDiv = document.getElementById("factura_alquiler");
+    
+    // Clonar el div para manipularlo sin afectar el DOM original
+    const facturaClone = facturaDiv.cloneNode(true);
+    
+    // Obtener todos los inputs dentro del div clonado
+    const inputs = facturaClone.getElementsByTagName('input');
+    
+    // Copiar los valores de los inputs originales a los inputs clonados
+    for (let i = 0; i < inputs.length; i++) {
+        const originalInput = document.getElementById(inputs[i].id);
+        if (originalInput) {
+            inputs[i].setAttribute('value', originalInput.value);
+        }
+    }
+    
+    // Convertir el div clonado a HTML
+    const facturaHTML = facturaClone.innerHTML;
+
+    // Crear una nueva ventana
+    var ventana = window.open('', '', 'height=700,width=400');
+
+    // Insertar todo lo que queremos que esté en el HTML de la nueva ventana
+    ventana.document.write('<html><head><title>Factura</title>');
+    ventana.document.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
+    ventana.document.write('<style>body{ margin: 20px; }</style>'); // Puedes añadir más estilos personalizados aquí
+    ventana.document.write('</head><body>');
+    ventana.document.write(facturaHTML);
+    ventana.document.write('</body></html>');
+
+    ventana.document.close();
+
+    ventana.onload = function() {
+        // Esto hace que se abra automáticamente la función de imprimir y luego de elegir una opción, cerrar la ventana automáticamente
+        ventana.print();
+        ventana.close();
+    };
+}

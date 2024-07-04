@@ -56,6 +56,7 @@ urlpatterns = [
     path('eliminar_alquiler/<int:id_alquiler>/',views.eliminar_alquiler),
     path('alquiler/obtener_cliente/', views.buscar_cliente_cedula, name='alquiler-cliente-bd'),
     path('alquiler/obtener_horasReservadas/', views.obtener_horas_ocupadas, name="obtener_horas_ocupadas"),
+
     #clientes
     path('add_cliente/', views.add_cliente),
     path('add_alquiler_cliente/', views.add_alquiler_cliente),

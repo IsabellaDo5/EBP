@@ -8,9 +8,9 @@ Facturar un alquiler
 <form action="/facturar/alquiler/{{id_alquiler}}/" method="post" class="row g-3" style="margin-top: 2% !important;">
     {% csrf_token %}
     <!--PRIMERA FILA-->
-    <div class="row">
+    <div class="row" id="factura_alquiler">
         {%for item in info_alquiler%}
-        <div class="col-md-6 card" style="padding: 1.5rem !important;">
+        <div class="col-md-6 card" style="padding: 1.5rem !important;" >
             <strong>EL BUEN PUNTO</strong>
             <hr>
             <div class="row">
@@ -139,7 +139,10 @@ Facturar un alquiler
 
     </div>
 
-    <button type="submit" class="btn btn-secondary">Continuar</button>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-primary me-md-2" type="button" onclick="facturar(event)">Imprimir factura</button>
+        <button class="btn btn-primary" type="submit">Continuar</button>
+      </div>
 </form>
 
 {% endblock %}
