@@ -885,6 +885,7 @@ def agregar_orden(request,id_mesa):
         desc= request.POST['comentario']
         cliente=str(request.POST['cliente'])
         #---------------------------------------ID DEL CLIENTE-------------------------------------------        
+        
         #Hay que convertir nombre del cliente a un id para ingresar a la orden       
         #Dividir la cadena en palabras
         palabras = cliente.split()
