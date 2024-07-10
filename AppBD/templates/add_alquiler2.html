@@ -38,7 +38,7 @@ Agregar un alquiler
             <div class="col">
                 <label for="fecha">Selecciona una fecha:</label>
                 <input type="date" class="form-control" id="fecha" name="fecha" min=""
-                    onchange="desactivar_horasReservadas(event)" required>
+                    onchange="desactivar_horasReservadas(event, 'no')" required>
             </div>
         </div>
 
@@ -47,7 +47,7 @@ Agregar un alquiler
         <div class="col-md-4">
             <label for="tipoAlquiler" class="form-label">Tipo de alquiler:</label>
             <select class="form-select" name="tipoAlquiler" aria-label="Default select example" id="tipoAlquiler"
-                onchange="desactivar_horasReservadas(event);serv_extras(event);">
+                onchange="desactivar_horasReservadas(event, 'no');serv_extras(event);">
                 {% for tipo in tipoAlquiler %}
                 <option value="{{tipo.0}}">{{tipo.1}} | Tarifa/ 4 horas: $ {{tipo.2}}</option>
                 {% endfor %}

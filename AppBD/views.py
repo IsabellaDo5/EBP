@@ -1358,12 +1358,39 @@ def respaldos_automaticos(request):
 def obtener_horas_ocupadas(request):
     fecha = request.GET.get('fecha')
     piso = request.GET.get('piso')
+    
+
     if fecha:
-        with connection.cursor() as cursor:
-            if piso != 3:
-                alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND (id_tipoAlquiler = %s OR id_tipoAlquiler = 3)", (fecha,piso,)).fetchall()
-            else:
-                alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND id_tipoAlquiler = %s", (fecha,piso,)).fetchall()    
+        print("FECHA SELECCIONADA: "+str(fecha))
+        print("PISO SELECCIONADO: "+str(type(piso)))
+
+        
+        try:
+            # Entra aqui en el caso de que encuentre un id de alquiler valido
+            # y busca coincidencias de alquileres dentro de la misma fecha, pero ignorandose a el mismo
+            # porque quiero modificar un alquiler
+            id_alquiler = int(request.GET.get('id_alquiler'))
+
+            with connection.cursor() as cursor:
+                if int(piso) != 3:
+
+                    alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND (id_tipoAlquiler = %s OR id_tipoAlquiler = 3) AND id_alquiler != %s", (fecha,piso, id_alquiler,)).fetchall()
+                elif int(piso) == 3:
+                    
+                    alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND (id_tipoAlquiler = %s OR id_tipoAlquiler = 1 OR id_tipoAlquiler = 2) AND id_alquiler != %s", (fecha,piso,id_alquiler,)).fetchall()    
+                    print("ENTRA A ELSE: "+str(alquileres))
+        except:
+            # Entra aqui en el caso de que no encuentre un id de alquiler valido
+            # por lo que significa que el usuario quiere agendar un nuevo alquiler
+            with connection.cursor() as cursor:
+                if int(piso) != 3:
+
+                    alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND (id_tipoAlquiler = %s OR id_tipoAlquiler = 3)", (fecha,piso,)).fetchall()
+                elif int(piso) == 3:
+                    
+                    alquileres = cursor.execute("SELECT horaInicio, horaFin, id_tipoAlquiler FROM alquileres WHERE fecha=%s AND (id_tipoAlquiler = %s OR id_tipoAlquiler = 1 OR id_tipoAlquiler = 2)", (fecha,piso,)).fetchall()    
+                    print("ENTRA A ELSE: "+str(alquileres))
+        
         print("HORAS OCUPADAS: "+str(alquileres))    
         horas_ocupadas = []
         for x in range(len(alquileres)):
@@ -1427,6 +1454,7 @@ def ventas_periodo(request):
         hoja_trabajo = excel.add_worksheet()
         estilo_titulo = excel.add_format({'bold': True, 'font_size': 12})
         estilo_titulo.set_align("center")
+        estilo_titulo.set_border(1)
         estilo_tabla = excel.add_format()
         estilo_tabla.set_border(1)
         estilo_tabla.set_text_wrap()
@@ -1470,6 +1498,55 @@ def ventas_periodo(request):
             columna = 2
 
         hoja_trabajo.autofit()
+        excel.close()
+        reporte.seek(0)
+
+        response = HttpResponse(reporte.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="Reporte_Ventas_{periodo}_dias_{fecha[0]}.xlsx"'
+        return response
+
+    except OperationalError as e:
+        # Envia un error si la consulta falla
+        return JsonResponse({'error': str(e)}, status=500)
+    
+def reportes_alquileres(request):
+    try:
+        fila = 6
+        columna = 2
+
+        periodo = int(request.GET.get('periodo'))
+        with connection.cursor() as cursor:
+            info_reporte = cursor.execute("EXEC reportes_alquileres  %s", (periodo,)).fetchall()
+            fecha = cursor.execute("SELECT CONVERT (date, SYSDATETIME())").fetchone()
+        reporte = io.BytesIO()
+        excel = xlsxwriter.Workbook(reporte)
+        hoja = excel.add_worksheet()
+        estilo_titulo = excel.add_format({'bold': True, 'font_size': 12})
+        estilo_tabla = excel.add_format()
+        estilo_tabla.set_border(1)
+        estilo_tabla.set_text_wrap()
+        estilo_titulo.set_text_wrap()
+
+        hoja.merge_range("C2:G2", "REPORTE DE ACTIVIDAD DE ALQUILERES FACTURADOS DEL LOCAL EL BUEN PUNTO", estilo_titulo)
+        hoja.merge_range("C3:G3", "GENERADO EL: "+ str(fecha[0]), estilo_titulo)
+
+        estilo_titulo.set_border(1)
+        hoja.write("C6", "PLANTA", estilo_titulo)
+        hoja.write("D6", "CANTIDAD DE VECES ALQUILADO", estilo_titulo)
+        hoja.write("E6", "TARIFA", estilo_titulo)
+        hoja.write("F6", "CANTIDAD PROMEDIO DE HORAS ALQUILADAS", estilo_titulo)
+        hoja.write("G6", "CANTIDAD DE VECES EN QUE SE CONTRATARON SERVICIOS EXTRAS", estilo_titulo)
+        hoja.write("H6", "MES EN QUE MÁS SE ALQUILÓ ESTE PISO", estilo_titulo)
+        
+        
+        for tupla in info_reporte:
+            for item in tupla:
+                hoja.write(fila, columna, item, estilo_tabla)
+                columna += 1
+            fila += 1
+            columna = 2
+        hoja.autofit()  
+        hoja.set_column('C:C', 10)  
         excel.close()
         reporte.seek(0)
 
