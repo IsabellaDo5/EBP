@@ -48,7 +48,14 @@ Inicio
         <li class="list-group-item" onclick="obtenerReporteVentas(30)" >Descargar mi reporte de ventas de los últimos 30 días</li>
         <li class="list-group-item" onclick="obtenerReporteVentas(7)">Descargar mi reporte de ventas de los ultimos 7 días</li>
       </ul>
+      <hr>
+      <strong class="fs-5">REPORTES DE ALQUILER</strong>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" onclick="obtenerReporteAlquileres(30)" >Descargar mi reporte de alquileres de los últimos 30 días</li>
+        <li class="list-group-item" onclick="obtenerReporteAlquileres(7)">Descargar mi reporte de alquileres de los ultimos 7 días</li>
+      </ul>
     </div>
+    
 
     <hr class="d-md-none" style="margin-top: 4% ;margin-bottom: 4% ;">
 
@@ -84,6 +91,7 @@ Inicio
   const items_url = "{% url 'items_mas_vendidos' %}";
   const platillos_url = "{% url 'platillos_mas_vendidos' %}";
   const ventas_url = "{% url 'reportes-ventas-ordenes' %}";
+  const alquileres_url= "{% url 'reportes-alquileres' %}"
 
   document.addEventListener("DOMContentLoaded", (event) => {
   ItemsMasVendidos();

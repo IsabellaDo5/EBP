@@ -83,3 +83,27 @@ async function obtenerReporteVentas(periodo_tiempo) {
         throw error; // Propagar el error para que pueda ser manejado por el llamador
     }
 }
+
+async function obtenerReporteAlquileres(periodo_tiempo) {
+    try {
+        const response = await axios.get(alquileres_url, {
+            params: {
+                periodo: periodo_tiempo
+            },
+            responseType: 'blob'  // Cambiar el tipo de respuesta a 'blob'
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Reporte_Alquileres_${periodo_tiempo}_dias.xlsx`); // Nombre del archivo
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+    } catch (error) {
+        console.error('Error en la solicitud HTTP:', error);
+        throw error; // Propagar el error para que pueda ser manejado por el llamador
+    }
+}
+

@@ -55,7 +55,8 @@ function activarHoras(event) {
 }
 
 
-function desactivar_horasReservadas(event) {
+function desactivar_horasReservadas(event, id_alquiler) {
+
     const fechaInput = document.getElementById('fecha');
     const horaInicioInput = document.getElementById('horaInicio');
     const horaFinInput = document.getElementById('horaFin');
@@ -63,12 +64,13 @@ function desactivar_horasReservadas(event) {
     const msg_horarios = document.getElementById('horariosReservados');
     const btn_save = document.getElementById("guardarAlquiler");
     msg_horarios.innerHTML = "Reservaciones para esta fecha en este piso: <br>";
-
+    console.log("FECHA SELECCIONADA: "+fechaInput.value+" TIPO DE ALQUILER: "+pisoInput.value);
     if (fechaInput.value && pisoInput.value) {
         axios.get(horasOcupadasURL, {
             params: {
                 'fecha': fechaInput.value,
-                'piso': pisoInput.value
+                'piso': pisoInput.value,
+                'id_alquiler': id_alquiler
             }
         })
             .then(function (response) {
@@ -88,8 +90,14 @@ function desactivar_horasReservadas(event) {
                             const horaInicio = hora.horaInicio;
                             const horaFin = hora.horaFin;
                             const id_tipoAlq = hora.id_tipoAlquiler;
-                            msg_horarios.innerHTML += "<b>Hora inicio: </b>" + horaInicio + " <b>Hora de fin: </b>" + horaFin + "<br>";
+                            if (id_tipoAlq == 1 ){
+                                msg_horarios.innerHTML += "<b>Primera Planta: </b> <b>Hora inicio: </b>" + horaInicio + " <b>Hora de fin: </b>" + horaFin + "<br>";
 
+                            }
+                            if (id_tipoAlq == 2 ){
+                                msg_horarios.innerHTML += "<b>Segunda Planta: </b> <b>Hora inicio: </b>" + horaInicio + " <b>Hora de fin: </b>" + horaFin + "<br>";
+
+                            }
                             if (id_tipoAlq == 3) {
                                 msg_horarios.innerHTML = "Esta fecha ya está ocupada para una reservación de ambos pisos, por favor escoge otra fecha";
                                 btn_save.disabled = true;
@@ -101,7 +109,7 @@ function desactivar_horasReservadas(event) {
 
                                         if (hourString >= horaInicio && hourString < horaFin) {
 
-                                            console.log(`HORAS DESHABILITADAS: ` + `${hourString}`);
+                                            /*console.log(`HORAS DESHABILITADAS: ` + `${hourString}`);*/
                                             ajustarHora(hourString, horaFin, horaInicio, id_tipoAlq);
 
                                         }
