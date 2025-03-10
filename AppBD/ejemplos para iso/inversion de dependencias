@@ -1,0 +1,76 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from django.contrib.auth.forms import *
+from django.contrib.auth import login, logout
+from django.db import OperationalError, connection
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.utils.text import slugify
+import datetime as datetimeglobal  # Alias para el módulo global
+from datetime import datetime   # Alias para la clase específica
+from django.conf import settings
+from fpdf import FPDF
+
+#----------------------------------- actual esta malo------------------------------------------
+def agregar_orden(request,id_mesa):
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            #obtenemos la lista de clientes, platillos, y consumibles del menu
+            clientes = cursor.execute("exec VerClientes").fetchall()
+            Bebidas = cursor.execute("SELECT * FROM VerMenu").fetchall()
+            platillos = cursor.execute("SELECT * FROM platillos").fetchall()
+            
+        clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]   
+        hora_actual = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
+
+        return render(request, 'generar_orden2.html', 
+                      {'bebidas': Bebidas,
+                       'platillos': platillos,
+                       'hora': hora_actual,
+                       'clientes_nombres': clientes_nombres,
+                       'id_mesa': id_mesa,
+                       'MEDIA_URL': settings.MEDIA_URL,})
+
+
+
+
+
+
+
+
+
+
+
+
+#----------------------------- como deberia ser---------------------------------------------
+def agregar_orden(request,id_mesa):
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            #obtenemos la lista de clientes, platillos, y consumibles del menu
+            clientes = obtener_clientes()
+            Bebidas = obtener_bebidas()
+            platillos = obtener_platillos()
+            
+        clientes_nombres = [f"{cliente[1]} {cliente[2]}" for cliente in clientes]   
+        hora_actual = str(datetimeglobal.datetime.now().strftime('%Y-%m-%d'))
+
+        return render(request, 'generar_orden2.html', 
+                      {'bebidas': Bebidas,
+                       'platillos': platillos,
+                       'hora': hora_actual,
+                       'clientes_nombres': clientes_nombres,
+                       'id_mesa': id_mesa,
+                       'MEDIA_URL': settings.MEDIA_URL,})
+    
+def obtener_clientes():
+     with connection.cursor() as cursor:
+         return cursor.execute("exec VerClientes").fetchall()
+     
+def obtener_bebidas():
+     with connection.cursor() as cursor:
+         return cursor.execute("SELECT * FROM VerMenu").fetchall()
+
+def obtener_platillos():
+     with connection.cursor() as cursor:
+          return cursor.execute("SELECT * FROM platillos").fetchall()

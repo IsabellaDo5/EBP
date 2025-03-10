@@ -22,7 +22,7 @@ def obtenerMedidaItem(request, nombreItem):
 
 #-----------------Funciones para añadir y restar items y platillos a las ordenes---------------------
 
-# Items
+# Items----------------------------------------------------------------------------------------------
 def AñadirItemAOrden(request, idOrden, idItem):
     try:
         with connection.cursor() as cursor:
@@ -47,7 +47,7 @@ def RestarItemAOrden(request, idOrden, idItem):
         print(f"Error al restar item de la orden: {e}")
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-# Platillos
+# Platillos---------------------------------------------------------------------------------------------
 def AñadirPlatilloAOrden(request, idOrden, idPlatillo):
     try:
         with connection.cursor() as cursor:
@@ -74,7 +74,7 @@ def RestarPlatilloAOrden(request, idOrden, idPlatillo):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 #No lo termine utilizando 
-    
+
 def verCantidadBebidaEnOrden(request, idOrden,idItem):
     with connection.cursor() as cursor:
         cursor.execute("exec verCantidadBebidaEnOrden @idOrden = %s, @idItem = %s", (idOrden,idItem,))
@@ -112,7 +112,7 @@ def reactivarOrden(request, idOrden):
         print(f"Error inesperado al reactivar la orden: {e}")
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-#COSA DE LOS RESPALDOS
+#COSA DE LOS RESPALDOS--------------------------------------------------------------------------------------------------------------------------------------
 def crearRespaldo(request,carpeta,nombrerespaldo):
     try:
         with connection.cursor() as cursor:

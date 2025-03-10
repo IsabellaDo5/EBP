@@ -31,3 +31,25 @@ def RestarItemAOrden(request, idOrden, idItem):
     except Exception as e:
         print(f"Error al restar item de la orden: {e}")
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+# ESTO NO HAYQ UE HACER-------------------------------------------------------------------------------
+
+def ModificarItemEnOrden(request, idOrden, idItem, accion):
+    try:
+        with connection.cursor() as cursor:
+            if accion == "añadir":
+                query = "exec AñadirItemAOrden @id_orden = %s, @id_item = %s"
+            elif accion == "restar":
+                query = "exec RestarItemAOrden @id_orden = %s, @id_item = %s"
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Acción no válida'}, status=400)
+
+            valores = (idOrden, idItem,)
+            cursor.execute(query, valores)
+        
+        connection.commit()
+        return JsonResponse({'status': 'success', 'message': f'Item {accion} a la orden'}, status=200)
+    
+    except Exception as e:
+        print(f"Error al modificar item en la orden: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
