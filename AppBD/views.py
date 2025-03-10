@@ -1265,14 +1265,14 @@ def respaldos(request):
 @echo off
 
 rem Configuración de variables
-set server=DESKTOP-FO9G4LP\SQLEXPRESS
+set server=LAPTOP-T8DL8SGS\SQLEXPRESS
 set user=sa
-set password=22480715
+set password=isabella2023
 set database=EBP
 set backup_file={carpeta}{respaldo}.bak rem Ruta completa con el nombre del archivo
 
 rem Ejecutar el comando sqlcmd para realizar la copia de seguridad
-sqlcmd -S DESKTOP-FO9G4LP\SQLEXPRESS -U sa -P 22480715 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
+sqlcmd -S LAPTOP-T8DL8SGS\SQLEXPRESS -U sa -P isabella2023 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
 
 rem Salir del script
 exit /b 0
@@ -1314,14 +1314,14 @@ def respaldos_automaticos(request):
             @echo off
 
             rem Configuración de variables
-            set server=DESKTOP-FO9G4LP\SQLEXPRESS
+            set server=LAPTOP-T8DL8SGS\SQLEXPRESS
             set user=sa
-            set password=22480715
+            set password=isabella2023
             set database=EBP
             set backup_file={carpeta}{respaldo}.bak rem Ruta completa con el nombre del archivo
 
             rem Ejecutar el comando sqlcmd para realizar la copia de seguridad
-            sqlcmd -S DESKTOP-FO9G4LP\SQLEXPRESS -U sa -P 22480715 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
+            sqlcmd -S LAPTOP-T8DL8SGS\SQLEXPRESS -U sa -P isabella123 -Q "BACKUP DATABASE [EBP] TO DISK = '{carpeta}{respaldo}.bak'"
 
             rem Salir del script
             exit /b 0
@@ -1329,8 +1329,8 @@ def respaldos_automaticos(request):
         # Guardar el contenido en un archivo .bat
         #Esta direccione es estatica y sinceramente me gustaria hacerlo en C:\ pero no le quiero 
         #otorgar permisos al servidor para que escriba en el disco root
-        #Si estas leyendo esto: cambia esta direccion estatica a lo que te plazca
-        nombre_archivo = "H:\\tarea_respaldo_automatico.bat"
+        #Si estas leyendo estod: cambia esta direccion estatica a lo que te plazca
+        nombre_archivo = "E:\\Datos\\tarea_respaldo_automatico.bat"
 
         #estas son mis credenciales de windows, tambien vas a tener que cambiarlas
         #TIENE QUE HABER UNA MEJOR MANERA DE HACER ESTO
